@@ -1,0 +1,98 @@
+\BOOKMARK [1][-]{section.1}{Discrete Probability Distributions}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Introduction}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Expected Value and Variance}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Bernoulli Distribution}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.4}{Binomial Distribution}{section.1}% 5
+\BOOKMARK [2][-]{subsection.1.5}{Hypergeometric Distribution}{section.1}% 6
+\BOOKMARK [2][-]{subsection.1.6}{Poisson Distribution}{section.1}% 7
+\BOOKMARK [2][-]{subsection.1.7}{Relationship between Binomial and Poisson Distributions}{section.1}% 8
+\BOOKMARK [2][-]{subsection.1.8}{Geometric Distribution}{section.1}% 9
+\BOOKMARK [2][-]{subsection.1.9}{Negative Binomial Distribution}{section.1}% 10
+\BOOKMARK [2][-]{subsection.1.10}{Multinomial Distribution}{section.1}% 11
+\BOOKMARK [2][-]{subsection.1.11}{Overview and Examples}{section.1}% 12
+\BOOKMARK [1][-]{section.2}{Continuous Probability Distributions}{}% 13
+\BOOKMARK [2][-]{subsection.2.1}{Introduction}{section.2}% 14
+\BOOKMARK [2][-]{subsection.2.2}{Finding Probabilities and Percentiles}{section.2}% 15
+\BOOKMARK [2][-]{subsection.2.3}{Mean and Variance of Continuous R.V.}{section.2}% 16
+\BOOKMARK [2][-]{subsection.2.4}{Continuous Uniform Distribution}{section.2}% 17
+\BOOKMARK [2][-]{subsection.2.5}{Normal \(Gaussian\) Distribution}{section.2}% 18
+\BOOKMARK [2][-]{subsection.2.6}{Standardizing Normally Distributed R.V.}{section.2}% 19
+\BOOKMARK [2][-]{subsection.2.7}{Normal Approximation to the Binomial Distribution}{section.2}% 20
+\BOOKMARK [2][-]{subsection.2.8}{Introduction to Chi-Square Distribution}{section.2}% 21
+\BOOKMARK [2][-]{subsection.2.9}{Introduction to Student t Distribution}{section.2}% 22
+\BOOKMARK [2][-]{subsection.2.10}{Introduction to the F Distribution}{section.2}% 23
+\BOOKMARK [1][-]{section.3}{Using Tables to Find Areas and Percentiles}{}% 24
+\BOOKMARK [2][-]{subsection.3.1}{Area/Percentiles \(Tables for area left of z\)}{section.3}% 25
+\BOOKMARK [2][-]{subsection.3.2}{Area/Percentiles \(Tables for area between 0 and z\)}{section.3}% 26
+\BOOKMARK [2][-]{subsection.3.3}{Area/Percentiles \(for t tables\)}{section.3}% 27
+\BOOKMARK [2][-]{subsection.3.4}{Area/Percentiles \(for F tables\)}{section.3}% 28
+\BOOKMARK [2][-]{subsection.3.5}{Area/Percentiles \(Chi-square tables\)}{section.3}% 29
+\BOOKMARK [1][-]{section.4}{Sampling Distributions}{}% 30
+\BOOKMARK [2][-]{subsection.4.1}{Introduction to Sampling Distributions}{section.4}% 31
+\BOOKMARK [2][-]{subsection.4.2}{Sampling Distribution of the Sample Mean}{section.4}% 32
+\BOOKMARK [2][-]{subsection.4.3}{Introduction to Central Limit Theorem}{section.4}% 33
+\BOOKMARK [1][-]{section.5}{Confidence Intervals \(One Mean\)}{}% 34
+\BOOKMARK [2][-]{subsection.5.1}{Introduction to Confidence Intervals}{section.5}% 35
+\BOOKMARK [2][-]{subsection.5.2}{Confidence Interval for the Mean}{section.5}% 36
+\BOOKMARK [2][-]{subsection.5.3}{Finding z Value for the Confidence Interval Formula}{section.5}% 37
+\BOOKMARK [2][-]{subsection.5.4}{Interpreting the Interval}{section.5}% 38
+\BOOKMARK [2][-]{subsection.5.5}{Factors Affecting Margin of Error}{section.5}% 39
+\BOOKMARK [2][-]{subsection.5.6}{Confidence Intervals when Sigma is Unknown \(t method\)}{section.5}% 40
+\BOOKMARK [2][-]{subsection.5.7}{Determining the Required Sample Size}{section.5}% 41
+\BOOKMARK [2][-]{subsection.5.8}{Investigating the Normality Assumption}{section.5}% 42
+\BOOKMARK [1][-]{section.6}{Hypothesis Testing}{}% 43
+\BOOKMARK [2][-]{subsection.6.1}{Introduction to Hypothesis Testing}{section.6}% 44
+\BOOKMARK [2][-]{subsection.6.2}{Z Tests for One Mean}{section.6}% 45
+\BOOKMARK [3][-]{subsubsection.6.2.1}{Introduction}{subsection.6.2}% 46
+\BOOKMARK [3][-]{subsubsection.6.2.2}{The Rejection Region Approach}{subsection.6.2}% 47
+\BOOKMARK [3][-]{subsubsection.6.2.3}{The p-value}{subsection.6.2}% 48
+\BOOKMARK [2][-]{subsection.6.3}{Type I / Type II Errors and the Power of the Test}{section.6}% 49
+\BOOKMARK [2][-]{subsection.6.4}{One-sided vs. Two-sided Tests}{section.6}% 50
+\BOOKMARK [2][-]{subsection.6.5}{Statistical Significance vs. Practical Significance}{section.6}% 51
+\BOOKMARK [2][-]{subsection.6.6}{Relation between Confidence Intervals and Hypothesis Tests}{section.6}% 52
+\BOOKMARK [2][-]{subsection.6.7}{Calculating Power and Probability \(Type II Error \)}{section.6}% 53
+\BOOKMARK [3][-]{subsubsection.6.7.1}{One-Tailed}{subsection.6.7}% 54
+\BOOKMARK [3][-]{subsubsection.6.7.2}{Two-Tailed}{subsection.6.7}% 55
+\BOOKMARK [2][-]{subsection.6.8}{What Factors Affect the Power of a Z Test?}{section.6}% 56
+\BOOKMARK [2][-]{subsection.6.9}{t Tests for One Mean}{section.6}% 57
+\BOOKMARK [3][-]{subsubsection.6.9.1}{Introduction}{subsection.6.9}% 58
+\BOOKMARK [3][-]{subsubsection.6.9.2}{Investigating the Normality Assumption}{subsection.6.9}% 59
+\BOOKMARK [2][-]{subsection.6.10}{t test or z test?}{section.6}% 60
+\BOOKMARK [1][-]{section.7}{Inference of Two Means}{}% 61
+\BOOKMARK [2][-]{subsection.7.1}{Introduction}{section.7}% 62
+\BOOKMARK [2][-]{subsection.7.2}{Sampling Distribution of 1 - 2}{section.7}% 63
+\BOOKMARK [2][-]{subsection.7.3}{Pooled-Variance t Tests and Confidence Intervals}{section.7}% 64
+\BOOKMARK [2][-]{subsection.7.4}{Welch \(Unpooled Variance\) t Tests and Confidence Intervals}{section.7}% 65
+\BOOKMARK [2][-]{subsection.7.5}{Pooled or Unpooled Variance t Tests?}{section.7}% 66
+\BOOKMARK [2][-]{subsection.7.6}{Paired-Difference Procedures}{section.7}% 67
+\BOOKMARK [1][-]{section.8}{Inference of Proportions}{}% 68
+\BOOKMARK [2][-]{subsection.8.1}{Introduction}{section.8}% 69
+\BOOKMARK [2][-]{subsection.8.2}{Sampling Distribution of }{section.8}% 70
+\BOOKMARK [2][-]{subsection.8.3}{Confidence Intervals for a Proportion}{section.8}% 71
+\BOOKMARK [3][-]{subsubsection.8.3.1}{Determining Minimum Sample Size}{subsection.8.3}% 72
+\BOOKMARK [2][-]{subsection.8.4}{Inference of Two Proportions}{section.8}% 73
+\BOOKMARK [1][-]{section.9}{Chi-square Tests}{}% 74
+\BOOKMARK [2][-]{subsection.9.1}{One-Way Tables}{section.9}% 75
+\BOOKMARK [2][-]{subsection.9.2}{Goodness of fit for Binomial Distribution}{section.9}% 76
+\BOOKMARK [2][-]{subsection.9.3}{Two-Way Tables \(Tests of Independence\)}{section.9}% 77
+\BOOKMARK [1][-]{section.10}{Variance}{}% 78
+\BOOKMARK [2][-]{subsection.10.1}{Inference of One Variance}{section.10}% 79
+\BOOKMARK [3][-]{subsubsection.10.1.1}{Introduction}{subsection.10.1}% 80
+\BOOKMARK [3][-]{subsubsection.10.1.2}{Sampling Distribution of the Sample Variance}{subsection.10.1}% 81
+\BOOKMARK [3][-]{subsubsection.10.1.3}{Effects of Violation of Normality Assumption}{subsection.10.1}% 82
+\BOOKMARK [2][-]{subsection.10.2}{Inference for the Ratio of Two Variances}{section.10}% 83
+\BOOKMARK [3][-]{subsubsection.10.2.1}{Introduction}{subsection.10.2}% 84
+\BOOKMARK [3][-]{subsubsection.10.2.2}{Sampling Distribution of the Ratio of Sample Variances}{subsection.10.2}% 85
+\BOOKMARK [3][-]{subsubsection.10.2.3}{Effects of Violation of Normality Assumption}{subsection.10.2}% 86
+\BOOKMARK [1][-]{section.11}{One-Way ANOVA}{}% 87
+\BOOKMARK [2][-]{subsection.11.1}{Introduction}{section.11}% 88
+\BOOKMARK [2][-]{subsection.11.2}{The Formulas}{section.11}% 89
+\BOOKMARK [2][-]{subsection.11.3}{LSD Confidence Intervals}{section.11}% 90
+\BOOKMARK [1][-]{section.12}{Simple Linear Regression}{}% 91
+\BOOKMARK [2][-]{subsection.12.1}{Introduction}{section.12}% 92
+\BOOKMARK [2][-]{subsection.12.2}{The Least Squares Regression Line}{section.12}% 93
+\BOOKMARK [2][-]{subsection.12.3}{Assumptions}{section.12}% 94
+\BOOKMARK [2][-]{subsection.12.4}{Inference on the Slope}{section.12}% 95
+\BOOKMARK [2][-]{subsection.12.5}{Example}{section.12}% 96
+\BOOKMARK [2][-]{subsection.12.6}{Estimation and Prediction Using the Fitted Line}{section.12}% 97
+\BOOKMARK [2][-]{subsection.12.7}{Outliers, Leverage, and Influential Points}{section.12}% 98
