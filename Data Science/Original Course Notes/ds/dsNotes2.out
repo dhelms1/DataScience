@@ -1,0 +1,49 @@
+\BOOKMARK [1][-]{section.1}{Introduction to SQL}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Relational Database Management System}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Data Manipulation in SQL}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Writing Queries}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.4}{Aggregate Functions}{section.1}% 5
+\BOOKMARK [2][-]{subsection.1.5}{Multiple Tables}{section.1}% 6
+\BOOKMARK [2][-]{subsection.1.6}{Usage Funnels}{section.1}% 7
+\BOOKMARK [2][-]{subsection.1.7}{User Churn}{section.1}% 8
+\BOOKMARK [1][-]{section.2}{Introduction to Python}{}% 9
+\BOOKMARK [2][-]{subsection.2.1}{Lists}{section.2}% 10
+\BOOKMARK [2][-]{subsection.2.2}{Loops}{section.2}% 11
+\BOOKMARK [2][-]{subsection.2.3}{List Comprehension / Lambda Functions}{section.2}% 12
+\BOOKMARK [1][-]{section.3}{Data Analysis with Pandas}{}% 13
+\BOOKMARK [2][-]{subsection.3.1}{Introduction to Pandas}{section.3}% 14
+\BOOKMARK [2][-]{subsection.3.2}{Modifying DataFrames}{section.3}% 15
+\BOOKMARK [2][-]{subsection.3.3}{Aggregate Functions}{section.3}% 16
+\BOOKMARK [2][-]{subsection.3.4}{Multiple DataFrames}{section.3}% 17
+\BOOKMARK [1][-]{section.4}{Data Visualization}{}% 18
+\BOOKMARK [2][-]{subsection.4.1}{Introduction to Matplotlib}{section.4}% 19
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Different Plot Types \046 Error}{subsection.4.1}% 20
+\BOOKMARK [3][-]{subsubsection.4.1.2}{Selecting the Correct Visualization}{subsection.4.1}% 21
+\BOOKMARK [2][-]{subsection.4.2}{Introduction to Seaborn}{section.4}% 22
+\BOOKMARK [3][-]{subsubsection.4.2.1}{Plotting Distributions}{subsection.4.2}% 23
+\BOOKMARK [3][-]{subsubsection.4.2.2}{Styling Graphs}{subsection.4.2}% 24
+\BOOKMARK [2][-]{subsection.4.3}{Data Visualization Cumulative Project \(Matplotlib\)}{section.4}% 25
+\BOOKMARK [1][-]{section.5}{Statistics in Python}{}% 26
+\BOOKMARK [2][-]{subsection.5.1}{Basic Statistical Calculations}{section.5}% 27
+\BOOKMARK [2][-]{subsection.5.2}{Histograms}{section.5}% 28
+\BOOKMARK [2][-]{subsection.5.3}{Quartiles, Quantiles, and Interquartile Range}{section.5}% 29
+\BOOKMARK [2][-]{subsection.5.4}{Introduction to NumPy}{section.5}% 30
+\BOOKMARK [3][-]{subsubsection.5.4.1}{Statistics with NumPy}{subsection.5.4}% 31
+\BOOKMARK [3][-]{subsubsection.5.4.2}{Distributions with NumPy}{subsection.5.4}% 32
+\BOOKMARK [2][-]{subsection.5.5}{Hypothesis Testing with SciPy}{section.5}% 33
+\BOOKMARK [3][-]{subsubsection.5.5.1}{Types of Tests}{subsection.5.5}% 34
+\BOOKMARK [3][-]{subsubsection.5.5.2}{Sample Size Determination \(A/B Tests \046 Surveys\)}{subsection.5.5}% 35
+\BOOKMARK [1][-]{section.6}{Data Cleaning / Scraping}{}% 36
+\BOOKMARK [2][-]{subsection.6.1}{Regular Expressions}{section.6}% 37
+\BOOKMARK [2][-]{subsection.6.2}{Data Cleaning with Pandas}{section.6}% 38
+\BOOKMARK [2][-]{subsection.6.3}{Web Scrapping with Beautiful Soup}{section.6}% 39
+\BOOKMARK [1][-]{section.7}{Machine Learning \(Supervised Learning\)}{}% 40
+\BOOKMARK [2][-]{subsection.7.1}{Introduction to Machine Learning}{section.7}% 41
+\BOOKMARK [2][-]{subsection.7.2}{Linear Regression}{section.7}% 42
+\BOOKMARK [2][-]{subsection.7.3}{Multiple Linear Regression}{section.7}% 43
+\BOOKMARK [2][-]{subsection.7.4}{Classification: K-Nearest Neighbors}{section.7}% 44
+\BOOKMARK [3][-]{subsubsection.7.4.1}{Distance Formulas}{subsection.7.4}% 45
+\BOOKMARK [3][-]{subsubsection.7.4.2}{Normalization \046 Dataset Splits}{subsection.7.4}% 46
+\BOOKMARK [3][-]{subsubsection.7.4.3}{K-Nearest Neighbors}{subsection.7.4}% 47
+\BOOKMARK [3][-]{subsubsection.7.4.4}{K Nearest Neighbor Regression}{subsection.7.4}% 48
+\BOOKMARK [2][-]{subsection.7.5}{Accuracy, Recall, and Precision}{section.7}% 49

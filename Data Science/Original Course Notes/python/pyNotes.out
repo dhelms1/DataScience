@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Programming in Python}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Git Bash \046 Workflow}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Lists}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Loops}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.4}{List Comprehension / Lambda Functions}{section.1}% 5
+\BOOKMARK [2][-]{subsection.1.5}{Python Objects}{section.1}% 6
+\BOOKMARK [3][-]{subsubsection.1.5.1}{Strings and their Methods}{subsection.1.5}% 7
+\BOOKMARK [3][-]{subsubsection.1.5.2}{Datetime Module}{subsection.1.5}% 8
+\BOOKMARK [3][-]{subsubsection.1.5.3}{Dictionaries}{subsection.1.5}% 9
+\BOOKMARK [3][-]{subsubsection.1.5.4}{Classes}{subsection.1.5}% 10
+\BOOKMARK [2][-]{subsection.1.6}{Linear Data Structures}{section.1}% 11
+\BOOKMARK [3][-]{subsubsection.1.6.1}{Nodes}{subsection.1.6}% 12
+\BOOKMARK [3][-]{subsubsection.1.6.2}{Linked Lists}{subsection.1.6}% 13
+\BOOKMARK [3][-]{subsubsection.1.6.3}{Stacks}{subsection.1.6}% 14
+\BOOKMARK [3][-]{subsubsection.1.6.4}{Queues}{subsection.1.6}% 15
+\BOOKMARK [2][-]{subsection.1.7}{Complex Data Structures}{section.1}% 16
+\BOOKMARK [3][-]{subsubsection.1.7.1}{Hash Maps}{subsection.1.7}% 17

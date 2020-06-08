@@ -1,0 +1,15 @@
+\contentsline {section}{\numberline {1}PostgreSQL For Data Science}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}SQL Query Basics (Filtering)}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Using Functions}{2}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}String Functions}{3}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}Grouping Functions}{3}{subsubsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.3}Grouping Data / Computing Aggregates}{4}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Using Subqueries}{5}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}The CASE Clause}{6}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Correlated Subqueries}{7}{subsection.1.6}%
+\contentsline {subsection}{\numberline {1.7}Working with Multiple Tables}{8}{subsection.1.7}%
+\contentsline {subsubsection}{\numberline {1.7.1}Table Unions}{8}{subsubsection.1.7.1}%
+\contentsline {subsubsection}{\numberline {1.7.2}Table Joins}{8}{subsubsection.1.7.2}%
+\contentsline {subsubsection}{\numberline {1.7.3}Creating Views}{9}{subsubsection.1.7.3}%
+\contentsline {subsection}{\numberline {1.8}Window Functions}{9}{subsection.1.8}%
+\contentsline {subsection}{\numberline {1.9}Practice Problems with Solutions}{11}{subsection.1.9}%
