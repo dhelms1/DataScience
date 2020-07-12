@@ -1,0 +1,46 @@
+\contentsline {section}{\numberline {1}Six Step Machine Learning Framework}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Step 1: Problem Definition}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Step 2: Data}{1}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Step 3: Evaluation}{2}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Step 4: Features}{2}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Step 5: Modeling}{2}{subsection.1.5}%
+\contentsline {section}{\numberline {2}Pandas: Data Analysis}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Series, Data Frames, and CSVs}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Describing Data}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Selecting/Viewing Data}{4}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Manipulating Data}{4}{subsection.2.4}%
+\contentsline {section}{\numberline {3}NumPy}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Arrays and Attributes}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Array Functions}{6}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Sorting Arrays}{7}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Turn Images into NumPy Arrays}{7}{subsubsection.3.2.2}%
+\contentsline {section}{\numberline {4}Matplotlib: Plotting and Visualizing}{8}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Types of Plots}{8}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Subplots}{9}{subsubsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.2}Plotting from Pandas DataFrames}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Customizing Plots}{10}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Scikit-learn: Machine Leaning Models}{11}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Workflow}{11}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Step 1: Getting Data Ready}{12}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Step 2: Choosing the Right Model}{14}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Regression models}{15}{subsubsection.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.2}Classification models}{15}{subsubsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.4}Step 3: Making Predictions with our Model}{16}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Step 4: Evaluating a Model}{16}{subsection.5.5}%
+\contentsline {subsubsection}{\numberline {5.5.1}Evaluating a Classification Model}{17}{subsubsection.5.5.1}%
+\contentsline {subsubsection}{\numberline {5.5.2}Evaluating a Regression Model}{19}{subsubsection.5.5.2}%
+\contentsline {subsubsection}{\numberline {5.5.3}Cross Validation and Scoring parameter}{19}{subsubsection.5.5.3}%
+\contentsline {subsubsection}{\numberline {5.5.4}Metric Functions with scikit-learn}{20}{subsubsection.5.5.4}%
+\contentsline {subsection}{\numberline {5.6}Step 5: Improving a Model}{21}{subsection.5.6}%
+\contentsline {subsubsection}{\numberline {5.6.1}Tuning Hyperparameters Manually}{21}{subsubsection.5.6.1}%
+\contentsline {subsubsection}{\numberline {5.6.2}Tuning Hyperparameters with RandomizedSearchCV}{22}{subsubsection.5.6.2}%
+\contentsline {subsubsection}{\numberline {5.6.3}Tuning Hyperparameters with GridSearchCV}{22}{subsubsection.5.6.3}%
+\contentsline {subsection}{\numberline {5.7}Step 6: Saving and Loading a Model}{23}{subsection.5.7}%
+\contentsline {subsection}{\numberline {5.8}Putting It All Together}{24}{subsection.5.8}%
+\contentsline {subsection}{\numberline {5.9}Milestone Project 1 (Classification)}{25}{subsection.5.9}%
+\contentsline {subsubsection}{\numberline {5.9.1}Data Exploration (EDA)}{26}{subsubsection.5.9.1}%
+\contentsline {subsubsection}{\numberline {5.9.2}Modeling (Step 5)}{28}{subsubsection.5.9.2}%
+\contentsline {subsubsection}{\numberline {5.9.3}Tuning Hyperparameters}{28}{subsubsection.5.9.3}%
+\contentsline {subsubsection}{\numberline {5.9.4}Evaluating the Model}{30}{subsubsection.5.9.4}%
+\contentsline {subsubsection}{\numberline {5.9.5}Find Most Important Features}{32}{subsubsection.5.9.5}%
+\contentsline {subsection}{\numberline {5.10}Milestone Project 2 (Regression)}{33}{subsection.5.10}%

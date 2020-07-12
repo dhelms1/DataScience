@@ -1,0 +1,46 @@
+\BOOKMARK [1][-]{section.1}{Six Step Machine Learning Framework}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Step 1: Problem Definition}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Step 2: Data}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Step 3: Evaluation}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.4}{Step 4: Features}{section.1}% 5
+\BOOKMARK [2][-]{subsection.1.5}{Step 5: Modeling}{section.1}% 6
+\BOOKMARK [1][-]{section.2}{Pandas: Data Analysis}{}% 7
+\BOOKMARK [2][-]{subsection.2.1}{Series, Data Frames, and CSVs}{section.2}% 8
+\BOOKMARK [2][-]{subsection.2.2}{Describing Data}{section.2}% 9
+\BOOKMARK [2][-]{subsection.2.3}{Selecting/Viewing Data}{section.2}% 10
+\BOOKMARK [2][-]{subsection.2.4}{Manipulating Data}{section.2}% 11
+\BOOKMARK [1][-]{section.3}{NumPy}{}% 12
+\BOOKMARK [2][-]{subsection.3.1}{Arrays and Attributes}{section.3}% 13
+\BOOKMARK [2][-]{subsection.3.2}{Array Functions}{section.3}% 14
+\BOOKMARK [3][-]{subsubsection.3.2.1}{Sorting Arrays}{subsection.3.2}% 15
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Turn Images into NumPy Arrays}{subsection.3.2}% 16
+\BOOKMARK [1][-]{section.4}{Matplotlib: Plotting and Visualizing}{}% 17
+\BOOKMARK [2][-]{subsection.4.1}{Types of Plots}{section.4}% 18
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Subplots}{subsection.4.1}% 19
+\BOOKMARK [2][-]{subsection.4.2}{Plotting from Pandas DataFrames}{section.4}% 20
+\BOOKMARK [2][-]{subsection.4.3}{Customizing Plots}{section.4}% 21
+\BOOKMARK [1][-]{section.5}{Scikit-learn: Machine Leaning Models}{}% 22
+\BOOKMARK [2][-]{subsection.5.1}{Workflow}{section.5}% 23
+\BOOKMARK [2][-]{subsection.5.2}{Step 1: Getting Data Ready}{section.5}% 24
+\BOOKMARK [2][-]{subsection.5.3}{Step 2: Choosing the Right Model}{section.5}% 25
+\BOOKMARK [3][-]{subsubsection.5.3.1}{Regression models}{subsection.5.3}% 26
+\BOOKMARK [3][-]{subsubsection.5.3.2}{Classification models}{subsection.5.3}% 27
+\BOOKMARK [2][-]{subsection.5.4}{Step 3: Making Predictions with our Model}{section.5}% 28
+\BOOKMARK [2][-]{subsection.5.5}{Step 4: Evaluating a Model}{section.5}% 29
+\BOOKMARK [3][-]{subsubsection.5.5.1}{Evaluating a Classification Model}{subsection.5.5}% 30
+\BOOKMARK [3][-]{subsubsection.5.5.2}{Evaluating a Regression Model}{subsection.5.5}% 31
+\BOOKMARK [3][-]{subsubsection.5.5.3}{Cross Validation and Scoring parameter}{subsection.5.5}% 32
+\BOOKMARK [3][-]{subsubsection.5.5.4}{Metric Functions with scikit-learn}{subsection.5.5}% 33
+\BOOKMARK [2][-]{subsection.5.6}{Step 5: Improving a Model}{section.5}% 34
+\BOOKMARK [3][-]{subsubsection.5.6.1}{Tuning Hyperparameters Manually}{subsection.5.6}% 35
+\BOOKMARK [3][-]{subsubsection.5.6.2}{Tuning Hyperparameters with RandomizedSearchCV}{subsection.5.6}% 36
+\BOOKMARK [3][-]{subsubsection.5.6.3}{Tuning Hyperparameters with GridSearchCV}{subsection.5.6}% 37
+\BOOKMARK [2][-]{subsection.5.7}{Step 6: Saving and Loading a Model}{section.5}% 38
+\BOOKMARK [2][-]{subsection.5.8}{Putting It All Together}{section.5}% 39
+\BOOKMARK [2][-]{subsection.5.9}{Milestone Project 1 \(Classification\)}{section.5}% 40
+\BOOKMARK [3][-]{subsubsection.5.9.1}{Data Exploration \(EDA\)}{subsection.5.9}% 41
+\BOOKMARK [3][-]{subsubsection.5.9.2}{Modeling \(Step 5\)}{subsection.5.9}% 42
+\BOOKMARK [3][-]{subsubsection.5.9.3}{Tuning Hyperparameters}{subsection.5.9}% 43
+\BOOKMARK [3][-]{subsubsection.5.9.4}{Evaluating the Model}{subsection.5.9}% 44
+\BOOKMARK [3][-]{subsubsection.5.9.5}{Find Most Important Features}{subsection.5.9}% 45
+\BOOKMARK [2][-]{subsection.5.10}{Milestone Project 2 \(Regression\)}{section.5}% 46
