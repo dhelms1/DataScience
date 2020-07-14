@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7250 64-bit) (preloaded format=pdflatex 2020.2.10)  12 JUL 2020 09:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7250 64-bit) (preloaded format=pdflatex 2020.2.10)  14 JUL 2020 07:38
 entering extended mode
 **./mlNotes.tex
 (mlNotes.tex
@@ -666,16 +666,16 @@ Underfull \hbox (badness 10000) in paragraph at lines 1500--1501
 
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1517.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1516.
 [33]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1517.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1516.
  (mlNotes.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1517.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1517.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1516.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1516.
 
 Package rerunfilecheck Info: File `mlNotes.out' has not changed.
 (rerunfilecheck)             Checksum: 4E0C08B825CA4171A4CED3A097984C4A;3534.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1517.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1516.
  ) 
 Here is how much of TeX's memory you used:
  11385 strings out of 492484

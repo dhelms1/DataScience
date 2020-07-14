@@ -1074,7 +1074,7 @@
 	# Make and evaluate joblib predictions
 	joblib_y_preds = loaded_job_model.predict(X_test)
 	evaluate_preds(y_test, joblib_y_preds) \end{lstlisting} \newpage
-%%%% PAGE 24/25 %%%%
+%%%% PAGE 24 %%%%
 
 	\subsection{Putting It All Together}
 	We will use the \textbf{scikit-learn Pipeline} class as a way to string together a bunch of scikit processes in one hit (similar to a function). In one cell block, we want to: fill missing data, convert it to numeric, and build a model on the data. 
@@ -1498,7 +1498,6 @@
 
 	\subsection{Milestone Project 2 (Regression)}
 	This is a \textbf{time series data set}, meaning that we will be using sales from the past to predict sales for the future. The data is split into 3 parts: Train.csv (data until end of 2011), Valid.csv (Jan-Apr 2012), Test.csv (May - Nov 2012). \\~\\
-	
 	
 	
 	
