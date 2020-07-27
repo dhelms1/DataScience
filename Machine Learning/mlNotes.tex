@@ -1497,7 +1497,445 @@
 %%%% PAGE 33 %%%%
 
 	\subsection{Milestone Project 2 (Regression)}
-	This is a \textbf{time series data set}, meaning that we will be using sales from the past to predict sales for the future. The data is split into 3 parts: Train.csv (data until end of 2011), Valid.csv (Jan-Apr 2012), Test.csv (May - Nov 2012). \\~\\
+	This is a \textbf{time series data set}, meaning that we will be using sales from the past to predict sales for the future. We will use the bulldozer datasets for this project. Following the typical work flow that we covered in section one, lets map out our data modeling steps. \vspace*{1.5mm} \\
+	\textbf{Step 1: Problem Definition} \\
+	How well can we predict the future sale price of a bulldozer, given its characteristics and previous examples of how much similar bulldozers have been sold for? \vspace*{1.5mm} \\
+	\textbf{Step 2: Data} \\
+	The data is downloaded from the \href{https://archive.ics.uci.edu/ml/datasets/heart+Disease}{Kaggle Bluebook for Bulldozers competition}. Note that there are 3 main datasets already split for us: \\
+	\hspace*{2mm} 1) Train.csv is the training set, which contains data through the end of 2011. \\
+	\hspace*{2mm} 2) Valid.csv is the validation set, which contains data from January 1, 2012 - April 30, 2012 \\
+	\hspace*{2mm} 3) Test.csv is the test set, which contains data from May 1, 2012 - November 2012. \vspace*{1.5mm} \\
+	\textbf{Step 3: Evaluation} \\
+	The \href{https://www.kaggle.com/c/bluebook-for-bulldozers/overview/evaluation}{evaluation metric} for this competition is the RMSLE (root mean squared log error) between the actual and predicted auction prices. Note that the goal for most regression evaluation metrics is to minimize the error. For example, our goal for this project will be to build a machine learning model which minimizes RMSLE. \vspace*{1.5mm} \\
+	\textbf{Step 4: Features} \\
+	Kaggle provides a data dictionary detailing all of the features of the dataset. You can view this data dictionary on \href{https://docs.google.com/spreadsheets/d/18ly-bLR8sbDJLITkWG7ozKm8l3RyieQ2Fpgix-beSYI/edit?usp=sharing}{Google Sheets}. \vspace*{1mm}
+	\subsubsection{Exploring the Data (EDA)}
+	Since the data frames that we read in live in RAM, we need to set \textit{low\_memory=False} so that it can read in the file without an error. For plotting, we must use subsections (approx 1000 observations) since plotting over 400,000 observations in one plot would not only take a long time but also be unreadable. 
+	\begin{lstlisting}
+	# Import Training and Validation Sets
+	df = pd.read_csv('data/bluuebook-for-bulldozers/TrainAndValid.csv', low_memory=False) 
+	
+	df.info() 
+	# 412,698 rows and 53 columns
+	# dtypes: float64 (3), int64 (5), object (45)
+	# memory usage: 166.9+ MB (very large file)
+	
+	df.SalePrice.plot.hist() \end{lstlisting} \vspace*{1mm}
+	\begin{minipage}[c]{9cm}
+	\includegraphics[scale=.8]{sp_ml2}
+	\end{minipage}
+	\begin{minipage}[c]{8cm}
+	Plotting the distribution of our target varaible gives us an idea of where most bulldozers prices are centered around. As we can see, many are sold for below \$20,000. We can also try plotting this target variable against other important variables in other graphs to get a better understanding.
+	\end{minipage} \newpage
+%%%% PAGE 34 %%%%
+
+	\noindent When we work with time series data, we want to enrich the time \& date component as much as possible. We can do that by telling pandas which of our columns has dates in it using the \textit{parse\_dates} parameter, known as \textbf{parsing dates}. 
+	\begin{lstlisting}
+	# Import data again but this time parse dates
+	df = pd.read_csv("data/bluebook-for-bulldozers/TrainAndValid.csv",
+	                 low_memory=False, parse_dates=["saledate"])
+	
+	df.saledate.dtype # '<M8[ns]' (same as datetime64[ns]) which is a datetime object
+	# ex: turns MM/DD/YYYY into YYYY-MM-DD \end{lstlisting} \vspace*{1mm}
+	When working with time series data, it may be helpful to \textbf{sort} the DataFrame by date. We also may want to make a \textbf{copy} of the original DataFrame so that when we manipulate it, we still have the original data if we need it. 
+	\begin{lstlisting}
+	# Sort DataFrame in date order
+	df.sort_values(by=["saledate"], inplace=True, ascending=True)
+	
+	# Make a copy of the original DataFrame to perform edits on
+	df_tmp = df.copy() \end{lstlisting} \vspace*{1mm}
+	We can enrich our dataset with \textbf{feature engineering} (step 4), which means we create new features or change already existing columns to enhance our dataset. This is valuable to most time series projects that you may work on. \vspace*{1mm} \\
+	We can use the pandas \href{https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DatetimeIndex.html}{DatetimeIndex} attributes to access specific values within the datetime object of the saledate column.
+	\begin{lstlisting}
+	# Create new columns from attritubes of the saledate column
+	df_tmp["saleYear"] = df_tmp.saledate.dt.year
+	df_tmp["saleMonth"] = df_tmp.saledate.dt.month
+	df_tmp["saleDay"] = df_tmp.saledate.dt.day
+	df_tmp["saleDayOfWeek"] = df_tmp.saledate.dt.dayofweek
+	df_tmp["saleDayOfYear"] = df_tmp.saledate.dt.dayofyear
+	
+	# Now we've enriched our DataFrame with date time features, we can remove 'saledate'
+	df_tmp.drop("saledate", axis=1, inplace=True) \end{lstlisting} \vspace*{1mm}
+	\subsubsection{Converting Strings to Categories}
+	We have a lot of missing data values in our DataFrame, along with many columns being objects instead of numerical data types. In order to use this data one a ML model, we must convert everything to numeric along with no missing values before fitting the model. \\~\\
+	We can begin by \textbf{converting strings to categories}, more specifically \href{https://pandas.pydata.org/pandas-docs/stable/reference/general_utility_functions.html#data-types-related-functionality}{pandas categories}. The .items() function will treat our DataFrame as a dictionary, with column names being the `label' variable and the values within these columns being the `content' variable.
+	\begin{lstlisting}
+	# This will turn all of the string value into category values
+	for label, content in df_tmp.items():
+		if pd.api.types.is_string_dtype(content): # returns T/F if column is a string
+			df_tmp[label] = content.astype("category").cat.as_ordered()	\end{lstlisting} \vspace*{1mm}
+	By using the pandas Categories, it has turned all of the strings into the form of numbers, which we can now access and have been given specific codes based on their position in the \textit{.cat.categories} attribute. 
+	\begin{lstlisting}
+	df_tmp.state.cat.categories # returns an array of ordered values
+	df_tmp.state.cat.codes # returns numeric code for given array position \end{lstlisting} \newpage
+%%%% PAGE 34 %%%%
+
+	\noindent Before we fill missing values and make new changes, we want to save this data so that we can import the manipulated data and start from the current position if we start a new Jupyter Notebook.
+	\begin{lstlisting}
+	# Export current tmp dataframe
+	df_tmp.to_csv("data/bluebook-for-bulldozers/train_tmp.csv", index=False)
+	
+	# Import preprocessed data
+	df_tmp = pd.read_csv("data/bluebook-for-bulldozers/train_tmp.csv", low_memory=False)\end{lstlisting} \vspace*{1mm}	
+	\subsubsection{Filling Missing Values}
+	We will begin by filling the missing \textbf{numerical values} first. We can create a loop to find the numerical columns using the pandas categories attributes.
+	\begin{lstlisting}	
+	# Check for which numeric columns have null values
+	for label, content in df_tmp.items():
+		if pd.api.types.is_numeric_dtype(content):
+			if pd.isnull(content).sum():
+				print(label) # auctioneerID, MachineHoursCurrentMeter
+	
+	# Fill numeric rows with the median
+	for label, content in df_tmp.items():
+		if pd.api.types.is_numeric_dtype(content):
+			if pd.isnull(content).sum():
+				# Add a binary column which tells us if the data was missing or not
+				df_tmp[label+"_is_missing"] = pd.isnull(content)
+				# Fill missing numeric values with median
+				df_tmp[label] = content.fillna(content.median()) \end{lstlisting} \vspace*{1mm}
+	Note that the \textit{\_is\_missing} column will have a corresponding value (True or False) to the original column that tells us if the current value was already in the DataFrame or if it was filled from the loop above. We will also use the median instead of the mean value because it is more robust. If we had used the mean, it could be much for sensitive to outliers and not be an accurate measure for our model. 
+	\begin{lstlisting}
+	# Check to see how many examples were missing
+	df_tmp.auctioneerID_is_missing.value_counts()
+	# False: 392562 (values that already existed)
+	# True: 20136 (missing values filled in from the above loop) \end{lstlisting} \vspace*{1mm}
+	Now that we have filled all missing numerical values, we will fill the missing \textbf{categorical values}. We can use a similar loop to the one above, but check for \textit{if not numerical} instead. We will add 1 to the codes since it assigns missing values = -1, but if we +1 then all missing values will have a value = 0. 
+	\begin{lstlisting}
+	# Turn categorical variables into numbers and fill missing
+	for label, content in df_tmp.items():
+		if not pd.api.types.is_numeric_dtype(content):
+			# Add binary column to indicate whether sample had missing value
+			df_tmp[label+"_is_missing"] = pd.isnull(content)
+			# Turn categories into numbers and add +1
+			df_tmp[label] = pd.Categorical(content).codes+1 
+			
+	df_tmp.info() # 103 columns (increased from original 53 columns)
+	# bool(46), float64(3), int16(4), int64(10), int8(40)
+	
+	df_tmp.isna().sum() # prints 0 for all columns \end{lstlisting} \vspace*{1mm}
+	Note that filling the above missing categorical values turned the columns into numerical values since they are now codes that correspond to the string values. \newpage
+%%%% PAGE 36 %%%%
+
+	\subsubsection{Modeling (Step 5)}
+	This is the first time we are working with a dataset that has hundreds of thousands of observations. Our goal is to minimize the amount of time between tests, but if we test on the entire set we will not be able to do this (we will first time how long it takes to do this). Remember that the .score() method returns $R^2$ for regression. 
+	\begin{lstlisting}
+	%%time # It took around 7 mins to go through 412698 observations 
+	
+	model = RandomForestRegressor(n_jobs=-1, random_state=42)
+	model.fit(df_tmp.drop("SalePrice", axis=1), df_tmp["SalePrice"])
+	model.score(df_tmp.drop("SalePrice", axis=1), df_tmp["SalePrice"]) # 0.9875468079 \end{lstlisting} \vspace*{1mm}
+	However, the above score metric is not reliable because we trained it and tested it on the same data sets. In other words, the training set was mixed with the testing set, thus explaining the near 99\% score. We must \textbf{split the data} into training and validation sets. Remember from step 1 that the training set is up to Dec 31, 2011 while the validation set is Jan 1, 2012 - Apr 30, 2012. A few notes: \\
+	\hspace*{3mm} - Encode/transform all categorical variables of your data for training/test set at the same time. \\
+	\hspace*{3mm} - Split your data (into train/test). \\
+	\hspace*{3mm} - Fill the training set and test set numerical values separately.
+	\begin{lstlisting}
+	# Split data into training and validation
+	df_val = df_tmp[df_tmp.saleYear == 2012]
+	df_train = df_tmp[df_tmp.saleYear != 2012]
+	len(df_val), len(df_train) # (11573, 401125)
+	
+	# Split data into X & y
+	X_train, y_train = df_train.drop("SalePrice", axis=1), df_train.SalePrice
+	X_valid, y_valid = df_val.drop("SalePrice", axis=1), df_val.SalePrice \end{lstlisting} \vspace*{1mm}
+	The \textbf{evaluation metric} for this data set is the RMSLE (Root mean square log error) . We will have to create our own custom evaluation functions to help us with our model. Note that if validation model has a higher score, that means we are over training (we want to see slightly worse metric since it is a smaller set). 
+	\begin{lstlisting}
+	from sklearn.metrics import mean_squared_log_error, mean_absolute_error, r2_score
+	
+	def rmsle(y_test, y_preds): # y_test same as y_true (used for train set)
+		"""
+		Caculates root mean squared log error between predictions and true labels.
+		"""
+		return np.sqrt(mean_squared_log_error(y_test, y_preds))
+	
+	# Create function to evaluate model on a few different levels
+	def show_scores(model):
+		train_preds = model.predict(X_train) # use train data from previous code block
+		val_preds = model.predict(X_valid )# use valid data from previous code block
+		scores = {"Training MAE": mean_absolute_error(y_train, train_preds),
+		          "Valid MAE": mean_absolute_error(y_valid, val_preds),
+		          "Training RMSLE": rmsle(y_train, train_preds),
+		          "Valid RMSLE": rmsle(y_valid, val_preds),
+		          "Training R^2": r2_score(y_train, train_preds),
+		          "Valid R^2": r2_score(y_valid, val_preds)}
+		return scores \end{lstlisting} \vspace*{1mm}
+	Remember, we want to decrease the time between experiments. When we trained the model on the entire data set, it took about 7 minutes to complete. This is too long, so ideally we would want to train on a subset of the data. This idea is known as \textbf{reducing data}. \newpage
+%%%% PAGE 37 %%%%
+
+	\noindent The model would see the length of the training data (401125) multiplied by the number of estimators (default is 100) which totals to over 40 million different models, hence the 7 minute training time. However, if we reduce the max\_samples, then we can take this down to only 1 million different models. 
+	\begin{lstlisting}
+	# Change max_samples value
+	model = RandomForestRegressor(n_jobs=-1, random_state=42, max_samples=10000)
+	
+	%%time
+	# Cutting down the max number of samples each estimator can improved training time
+	model.fit(X_train, y_train)
+	# 16.6s to fit the model to a subset of 10000 samples of data
+	
+	show_scores(model)
+	# {'Training MAE': 5561.2988092240585,
+	#  'Valid MAE': 7177.26365505919,
+	#  'Training RMSLE': 0.257745378256977,
+	#  'Valid RMSLE': 0.29362638671089003,
+	#  'Training R^2': 0.8606658995199189,
+	#  'Valid R^2': 0.8320374995090507} \end{lstlisting} \vspace*{1mm}
+	Now that we have a base evaluation metric for the model, we can use RandomizedSearchCV to \textbf{tune the hyperparameters} in order to try and increase these values. Since we have a wide range of parameters to chose from, we want to use RandomizedSearchCV instead of GridSearchCV
+	\begin{lstlisting}
+	%%time
+	from sklearn.model_selection import RandomizedSearchCV
+	
+	# Different RandomForestRegressor hyperparameters
+	rf_grid = {"n_estimators": np.arange(10, 100, 10),
+	           "max_depth": [None, 3, 5, 10],
+	           "min_samples_split": np.arange(2, 20, 2),
+	           "min_samples_leaf": np.arange(1, 20, 2),
+	           "max_features": [0.5, 1, "sqrt", "auto"],
+	           "max_samples": [10000]}
+	
+	# Instantiate RandomizedSearchCV model
+	rs_model = RandomizedSearchCV(RandomForestRegressor(n_jobs=-1, random_state=42),
+	                              param_distributions=rf_grid, n_iter=2, cv=5, 
+	                              verbose=True)
+	
+	# Fit the RandomizedSearchCV model
+	rs_model.fit(X_train, y_train) # 1 min 49 seconds
+	
+	rs_model.best_params_
+	# {'n_estimators': 90,
+	#  'min_samples_split': 16,
+	#  'min_samples_leaf': 11,
+	#  'max_samples': 10000,
+	#  'max_features': 'auto',
+	#  'max_depth': 10}	
+	
+	# Evaluate the RandomizedSearch model
+	show_scores(rs_model)
+	# {'Training MAE': 6633.714300615716,
+	#  'Valid MAE': 8074.634589086979,
+	#  'Training RMSLE': 0.2967133662928448,
+	#  'Valid RMSLE': 0.32142476459239144,
+	#  'Training R^2': 0.807156908286598,
+	#  'Valid R^2': 0.7827628271827518}	\end{lstlisting} \newpage
+%%%% PAGE 38 %%%%
+
+	\noindent In a model trained with 100 iterations of RandomizedSearchCV, the best parameters were found and the model below will have there parameters found. Note that random\_state is similar to np.random.seed(), so it is just used to create reproducible results.
+	\begin{lstlisting}
+	%%time
+	
+	# Most ideal hyperparamters
+	ideal_model = RandomForestRegressor(n_estimators=40, min_samples_leaf=1,
+	                                    min_samples_split=14, max_features=0.5,
+	                                    n_jobs=-1, max_samples=None, random_state=42)
+	
+	# Fit the ideal model
+	ideal_model.fit(X_train, y_train) # took around 1 min 14 seconds
+	
+	# Scores for ideal_model (trained on all the data)
+	show_scores(ideal_model)
+	# {'Training MAE': 2952.0893487566345,
+	#  'Valid MAE': 5959.9235776482565,
+	#  'Training RMSLE': 0.14457060318530182,
+	#  'Valid RMSLE': 0.2465443247528795,
+	#  'Training R^2': 0.9589437998919624,
+	#  'Valid R^2': 0.8817886038953688}	\end{lstlisting} \vspace*{1mm}
+	Next we will want to \textbf{preprocess the test data} so that it is in the same format as our training dataset. We will create a function to do this for us. Our training data set also has 102 columns, where our current test set only has 51. We must make these the same length in order to use them on our model.
+	\begin{lstlisting}
+	# Import the test data
+	df_test = pd.read_csv("data/bluebook-for-bulldozers/Test.csv", low_memory=False,
+	                      parse_dates=["saledate"])
+	                   
+	def preprocess_data(df):
+		"""
+		Performs transformations on df and returns transformed df.
+		"""
+		df["saleYear"] = df.saledate.dt.year
+		df["saleMonth"] = df.saledate.dt.month
+		df["saleDay"] = df.saledate.dt.day
+		df["saleDayOfWeek"] = df.saledate.dt.dayofweek
+		df["saleDayOfYear"] = df.saledate.dt.dayofyear
+		
+		df.drop("saledate", axis=1, inplace=True)
+		
+		# Fill the numeric rows with median
+		for label, content in df.items():
+			if pd.api.types.is_numeric_dtype(content):
+				if pd.isnull(content).sum():
+					# Add a binary column which tells us if the data was missing or not
+					df[label+"_is_missing"] = pd.isnull(content)
+					# Fill missing numeric values with median
+					df[label] = content.fillna(content.median())
+			
+			# Fill categorical missing data and turn categories into numbers
+			if not pd.api.types.is_numeric_dtype(content):
+				df[label+"_is_missing"] = pd.isnull(content)
+				# We add +1 to the category code because pd encodes missing categories as -1
+				df[label] = pd.Categorical(content).codes+1
+		return df 
+	
+	# Process the test data 
+	df_test = preprocess_data(df_test) \end{lstlisting} \newpage
+%%%% PAGE 39 %%%%
+
+	\noindent Currently, if we were to try and make predictions on our test data set, we would get the error ``Number of features of the model must match the input. Model n\_features is 102 and input n\_features is 101". We need to make the sets have the \textbf{same number of features}. 
+	\begin{lstlisting}
+	# We can find how the columns differ using sets
+	set(X_train.columns) - set(df_test.columns) # {'auctioneerID_is_missing'}
+	
+	# Manually adjust df_test to have auctioneerID_is_missing column
+	df_test["auctioneerID_is_missing"] = False \end{lstlisting} \vspace*{1mm}
+	The test data did not have any missing values, hence why the above column was never created. But now that we have created it, the number of features are matching and we can use our model to make price \textbf{predictions}. We will want to create a DataFrame and export it as a csv file.
+	\begin{lstlisting}
+	# Make predictions on the test data
+	test_preds = ideal_model.predict(df_test)
+	
+	# Format predictions into a DataFrame
+	df_preds = pd.DataFrame()
+	df_preds["SalesID"] = df_test["SalesID"]
+	df_preds["SalesPrice"] = test_preds
+	
+	# Export prediction data
+	df_preds.to_csv("data/bluebook-for-bulldozers/test_predictions.csv", index=False) \end{lstlisting} \vspace*{1mm}
+	Finally, \textbf{feature importance} seeks to figure out which different attributes of the data were most importance when it comes to predicting the \textit{target variable} (SalePrice).
+	\begin{lstlisting}
+	# Helper function for plotting feature importance
+	def plot_features(columns, importances, n=20):
+		df = (pd.DataFrame({"features": columns,
+		                    "feature_importances": importances})
+		      .sort_values("feature_importances", ascending=False) # sort high to low
+		      .reset_index(drop=True))
+		
+		# Plot the dataframe (only top 20 of the total 102 features)
+		fig, ax = plt.subplots()
+		ax.barh(df["features"][:n], df["feature_importances"][:20])
+		ax.set_ylabel("Features")
+		ax.set_xlabel("Feature importance")
+		ax.invert_yaxis()
+	
+	plot_features(X_train.columns, ideal_model.feature_importances_) \end{lstlisting} \vspace*{1mm}
+	\includegraphics[scale=1]{feat_im_mp2} \newpage
+%%%% PAGE 40 %%%%
+
+	\section{Neural Networks: Deep/Transfer Learning \& TensorFlow 2}
+	\subsection{Workflow \& Setup}
+	\includegraphics[scale=.4]{tflow} \\
+	1) Get our \textbf{unstructured data} ready by turning it into \textbf{Tensors}. \\
+	2) Pick a model from TensorFlow Hub. \\
+	3) Fit the model to find patterns and make predictions. \\
+	4) Evaluate the performance of our model. \\
+	5) Tune our model to try and improve our evaluation scores. \\
+	6) Save and use model to make predictions on custom data. \vspace*{1.5mm}\\
+	For this section, we will focus on a \textbf{multi-class classification} model (more than two options) where we try and identify the breed of a dog from a given image. We will be using \href{https://colab.research.google.com/notebooks/}{Google Colab} for this instead of Jupyter Notebooks. If we upload a .zip file, we can unpack it using the following command in Colab: 
+	\begin{lstlisting}
+	# Unzip the uploaded data into Google Drive (-d is the destination)
+	!unzip "drive/My Drive/Dog Vision/dog-breed-identification.zip" -d "drive/My Drive/
+	        Dog Vision/" \end{lstlisting} \vspace*{1mm}
+	\textbf{Using a GPU} \\
+	Go to \textit{Runtime} $\rightarrow$ \textit{Change Runtime Type} $\rightarrow$ \textit{Hardware Accelerator} $\rightarrow$ \textit{GPU}. \vspace*{1.5mm} \\
+	\textbf{Step 1: Problem} \\
+	Identify the breed of a dog given an image of a dog. \vspace*{1.5mm} \\
+	\textbf{Step 2: Data} \\
+	The data we're using is from \href{https://www.kaggle.com/c/dog-breed-identification/data}{Kaggle's dog breed identification} competition. \vspace*{1.5mm} \\
+	\textbf{Step 3: Evaluation} \\
+	The evaluation is a file with prediction probabilities for each dog breed of each test image. \vspace*{1.5mm} \\
+	\textbf{Step 4: Features} \\
+	\hspace*{2mm} - We're dealing with images (unstructured data) so it's probably best we use deep/transfer learning. \\
+	\hspace*{2mm} - There are 120 breeds of dogs (this means there are 120 different classes). \\
+	\hspace*{2mm} - There are around 10,000+ images in the training set (these images have labels). \\
+	\hspace*{2mm} - There are around 10,000+ images in the test set (these images have no labels). \vspace*{1.5mm} \\
+	\textbf{Import TensorFlow 2.x and Hub}
+	\begin{lstlisting}
+	# Import necessary tools
+	import tensorflow as tf
+	import tensorflow_hub as hub 
+	print("TF version:", tf.__version__) # TF version: 2.1.0
+	print("TF Hub version:", hub.__version__) # TF Hub version: 0.7.0 \end{lstlisting} \newpage
+%%%% PAGE 41 %%%%
+
+	\subsection{Preparing Data}
+	With all machine learning models, our data has to be in numerical format. So we must start by turning our images into \textbf{Tensors} (numerical representations).
+	\begin{lstlisting}
+	# Import data and check labels
+	import pandas as pd
+	labels_csv = pd.read_csv("drive/My Drive/Dog Vision/labels.csv")
+	print(labels_csv.describe())
+	# 10222 count for both columns (id and breed)
+	# 10222 unique values for id, 120 unique values for breed 
+	
+	# How many images are there of each breed?
+	labels_csv["breed"].value_counts().plot.bar(figsize=(20, 10)) \end{lstlisting} \vspace*{1mm}
+	\subsubsection{Getting Images and Their Labels}
+	We want to create a list containing the \textbf{file path names} for the images we want to use in our model. We can do this from combining the csv file column `id' and the location of the images within the Google Drive workspace.
+	\begin{lstlisting}
+	# Let's manually view an image in our folder
+	from IPython.display import Image
+	Image("drive/My Drive/Dog Vision/train/001513dfcb2ffafc82cccf4d8bbaba97.jpg")
+	
+	# Create pathnames from image ID's (similar to the one above)
+	filenames = ["drive/My Drive/Dog Vision/train/" + fname + ".jpg" for fname 
+	             in labels_csv["id"]] \end{lstlisting} \vspace*{1mm}
+	Now that we have our image file paths in a list, we need to \textbf{prepare our labels} by turning them from strings into numbers. We will also want to find the number of unique breeds (similar to classes) that we will be able to classify our dog breeds into. 
+	\begin{lstlisting}
+	# Convert breed labels into NumPy array
+	import numpy as np
+	labels = labels_csv["breed"].to_numpy() 
+	len(labels) # 10222
+	
+	# Find the unique label values
+	unique_breeds = np.unique(labels)
+	len(unique_breeds) # 120 
+	
+	# Turn every label into a boolean array
+	boolean_labels = [label == unique_breeds for label in labels] \end{lstlisting} \vspace*{1mm}
+	Now that we have our file paths and their labels are in numeric format, we want to create our own \textbf{validation set} and split the data. We can use train\_test\_split since the entire csv we are currently working with is only for training, so we can use part of it as a validation set. We will want to use a subset so that we are not training on 10,000 images (time consuming).
+	\begin{lstlisting}
+	# Set number of images to use for experimenting
+	NUM_IMAGES = 1000
+	
+	# Split them into training and validation of total size NUM_IMAGES
+	from sklearn.model_selection import train_test_split
+	X_train, X_val, y_train, y_val = train_test_split(X[:NUM_IMAGES], y[:NUM_IMAGES],
+	                                                  test_size=0.2, random_state=42)
+	
+	len(X_train), len(y_train), len(X_val), len(y_val) # (800, 800, 200, 200) \end{lstlisting} \newpage
+%%%% PAGE 42 %%%%
+
+	\subsubsection{Turning Images into Tensors}
+	To preprocess our images into Tensors we're going to write a function which does a few things: \vspace*{1mm} \\
+	\hspace*{2mm} 1. Take an image file path as input. \\
+	\hspace*{2mm} 2. Use TensorFlow to read the file and save it to a variable, image. \\
+	\hspace*{2mm} 3. Turn our image (a jpg) into Tensors. \\
+	\hspace*{2mm} 4. Normalize our image (convert color channel values from from 0-255 to 0-1). \\
+	\hspace*{2mm} 5. Resize the image to be a shape of (224, 224). \\
+	\hspace*{2mm} 6. Return the modified image. \vspace*{1mm} \\
+	Before we write this function, lets see what importing an image into an array looks like. The values within the image array below will be between 0 and 255 (color range for RGB). 
+	\begin{lstlisting}
+	# Example of how to convert image to NumPy array
+	from matplotlib.pyplot import imread
+	image = imread(filenames[42])
+	image.shape # (257, 350, 3)
+	
+	IMG_SIZE = 224 # Define image size
+	
+	# Create a function for preprocessing images
+	def process_image(image_path, img_size=IMG_SIZE):
+		"""
+		Takes an image file path and turns the image into a Tensor.
+		"""
+		image = tf.io.read_file(image_path) # Read in an image file into a Tensor string
+		# Turn the jpeg image into numerical Tensor with 3 colour channels (RGB)
+		image = tf.image.decode_jpeg(image, channels=3)
+		# Convert the colour channel values from 0-255 to 0-1 values (normalize)
+		image = tf.image.convert_image_dtype(image, tf.float32)
+		# Resize the image to our desired value (224, 224)
+		image = tf.image.resize(image, size=[IMG_SIZE, IMG_SIZE])
+		return image \end{lstlisting} \vspace*{1mm}
+	\subsubsection{Turning Data into Batches}
+	
+	
+	
+	
+	
+	
 	
 	
 	

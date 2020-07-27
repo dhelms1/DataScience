@@ -44,3 +44,13 @@
 \contentsline {subsubsection}{\numberline {5.9.4}Evaluating the Model}{30}{subsubsection.5.9.4}%
 \contentsline {subsubsection}{\numberline {5.9.5}Find Most Important Features}{32}{subsubsection.5.9.5}%
 \contentsline {subsection}{\numberline {5.10}Milestone Project 2 (Regression)}{33}{subsection.5.10}%
+\contentsline {subsubsection}{\numberline {5.10.1}Exploring the Data (EDA)}{33}{subsubsection.5.10.1}%
+\contentsline {subsubsection}{\numberline {5.10.2}Converting Strings to Categories}{34}{subsubsection.5.10.2}%
+\contentsline {subsubsection}{\numberline {5.10.3}Filling Missing Values}{35}{subsubsection.5.10.3}%
+\contentsline {subsubsection}{\numberline {5.10.4}Modeling (Step 5)}{36}{subsubsection.5.10.4}%
+\contentsline {section}{\numberline {6}Neural Networks: Deep/Transfer Learning \& TensorFlow 2}{40}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Workflow \& Setup}{40}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Preparing Data}{41}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {6.2.1}Getting Images and Their Labels}{41}{subsubsection.6.2.1}%
+\contentsline {subsubsection}{\numberline {6.2.2}Turning Images into Tensors}{42}{subsubsection.6.2.2}%
+\contentsline {subsubsection}{\numberline {6.2.3}Turning Data into Batches}{42}{subsubsection.6.2.3}%

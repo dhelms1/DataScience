@@ -44,3 +44,13 @@
 \BOOKMARK [3][-]{subsubsection.5.9.4}{Evaluating the Model}{subsection.5.9}% 44
 \BOOKMARK [3][-]{subsubsection.5.9.5}{Find Most Important Features}{subsection.5.9}% 45
 \BOOKMARK [2][-]{subsection.5.10}{Milestone Project 2 \(Regression\)}{section.5}% 46
+\BOOKMARK [3][-]{subsubsection.5.10.1}{Exploring the Data \(EDA\)}{subsection.5.10}% 47
+\BOOKMARK [3][-]{subsubsection.5.10.2}{Converting Strings to Categories}{subsection.5.10}% 48
+\BOOKMARK [3][-]{subsubsection.5.10.3}{Filling Missing Values}{subsection.5.10}% 49
+\BOOKMARK [3][-]{subsubsection.5.10.4}{Modeling \(Step 5\)}{subsection.5.10}% 50
+\BOOKMARK [1][-]{section.6}{Neural Networks: Deep/Transfer Learning \046 TensorFlow 2}{}% 51
+\BOOKMARK [2][-]{subsection.6.1}{Workflow \046 Setup}{section.6}% 52
+\BOOKMARK [2][-]{subsection.6.2}{Preparing Data}{section.6}% 53
+\BOOKMARK [3][-]{subsubsection.6.2.1}{Getting Images and Their Labels}{subsection.6.2}% 54
+\BOOKMARK [3][-]{subsubsection.6.2.2}{Turning Images into Tensors}{subsection.6.2}% 55
+\BOOKMARK [3][-]{subsubsection.6.2.3}{Turning Data into Batches}{subsection.6.2}% 56
