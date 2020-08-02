@@ -1851,7 +1851,7 @@
 	print("TF Hub version:", hub.__version__) # TF Hub version: 0.7.0 \end{lstlisting} \newpage
 %%%% PAGE 41 %%%%
 
-	\subsection{Preparing Data}
+	\subsection{Step 1: Preparing Data}
 	With all machine learning models, our data has to be in numerical format. So we must start by turning our images into \textbf{Tensors} (numerical representations).
 	\begin{lstlisting}
 	# Import data and check labels
@@ -1928,27 +1928,275 @@
 		image = tf.image.convert_image_dtype(image, tf.float32)
 		# Resize the image to our desired value (224, 224)
 		image = tf.image.resize(image, size=[IMG_SIZE, IMG_SIZE])
+		
 		return image \end{lstlisting} \vspace*{1mm}
 	\subsubsection{Turning Data into Batches}
+	A \textbf{batch} is a small portion of our data, typically a size of 32 (default for most deep learning models). We need batches because if we are processing thousands of images at once, it might not all fit into the GPU memory. \vspace*{1mm} \\
+	In order to use TensorFlow effectively, we need our data in the format of a \textbf{Tensor tuples}, which looks like: (image, label). We will want to write a function to do this for us. The image will be in the form of a Tensor from the above process\_image function, and our label will be a Boolean array that has already been created. 
+	\begin{lstlisting}
+	# Create a simple function to return a tuple (image, label)
+	def get_image_label(image_path, label):
+		"""
+		Takes an image file path name and the assosciated label,
+		processes the image and returns a tuple of (image, label).
+		"""
+		image = process_image(image_path)
+		return image, label # return the Tensor tuple \end{lstlisting} \vspace*{1mm}
+	We now need to write a function that can take our data (X \& y) and turn it into batches of size 32. \newpage
+%%%% PAGE 43 %%%%
+
+	\begin{lstlisting}
+	BATCH_SIZE = 32 # Define the batch size, 32 is a good start
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	# Create a function to turn data into batches
+	def create_data_batches(X, y=None, batch_size=BATCH_SIZE, valid_data=False, 
+	                        test_data=False):
+		"""
+		Creates batches of data out of image (X) and label (y) pairs.
+		Shuffles the data if it's training data but doesn't shuffle if it's validation data
+		Also accepts test data as input (no labels).
+		"""
+		if test_data: # If the data is a test dataset, we probably don't have labels
+			print("Creating test data batches...")
+			data = tf.data.Dataset.from_tensor_slices((tf.constant(X))) # only filepaths
+			data_batch = data.map(process_image).batch(BATCH_SIZE)
+			return data_batch
 		
+		elif valid_data: # If the data is a valid dataset, we don't need to shuffle it
+			print("Creating validation data batches...")
+			data = tf.data.Dataset.from_tensor_slices((tf.constant(X), # filepaths
+			                                           tf.constant(y))) # labels
+			data_batch = data.map(get_image_label).batch(BATCH_SIZE)
+			return data_batch
+		
+		else:
+			print("Creating training data batches...")
+			# Turn filepaths and labels into Tensors
+			data = tf.data.Dataset.from_tensor_slices((tf.constant(X), tf.constant(y)))
+			
+			# Shuffling pathnames and labels before mapping image processor function is 
+			# faster than shuffling images
+			data = data.shuffle(buffer_size=len(X))
+		
+			# Create (image, label) tuples (this also turns the image path into a 
+			# preprocessed image)
+			data = data.map(get_image_label)
+			
+			# Turn the training data into batches
+			data_batch = data.batch(BATCH_SIZE)
+		return data_batch 
+		
+	# Create training and validation data batches
+	train_data = create_data_batches(X_train, y_train)
+	val_data = create_data_batches(X_val, y_val, valid_data=True) 
+	
+	# Create a function for viewing images in a data batch
+	import matplotlib.pyplot as plt
+	def show_25_images(images, labels):
+		"""
+		Displays a plot of 25 images and their labels from a data batch.
+		"""
+		plt.figure(figsize=(10, 10)) # Setup the figure
+		# Loop through 25 (for displaying 25 images)
+		for i in range(25):
+			ax = plt.subplot(5, 5, i+1) # Create subplots (5 rows, 5 columns, index+1)
+			plt.imshow(images[i]) # Display an image 
+			plt.title(unique_breeds[labels[i].argmax()]) # Add the image label as the title
+			plt.axis("off") # Turn the grid lines off 
+	
+	# Now let's visualize the data in a training batch
+	train_images, train_labels = next(train_data.as_numpy_iterator())
+	show_25_images(train_images, train_labels) \end{lstlisting} \newpage
+%%%% PAGE 44 %%%%
+
+	\subsection{Step 2: Building a Deep Learning Model}
+	Before we build a model, there are a few things we need to define: \\
+	\hspace*{2mm} - The input shape (our images shape, in the form of Tensors) to our model. \\
+	\hspace*{2mm} - The output shape (image labels, in the form of Tensors) of our model. \\
+	\hspace*{2mm} - The URL of the model we want to use from TensorFlow Hub -  \href{https://tfhub.dev/google/imagenet/mobilenet_v2_130_224/classification/4}{click here}. \vspace*{1mm} \\
+	Using a URL for our model is \textbf{Transfer Learning} since we are using a model that is already created and we are simply just fitting our data to it. Some resources to find models are: TensorFlow Hub, PyTorch Hub, and Papers with Code. We will access our model through \textbf{TensorFlow Hub}.
+	\begin{lstlisting}
+	# Setup input shape to the model
+	INPUT_SHAPE = [None, IMG_SIZE, IMG_SIZE, 3] # batch, height, width, color channels
+	
+	# Setup output shape of our model
+	OUTPUT_SHAPE = len(unique_breeds)
+	
+	# Setup model URL from TensorFlow Hub
+	MODEL_URL = "https://tfhub.dev/google/imagenet/mobilenet_v2_130_224/classification/4"
+	
+	INPUT_SHAPE # [None, 224, 224, 3] \end{lstlisting} \vspace*{1mm}
+	Now we've got our inputs/outputs and model ready to go. Let's put them together into a \textbf{Keras deep learning model}. Knowing this, let's create a function which does the following (\href{https://www.tensorflow.org/guide/keras/overview}{click here for steps}): \\
+	\hspace*{2mm} - Takes the input shape, output shape and the model we've chosen as parameters. \\
+	\hspace*{2mm} - Defines the layers in a Keras model in sequential fashion (do this first, then this, then that). \\
+	\hspace*{2mm} - Compiles the model (says it should be evaluated and improved). \\
+	\hspace*{2mm} - Builds the model (tells the model the input shape it'll be getting). \\
+	\hspace*{2mm} - Returns the model.
+	\begin{lstlisting}
+	# Create a function which builds a Keras model
+	def create_model(input_shape=INPUT_SHAPE, output_shape=OUTPUT_SHAPE, model_url=MODEL_URL):
+		print("Building model with:", MODEL_URL)
+		
+		# Setup the model layers
+		model = tf.keras.Sequential([hub.KerasLayer(MODEL_URL), # Layer 1 (input layer)
+		                             tf.keras.layers.Dense(units=OUTPUT_SHAPE,
+		                                                   activation="softmax")
+		                                                   ]) # Layer 2 (output layer)
+		# Compile the model
+		model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),
+		              optimizer=tf.keras.optimizers.Adam(),	
+		              metrics=["accuracy"])
+		
+		# Build and return the model
+		model.build(INPUT_SHAPE) # size of images MobileNetV2 was trained on
+		return model
+	
+	model = create_model()
+	model.summary() \end{lstlisting} \vspace*{1mm}
+	\includegraphics[scale=.6]{model_sum} \newpage
+%%%% PAGE 45 %%%%
+
+	\noindent The \textbf{Setup the model layers} step above has the following explanation: \\
+	\hspace*{2mm} 1) We create a Keras model running in sequential fashion. \\
+	\hspace*{2mm} 2) The first layer will be the model URL (MobileNetV2 architecture which is implemented for us since \hspace*{7mm} we are using Transfer Learning). \\
+	\hspace*{2mm} 3) Then we output an array of size 120 (output\_shape) and use the \textit{softmax} activation to convert \hspace*{8mm} the patterns into a range of (0,1) (note that the values will add up to one and the largest value will \hspace*{8mm} be our label). \vspace*{1.5mm} \\
+	The \textbf{Compile the model} step above has the following explanation: \\
+	\hspace*{2mm} 1) Loss is a measure of how well the model is guessing (higher loss means worse prediction) \\
+	\hspace*{2mm} 2) The Adam optimizer is a general optimizer that performs well on most models. It helps guide the \hspace*{7mm} loss function to minimize its value and improve its guesses. \\
+	\hspace*{2mm} 3) The metric (accuracy) is how well our model is predicting the correct image label. \vspace*{1.5mm} \\
+	A general guide to \textbf{choosing activation/loss functions} are: \\
+	\hspace*{2mm} - Binary Classification : Sigmoid Activation, Binary Crossentropy Loss. \\
+	\hspace*{2mm} - Multi-class Classification : Softmax Activation, Categorical Crossentropy Loss. \vspace*{1.5mm} \\
+	\textbf{Summary}: Our model was trained on the ImageNet dataset, which contains approximately 14 million images. All the patterns that the MobileNetV2 model has learned from these images (approx 5 million patterns as seen the the summary above) can be utilized to help find patterns in our own 120,240 parameter (Dense layer above). Each layer is a model that has found patterns and are layered on top of each other (hence the name Deep Learning). \vspace*{2mm}	
+	\subsubsection{Creating callbacks} 
+	\textbf{Callbacks} are helper functions a model can use during training to do such things as save its progress, check its progress or stop training early if a model stops improving. We'll create two callbacks: \\
+	\hspace*{2mm} 1) \textit{TensorBoard} which helps track our models progress. \\
+	\hspace*{2mm} 2) \textit{Early stopping} which prevents our model from training for too long. \vspace*{1.5mm} \\
+	To setup a \href{https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard}{TensorBoard} callback, we need to do 3 things: \\
+	1. Load the TensorBoard notebook extension. \\
+	2. Create a TensorBoard callback which is able to save logs to a directory and pass it to our model's \hspace*{3mm} `fit()` function. \\
+	3. Visualize our models training logs with the `\%tensorboard` magic function (after model training).
+	\begin{lstlisting}
+	# Load TensorBoard notebook extension
+	%load_ext tensorboard
+	
+	import datetime
+	
+	# Create a function to build a TensorBoard callback
+	def create_tensorboard_callback():
+		# Create a log directory for storing TensorBoard logs
+		logdir = os.path.join("drive/My Drive/Dog Vision/logs",
+		                      # The logs get tracked whenever we run an experiment
+		                      datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+		return tf.keras.callbacks.TensorBoard(logdir) \end{lstlisting} \vspace*{1mm}
+	\href{https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/EarlyStopping}{Early stopping} helps stop our model from overfitting by stopping training if a certain evaluation metric stops improving. Patience is the number of epoch's to wait before stopping if no improvements are made.
+	\begin{lstlisting}
+	# Create early stopping callback
+	early_stopping = tf.keras.callbacks.EarlyStopping(monitor="val_accuracy",
+	                                                  patience=3) \end{lstlisting} \newpage
+%%%% PAGE 46 %%%%
+
+	\subsection{Step 3: Fit Model and Make Predictions}
+	\subsubsection{Training a Deep Neural Network (on a data subset)}	
+	Our first model is only going to train on 1000 images, to make sure everything is working. Training on the entire dataset can be time consuming and if any errors occur, it is not efficient to keep retraining on the entire dataset. The \textbf{number of epochs} is the chances we give our model to go through the training set and find any patterns. 
+	\begin{lstlisting}
+	NUM_EPOCHS = 100 #@param {type:"slider", min:10, max:100, step:10}
+	
+	# Check to make sure we're still running on a GPU
+	print("GPU", "available." if tf.config.list_physical_devices("GPU") else "not 
+	      available") \end{lstlisting} \vspace*{1mm}
+	Let's create a function which trains a model: \\	
+	\hspace*{2mm} 1) Create a model using `create\_model()' \\
+	\hspace*{2mm} 2) Setup a TensorBoard callback using `create\_tensorboard\_callback()' \\
+	\hspace*{2mm} 3) Call the `fit()' function on our model passing it the training data, validation data, number of epochs \hspace*{7mm} to train for (`NUM\_EPOCHS'), and the callbacks we'd like to use \\
+	\hspace*{2mm} 4) Return the model
+	\begin{lstlisting}
+	# Build a function to train and return a trained model
+	def train_model():
+		"""
+		Trains a given model and returns the trained version.
+		"""
+		# Create a model
+		model = create_model()
+		
+		# Create new TensorBoard session everytime we train a model
+		tensorboard = create_tensorboard_callback()
+		
+		# Fit the model to the data passing it the callbacks we created
+		model.fit(x=train_data,
+		          epochs=NUM_EPOCHS,
+		          validation_data=val_data,
+		          validation_freq=1, # how often we test patterns per epoch
+		          callbacks=[tensorboard, early_stopping])
+		# Return the fitted model
+		return model
+	
+	# Fit the model to the data
+	model = train_model() \end{lstlisting} \vspace*{1mm}
+	\includegraphics[scale=.63]{train_model} \\
+	Note that it looks like our model is overfitting because it's performing far better on the training dataset than the validation dataset. Overfitting to begin with is a good thing! It means our model is learning. \newpage  
+%%%% PAGE 46 %%%%
+
+	\subsubsection{Evaluating Performance with TensorBoard}
+	The TensorBoard magic function (\%tensorboard) will access the logs directory we created earlier and visualize its contents.
+	\begin{lstlisting}
+	%tensorboard --logdir drive/My\ Drive/Dog\ Vision/logs # \ used for space in name \end{lstlisting} \vspace*{1mm}
+	We can tell the model is overfitting because the red line (for the training data) is learning the patterns far too well. In the future, we would want to stop this by using more data. Note that the red line is behind the orange, ending at epoch 7. \vspace*{2mm} \\
+	\includegraphics[scale=.6]{tensorboard} \\
+	\subsubsection{Making and Evaluating Predictions}
+	\begin{lstlisting}
+	# Make predictions on the validation data (not used to train on)
+	predictions = model.predict(val_data, verbose=1) # verbose shows us progress bar
+	len(y_val) # 200
+	predictions.shape # (200, 120) meaning 200 arrays with 120 values in each
+	
+	index = 42 
+	print(f"Max value (probability of prediction): {np.max(predictions[index])}")
+	print(f"Sum: {np.sum(predictions[index])}") # sum to 1 since softmax
+	print(f"Max index: {np.argmax(predictions[index])}")
+	print(f"Predicted label: {unique_breeds[np.argmax(predictions[index])]}") \end{lstlisting} \vspace*{1mm}
+	\includegraphics[scale=.8]{first_pred} \newpage
+%%%% PAGE 48 %%%%
+
+	\noindent Note that above, each sub-array (with 120 values) in the predictions array will sum to approximately 1 for all of the values combined. The position of the largest value within the sub-array (value with the highest probability) will correspond to our label in the unique\_breeds data set. The higher this value, the more confident that the model is about its guess. \vspace*{2mm}
+	\subsection{Step 4: Evaluating a Model}
+	\subsubsection{Transform Predictions to Text}
+	Having the the above functionality is great but we want to be able to do it at scale. It would be even better if we could see the image the prediction is being made on. Also, \textbf{prediction probabilities} are also known as \textit{confidence levels}. \\~\\
+	Now since our validation data is still in a batch dataset, we'll have to \href{https://www.tensorflow.org/api_docs/python/tf/data/Dataset#unbatch}{unbatch} it to make predictions on the validation images and then compare those predictions to the validation labels (truth labels).
+	\begin{lstlisting}
+	# Turn prediction probabilities into their respective label (easier to understand)
+	def get_pred_label(prediction_probabilities):
+		"""
+		Turns an array of prediction probabilities into a label.
+		"""
+		return unique_breeds[np.argmax(prediction_probabilities)]
+	
+	# Create a function to unbatch a batch dataset
+	def unbatchify(data):
+		"""
+		Takes a batched dataset of (image, label) Tensors and reutrns separate arrays
+		of images and labels.
+		"""
+		images = []
+		labels = []
+		# Loop through unbatched data
+		for image, label in data.unbatch().as_numpy_iterator():
+			images.append(image)
+			labels.append(unique_breeds[np.argmax(label)])
+		return images, labels
+	
+	# Unbatchify the validation data
+	val_images, val_labels = unbatchify(val_data)
+	
+	# Get label for unbatched validation set
+	get_pred_label(val_labels[0]) # 'cairn'	\end{lstlisting} \vspace*{1mm}
+	\subsubsection{Visualize Model Predictions}
+	Now we've got ways to get Prediction labels, Validation labels (truth labels), and Validation images. Next, let's make a function to make these all a bit more visual. We'll create a function which: \\
+	\hspace*{2mm} - Takes an array of prediction probabilities, truth labels, and images and an integer. \\
+	\hspace*{2mm} - Convert the prediction probabilities to a predicted label. \\
+	\hspace*{2mm} - Plot the predicted label, its predicted probability, the truth label and target image on a single plot. 
+	
+	
+	
 	\end{spacing}
 \end{document}

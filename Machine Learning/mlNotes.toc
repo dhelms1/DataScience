@@ -50,7 +50,16 @@
 \contentsline {subsubsection}{\numberline {5.10.4}Modeling (Step 5)}{36}{subsubsection.5.10.4}%
 \contentsline {section}{\numberline {6}Neural Networks: Deep/Transfer Learning \& TensorFlow 2}{40}{section.6}%
 \contentsline {subsection}{\numberline {6.1}Workflow \& Setup}{40}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Preparing Data}{41}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.2}Step 1: Preparing Data}{41}{subsection.6.2}%
 \contentsline {subsubsection}{\numberline {6.2.1}Getting Images and Their Labels}{41}{subsubsection.6.2.1}%
 \contentsline {subsubsection}{\numberline {6.2.2}Turning Images into Tensors}{42}{subsubsection.6.2.2}%
 \contentsline {subsubsection}{\numberline {6.2.3}Turning Data into Batches}{42}{subsubsection.6.2.3}%
+\contentsline {subsection}{\numberline {6.3}Step 2: Building a Deep Learning Model}{44}{subsection.6.3}%
+\contentsline {subsubsection}{\numberline {6.3.1}Creating callbacks}{45}{subsubsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.4}Step 3: Fit Model and Make Predictions}{46}{subsection.6.4}%
+\contentsline {subsubsection}{\numberline {6.4.1}Training a Deep Neural Network (on a data subset)}{46}{subsubsection.6.4.1}%
+\contentsline {subsubsection}{\numberline {6.4.2}Evaluating Performance with TensorBoard}{47}{subsubsection.6.4.2}%
+\contentsline {subsubsection}{\numberline {6.4.3}Making and Evaluating Predictions}{47}{subsubsection.6.4.3}%
+\contentsline {subsection}{\numberline {6.5}Step 4: Evaluating a Model}{48}{subsection.6.5}%
+\contentsline {subsubsection}{\numberline {6.5.1}Transform Predictions to Text}{48}{subsubsection.6.5.1}%
+\contentsline {subsubsection}{\numberline {6.5.2}Visualize Model Predictions}{48}{subsubsection.6.5.2}%

@@ -50,7 +50,16 @@
 \BOOKMARK [3][-]{subsubsection.5.10.4}{Modeling \(Step 5\)}{subsection.5.10}% 50
 \BOOKMARK [1][-]{section.6}{Neural Networks: Deep/Transfer Learning \046 TensorFlow 2}{}% 51
 \BOOKMARK [2][-]{subsection.6.1}{Workflow \046 Setup}{section.6}% 52
-\BOOKMARK [2][-]{subsection.6.2}{Preparing Data}{section.6}% 53
+\BOOKMARK [2][-]{subsection.6.2}{Step 1: Preparing Data}{section.6}% 53
 \BOOKMARK [3][-]{subsubsection.6.2.1}{Getting Images and Their Labels}{subsection.6.2}% 54
 \BOOKMARK [3][-]{subsubsection.6.2.2}{Turning Images into Tensors}{subsection.6.2}% 55
 \BOOKMARK [3][-]{subsubsection.6.2.3}{Turning Data into Batches}{subsection.6.2}% 56
+\BOOKMARK [2][-]{subsection.6.3}{Step 2: Building a Deep Learning Model}{section.6}% 57
+\BOOKMARK [3][-]{subsubsection.6.3.1}{Creating callbacks}{subsection.6.3}% 58
+\BOOKMARK [2][-]{subsection.6.4}{Step 3: Fit Model and Make Predictions}{section.6}% 59
+\BOOKMARK [3][-]{subsubsection.6.4.1}{Training a Deep Neural Network \(on a data subset\)}{subsection.6.4}% 60
+\BOOKMARK [3][-]{subsubsection.6.4.2}{Evaluating Performance with TensorBoard}{subsection.6.4}% 61
+\BOOKMARK [3][-]{subsubsection.6.4.3}{Making and Evaluating Predictions}{subsection.6.4}% 62
+\BOOKMARK [2][-]{subsection.6.5}{Step 4: Evaluating a Model}{section.6}% 63
+\BOOKMARK [3][-]{subsubsection.6.5.1}{Transform Predictions to Text}{subsection.6.5}% 64
+\BOOKMARK [3][-]{subsubsection.6.5.2}{Visualize Model Predictions}{subsection.6.5}% 65
