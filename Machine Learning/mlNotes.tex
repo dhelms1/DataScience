@@ -2191,10 +2191,267 @@
 	# Get label for unbatched validation set
 	get_pred_label(val_labels[0]) # 'cairn'	\end{lstlisting} \vspace*{1mm}
 	\subsubsection{Visualize Model Predictions}
-	Now we've got ways to get Prediction labels, Validation labels (truth labels), and Validation images. Next, let's make a function to make these all a bit more visual. We'll create a function which: \\
+	Now we've got a function that can get us: \\
+	\hspace*{3mm} - Prediction labels\\
+	\hspace*{3mm} - Validation labels (truth labels) \\
+	\hspace*{3mm} - Validation images. \vspace*{1mm} \\
+	Next, let's make a function to make these all a bit more visual. We'll create a function which: \\
 	\hspace*{2mm} - Takes an array of prediction probabilities, truth labels, and images and an integer. \\
 	\hspace*{2mm} - Convert the prediction probabilities to a predicted label. \\
-	\hspace*{2mm} - Plot the predicted label, its predicted probability, the truth label and target image on a single plot. 
+	\hspace*{2mm} - Plot the predicted label, its predicted probability, the truth label and target image on a single plot.\vspace*{1mm} \\
+	The below function will output the predicted label, confidence level, truth label, and image. If it predicted correctly, the title will be green but if it predicted wrong, then the title with be red. \newpage
+%%%% PAGE 49 %%%%
+
+	\begin{lstlisting}
+	def plot_pred(prediction_probabilities, labels, images, n=1):
+		"""
+		View the prediction, ground truth and image for sample n
+		"""
+		pred_prob, true_label, image = prediction_probabilities[n], labels[n], images[n]
+		
+		# Get the pred label
+		pred_label = get_pred_label(pred_prob)
+		
+		# Plot image & remove ticks
+		plt.imshow(image)
+		plt.xticks([])
+		plt.yticks([])
+		
+		# Change the color of the title depending on if the prediction is right or wrong
+		if pred_label == true_label:
+			color = "green"
+		else:
+			color = "red"
+		
+		# Change plot title to be predicted, probability of prediction and truth label
+		plt.title("{} {:2.0f}% {}".format(pred_label, np.max(pred_prob)*100,
+		                                  true_label), color=color)	\end{lstlisting} \vspace*{1mm}
+	Now we've got one function to visualize our models top prediction, let's make another to view our models top 10 predictions. This function will: \vspace*{1mm} \\
+	\hspace*{3mm} - Take an input of prediction probabilities array and a ground truth array and an integer. \\
+	\hspace*{3mm} - Find the prediction using `get\_pred\_label()'. \\
+	\hspace*{3mm} - Find the top 10: Prediction probabilities indexes , Prediction probabilities values, Prediction labels. \\
+	\hspace*{3mm} - Plot the top 10 prediction probability values and labels, coloring the true label green.
+	\begin{lstlisting}
+	def plot_pred_conf(prediction_probabilities, labels, n=1):
+		"""
+		Plot the top 10 highest prediction confidences and the truth label for sample n.
+		"""
+		pred_prob, true_label = prediction_probabilities[n], labels[n]
+		
+		# Get the predicted label
+		pred_label = get_pred_label(pred_prob)
+		
+		# Find the top 10 prediction confidence indexes
+		top_10_pred_indexes = pred_prob.argsort()[-10:][::-1] # [::-1] descending order
+		# Find the top 10 prediction confidence values
+		top_10_pred_values = pred_prob[top_10_pred_indexes]
+		# Find the top 10 prediction labels
+		top_10_pred_labels = unique_breeds[top_10_pred_indexes]
+		
+		# Setup plot
+		top_plot = plt.bar(np.arange(len(top_10_pred_labels)),
+		                   top_10_pred_values,
+		                   color="grey")
+		plt.xticks(np.arange(len(top_10_pred_labels)),
+		           labels=top_10_pred_labels,
+		           rotation="vertical")
+		
+		# Change color of true label
+		if np.isin(true_label, top_10_pred_labels):
+			top_plot[np.argmax(top_10_pred_labels == true_label)].set_color("green")
+		else:
+			pass \end{lstlisting} \newpage
+%%%% PAGE 50 %%%%
+	
+	\begin{lstlisting}
+	# Let's check out a few predictions and their different values
+	i_multiplier = 20
+	num_rows = 3
+	num_cols = 2
+	num_images = num_rows*num_cols
+	plt.figure(figsize=(10*num_cols, 5*num_rows))
+	for i in range(num_images):
+		plt.subplot(num_rows, 2*num_cols, 2*i+1)
+		plot_pred(prediction_probabilities=predictions,
+		          labels=val_labels,
+		          images=val_images,
+		          n=i+i_multiplier)
+		plt.subplot(num_rows, 2*num_cols, 2*i+2)
+		plot_pred_conf(prediction_probabilities=predictions,
+		               labels=val_labels,
+		               n=i+i_multiplier)
+	plt.tight_layout(h_pad=1.0)
+	plt.show() # be sure to call outside loop (dont show each time)	\end{lstlisting} \vspace*{1mm}
+	\includegraphics[scale=.62]{dog_plot} \vspace*{1mm} \\
+	\subsection{Step 5: Improving our Model (on full dataset)}
+	Previously, we split our data into a subset of 1000 images to train on. Our X\_train has 800 images and our X\_val has 200 images. Now, we want to train a model on the full 10,000 images rather than just 800.
+	\begin{lstlisting}
+	# Create a data batch with the full data set
+	full_data = create_data_batches(X, y)
+	full_data # <BatchDataset shapes: ((None, 224, 224, 3), (None, 120)), 
+	          # types: (tf.float32, tf.bool)>  \end{lstlisting} \newpage
+%%%% PAGE 51 %%%%
+	
+	\begin{lstlisting}
+	# Create a model for full model
+	full_model = create_model()
+	
+	# Create full model callbacks
+	full_model_tensorboard = create_tensorboard_callback()
+	# No val set when training on all the data, so we can't monitor validation accuracy
+	full_model_early_stopping = tf.keras.callbacks.EarlyStopping(monitor="accuracy",
+	                                                             patience=3) \end{lstlisting} \vspace*{1mm}
+	Running the cell below will take a little while (maybe up to 30 minutes for the first epoch) because the GPU we're using in the runtime has to load all of the images into memory (around 10,000 images). The model stopped at epoch 17, where the accuracy plateaued at around 99.87\% accuracy for 3 epochs.
+	\begin{lstlisting}
+	# Fit the full model to the full data
+	full_model.fit(x=full_data,	epochs=NUM_EPOCHS,
+	               callbacks=[full_model_tensorboard, full_model_early_stopping]) \end{lstlisting} \vspace*{1mm}
+	\includegraphics[scale=1]{full_model} \vspace*{2mm} \\
+	The above models first epoch took around 80 minutes to complete, where each epoch following was less than a minute. It is good practice to have a `save model' call after you finish fitting the model so that it saves it if the model successfully trains. \vspace*{1mm} \\
+	We should be a little skeptic of the above accuracy because we cannot validate it with another set. Instead we can use the test data to make predictions and submit them to Kaggle. We will do this in a future section. \newpage
+%%%% PAGE   %%%%
+
+	\subsection{Step 6: Saving and Loading a Trained Model}
+	\begin{lstlisting}
+	# Create a function to save a model
+	def save_model(model, suffix=None):
+		"""
+		Saves a given model in a models directory and appends a suffix (string).
+		"""
+		# Create a model directory pathname with current time
+		modeldir = os.path.join("drive/My Drive/Dog Vision/models",
+		                        datetime.datetime.now().strftime("%Y%m%d-%H%M%s"))
+		model_path = modeldir + "-" + suffix + ".h5" # save format of model
+		print(f"Saving model to: {model_path}...")
+		model.save(model_path)
+		return model_path
+	
+	# Create a function to load a trained model
+	def load_model(model_path):
+		"""
+		Loads a saved model from a specified path.
+		"""
+		print(f"Loading saved model from: {model_path}")
+		model = tf.keras.models.load_model(model_path, 
+		                                   custom_objects={"KerasLayer":hub.KerasLayer})
+		return model \end{lstlisting} \vspace*{1mm}
+	Now we've got functions to save and load a trained model, let's make sure they work.
+	\begin{lstlisting}
+	# Save our model trained on full data (10,000 images)
+	save_model(full_model, suffix="full-image-set-mobilenetv2-Adam") \end{lstlisting} \vspace*{1mm}
+	\includegraphics[scale=.8]{save_dl_model}
+	\begin{lstlisting}
+	# Load in the full model
+	loaded_full_model = load_model('drive/My Drive/Dog Vision/models/20200205-
+	                                07041580886291-full-image-set-mobilenetv2-
+	                                Adam.h5') \end{lstlisting} \vspace*{1mm}
+	\includegraphics[scale=.48]{load_dl_model} \\
+	\subsection{Making Predictions on Test Data}
+	Since our model has been trained on images in the form of Tensor batches, to make predictions on the test data, we'll have to get it into the same format. Luckily we created `create\_data\_batches()' earlier which can take a list of filenames as input and convert them into Tensor batches.	To make predictions on the test data, we'll: \vspace*{1mm} \\
+	\hspace*{2mm} 1) Get the test image filenames. \\
+	\hspace*{2mm} 2) Convert the filenames into test data batches using `create\_data\_batches()' and setting the `test\_data' \hspace*{7mm} parameter to `True' (since the test data doesn't have labels). \\
+	\hspace*{2mm} 3) Make a predictions array by passing the test batches to the `predict()` method called on our model. 
+	\begin{lstlisting}
+	# Load test image filenames
+	test_path = "drive/My Drive/Dog Vision/test/"
+	test_filenames = [test_path + fname for fname in os.listdir(test_path)]
+	len(test_filenames) # 10357
+	
+	# Create test data batch
+	test_data = create_data_batches(test_filenames, test_data=True)
+	test_data # <BatchDataset shapes: (None, 224, 224, 3), types: tf.float32> \end{lstlisting} \newpage
+%%%% PAGE 53 %%%%
+
+	\noindent Calling predict() on our full model and passing it the test data batch will take a long time to run (about one hour). This is because we have to process approximately 10,000+ images and get our model to find patterns in those images and generate predictions based on what its learned in the training dataset. 
+	\begin{lstlisting}
+	# Make predictions on test data batch using the loaded full model
+	test_predictions = loaded_full_model.predict(test_data,	verbose=1)
+	
+	# Save predictions (NumPy array) to csv file (for access later)
+	np.savetxt("drive/My Drive/Dog Vision/preds_array.csv", 
+	           test_predctions, delimiter=",")	
+	
+	# Load predictions (NumPy array) from csv file 
+	test_predictions = np.loadtxt("drive/My Drive/Dog Vision/preds_array.csv", 
+	                              delimiter=",") 
+	
+	test_predictions.shape # (10357, 120) \end{lstlisting} \vspace*{1mm}
+	\subsubsection{Preparing Test Predictions for Kaggle}
+	Looking at the \href{https://www.kaggle.com/c/dog-breed-identification/overview/evaluation}{Kaggle Sample submission}, we find that it wants our models prediction probability outputs in a DataFrame with an ID and a column for each dog breed. To get the data in this format, we'll: \vspace*{1mm} \\
+	\hspace*{2mm} - Create a pandas DataFrame with an ID column as well as a column for each dog breed. \\
+	\hspace*{2mm} - Add data to the ID column by extracting the test image ID's from their file-paths. \\
+	\hspace*{2mm} - Add data (the prediction probabilites) to each of the dog breed columns. \\
+	\hspace*{2mm} - Export the DataFrame as a CSV to submit it to Kaggle.
+	\begin{lstlisting}
+	# Create a pandas DataFrame with empty columns
+	preds_df = pd.DataFrame(columns=["id"] + list(unique_breeds))
+	
+	# Append test image ID's to predictions DataFrame
+	test_ids = [os.path.splitext(path)[0] for path in os.listdir(test_path)]
+	preds_df["id"] = test_ids
+	
+	# Add the prediction probabilities to each dog breed column
+	preds_df[list(unique_breeds)] = test_predictions
+	
+	# Save our predictions dataframe to CSV for submission to Kaggle
+	preds_df.to_csv("drive/My Drive/Dog Vision/full_model_predictions_
+	                 submission_1_mobilenetV2.csv",	index=False) \end{lstlisting} \vspace*{1mm}                          
+	\includegraphics[scale=.65]{kaggle_sub} \newpage
+%%%% PAGE 54 %%%%
+
+	\subsubsection{Predicting on Custom Images}
+	To make predictions on custom images, we'll: \vspace*{1mm} \\
+	\hspace*{2mm} 1) Get the file-paths of our own images. \\
+	\hspace*{2mm} 2) Turn the file-paths into data batches using `create\_data\_batches()'. And since our custom images \hspace*{7mm} won't have labels, we set the `test\_data' parameter to `True'. \\
+	\hspace*{2mm} 3) Pass the custom image data batch to our model's `predict()`' method. \\
+	\hspace*{2mm} 4) Convert the prediction output probabilities to predictions labels. \\
+	\hspace*{2mm} 5) Compare the predicted labels to the custom images.
+	\begin{lstlisting}
+	# Get custom image filepaths
+	custom_path = "drive/My Drive/Dog Vision/my-dog-photos/"
+	custom_image_paths = [custom_path + fname for fname in os.listdir(custom_path)]
+	
+	# Turn custom images into batch datasets (test_data=True since no labels)
+	custom_data = create_data_batches(custom_image_paths, test_data=True)
+	custom_data # <BatchDataset shapes: (None, 224, 224, 3), types: tf.float32>
+	
+	# Make predictions on the custom data
+	custom_preds = loaded_full_model.predict(custom_data)
+	custom_preds.shape # (3, 120)
+	
+	# Get custom image prediction labels
+	custom_pred_labels = [get_pred_label(custom_preds[i]) for i in 
+	                      range(len(custom_preds))]
+	custom_pred_labels # ['lakeland_terrier', 'golden_retriever', 'labrador_retriever']
+	
+	# Get custom images (our unbatchify() function won't work since there aren't labels)
+	custom_images = []
+	# Loop through unbatched data
+	for image in custom_data.unbatch().as_numpy_iterator():
+		custom_images.append(image)
+	
+	# Check custom image predictions
+	plt.figure(figsize=(10, 10))
+	for i, image in enumerate(custom_images): # saves count to i, image to image
+		plt.subplot(1, 3, i+1)
+		plt.xticks([])
+		plt.yticks([])
+		plt.title(custom_pred_labels[i])
+		plt.imshow(image)	\end{lstlisting} \vspace*{1mm} 
+	\includegraphics[scale=.6]{custom_preds} \\
+	For the above images, the first prediction is wrong (is it the baby picture of the last picture). The second and third guesses are both correct. Some ways to improve the model include: \\
+	\hspace*{2mm} - Trying a new model from TensorFlow Hub that would perform better (including pretrained models). \\
+	\hspace*{2mm} - Take the training images and manipulate (crop, resize) or distort them (flip, rotate) to create even \hspace*{5.5mm} more training data for the model to learn from. Check out the \href{https://www.tensorflow.org/api_docs/python/tf/image}{TensorFlow images documentation} \hspace*{5.5mm} for a whole bunch of functions you can use on images. \\
+	\hspace*{2mm} - Use what the model already knows and fine-tune this knowledge to our own dataset (pictures of \hspace*{5.5mm} dogs). This would mean all of the patterns within the model would be updated to be more specific \hspace*{5.5mm} to pictures of dogs rather than general images. (\href{https://www.tensorflow.org/resources/learn-ml}{click here for more resources}). \newpage 
+%%%% PAGE 55 %%%%
+
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

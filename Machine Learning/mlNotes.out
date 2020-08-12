@@ -63,3 +63,8 @@
 \BOOKMARK [2][-]{subsection.6.5}{Step 4: Evaluating a Model}{section.6}% 63
 \BOOKMARK [3][-]{subsubsection.6.5.1}{Transform Predictions to Text}{subsection.6.5}% 64
 \BOOKMARK [3][-]{subsubsection.6.5.2}{Visualize Model Predictions}{subsection.6.5}% 65
+\BOOKMARK [2][-]{subsection.6.6}{Step 5: Improving our Model \(on full dataset\)}{section.6}% 66
+\BOOKMARK [2][-]{subsection.6.7}{Step 6: Saving and Loading a Trained Model}{section.6}% 67
+\BOOKMARK [2][-]{subsection.6.8}{Making Predictions on Test Data}{section.6}% 68
+\BOOKMARK [3][-]{subsubsection.6.8.1}{Preparing Test Predictions for Kaggle}{subsection.6.8}% 69
+\BOOKMARK [3][-]{subsubsection.6.8.2}{Predicting on Custom Images}{subsection.6.8}% 70
