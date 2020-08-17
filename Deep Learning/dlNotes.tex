@@ -408,7 +408,49 @@
 	\hspace*{3mm} $Z^{[1]} = W^{[1]}X + b^{[1]}$  \vspace*{1mm} \\
 	\hspace*{3mm} $A^{[1]} = \sigma(Z^{[1]})$  \vspace*{1mm} \\
 	\hspace*{3mm} $Z^{[2]} = W^{[2]}A^{[1]} + b^{[2]}$  \vspace*{1mm} \\
-	\hspace*{3mm} $A^{[2]} = \sigma(Z^{[2]})$ \vspace*{2mm} \\
+	\hspace*{3mm} $A^{[2]} = \sigma(Z^{[2]})$ 
+	\subsubsection{Activation Functions}
+	Previously, we have used the sigmoid function as our activation function. However, there are much better functions that we can use instead, denoted by a general symbol \textit{g}. For a Two Layer Neural Network, we can denote the activation function for the \textbf{hidden layer} as $g^{[1]}(z^{[1]})$ and the \textbf{output layer} as $g^{[2]}(z^{[2]})$. \vspace*{2mm} \\
+	One exception is when you are doing binary classification to use a sigmoid function for the output layer. This is because a a sigmoid function will output a value between 0 and 1, which works perfectly since our true labels (y) will either be a 0 or 1. \vspace*{2mm} \\
+	Another option for an activation function is tanh(z). This is often much more useful than the sigmoid function, and will output a value in the range [-1,1]. A downfall to both the sigmoid and tanh function are that when z is very large or small, the gradient is near 0 and can cause gradient descent to slow. The most commonly used activation function is the ReLU function (or the Leaky ReLU function to avoid having a 0 gradient for negative numbers). \vspace*{2mm} \\
+	\hspace*{24mm} \includegraphics[scale=0.3]{sigmoid} \hspace*{15mm} \includegraphics[scale=0.3]{tanh} \\
+	\hspace*{24mm} \includegraphics[scale=0.3]{relu} \hspace*{13mm} \includegraphics[scale=0.3]{leaky_relu} \newpage
+%%%% PAGE 11 %%%%
+
+	\subsubsection{Gradient Descent for Neural Networks}
+	A Neural Network with one hidden layer will have the following: \vspace*{1mm} \\
+	\hspace*{3mm} - Parameters: $W^{[1]}$ with shape ($n^{[1]},n^{[0]})$.\\ \hspace*{28mm} $b^{[1]}$ with shape $(n^{[1]},1)$.\\ \hspace*{28mm} $W^{[2]}$ with shape $(n^{[2]},n^{[1]})$.\\ \hspace*{28mm} $b^{[2]}$ with shape $(n^{[2]},1)$. \vspace*{1mm} \\
+	\hspace*{3mm} - $n^{[0]}$ input features (known as $n_x$), $n^{[1]}$ hidden layer units, and $n^{[2]}$ output units. \vspace*{1mm} \\
+	\hspace*{3mm} - Cost Function: J($W^{[1]}$, $b^{[1]}$, $W^{[2]}$, $b^{[2]}$) = $\frac{1}{m} \sum_{i=1}^{m}\mathcal{L}(\hat{y},y)$ \vspace*{1mm} \\
+	\hspace*{3mm} - Gradient descent (repeat the following steps): \vspace*{.5mm} \\
+	\hspace*{8mm} 1) Compute predicts ($\hat{y}^{(i)}, ..., \hat{y}^{(m)}$) \\
+	\hspace*{8mm} 2) Compute $dW^{[1]} = \frac{dJ}{dw^{[1]}}$, $db^{[1]} = \frac{dJ}{db^{[1]}}$, ... and similary for $dW^{[2]}$ and $db^{[2]}$ \vspace*{.5mm} \\
+	\hspace*{8mm} 3) Compute $W^{[1]} = W^{[1]} - \alpha\, dw^{[1]}$ \vspace*{.5mm} \\
+	\hspace*{8mm} 4) Compute $b^{[1]} = b^{[1]} - \alpha\, db^{[1]}$ \vspace*{.5mm} \\
+	\hspace*{8mm} 5) Compute $W^{[2]} = W^{[2]} - \alpha\, dw^{[2]}$ \vspace*{.5mm} \\
+	\hspace*{8mm} 6) Compute $b^{[2]} = b^{[2]} - \alpha\, db^{[2]}$ \vspace*{2mm} \\
+	Recall the formulas for \textbf{forward propagation} (where \textit{g} is the generalized activation function): \vspace*{.5mm} \\
+	\hspace*{3mm} $Z^{[1]} = W^{[1]}X + b^{[1]}$  \vspace*{1mm} \\
+	\hspace*{3mm} $A^{[1]} = g^{[1]}(Z^{[1]})$  \vspace*{1mm} \\
+	\hspace*{3mm} $Z^{[2]} = W^{[2]}A^{[1]} + b^{[2]}$  \vspace*{1mm} \\
+	\hspace*{3mm} $A^{[2]} = g^{[2]}(Z^{[2]})$ \vspace*{2mm} \\
+	This means that we can perform \textbf{back propagation} (gradient descent) with the following steps: \vspace*{.5mm} \\
+	\hspace*{3mm} $dz^{[2]} = A^{[2]} - Y$ \\
+	\hspace*{3mm} $dW^{[2]} = \frac{1}{m}\, dz^{[2]}\,A^{[1]T}$\\
+	\hspace*{3mm} $db^{[2]} = \frac{1}{m}\, np.sum(dz^{[2]}, axis=1, keepdims=True)$ \vspace*{.5mm} \\
+	\hspace*{3mm} $dz^{[1]} = W^{[2]T}\,dz^{[2]} * g^{[1]'}(Z^{[1]})$, which is an element-wise product of two ($n^{[1]}, m$) matrices. \\
+	\hspace*{3mm} $dW^{[1]} = \frac{1}{m}\, dz^{[1]}\,X^{T}$\\
+	\hspace*{3mm} $db^{[1]} = \frac{1}{m}\, np.sum(dz^{[1]}, axis=1, keepdims=True)$, which is an ($n^{[1]},1$ vector). \\~\\
+	\textbf{Random Initialization}: \vspace*{1mm} \\
+	For a Neural Network, we want to initialize the weights to random values instead of zeros (initializing to zero will cause all of the calculations to be symmetric). To randomly initialize our weights, we can: \\ 
+	\hspace*{3mm} - Set $W^{[1]}$ = np.random.randn((2,2)) * 0.01 to create small Gaussian random variables.\\ 
+	\hspace*{3mm} - Initialize $b^{[1]}$ = np.zero((2,1)) because \textit{b} does not have the symmetry problem that \textit{w} can have. \\
+	\hspace*{3mm} - Similarly, we can do the same for $W^{[2]}$ and $b^{[2]}$.
+	\subsubsection{Programming Assignment}
+	
+	
+	
+	
 	
 	
 	
