@@ -2920,10 +2920,1237 @@
 	
 	\subsection{Machine Learning Strategy 2}
 	\subsubsection{Error Analysis}
+	During \textbf{error analysis}, for example using a cat classifier, we are looking at images in our dev set that are mislabeled (incorrectly predicted). We want to look at the false positives and false negatives. One idea is manual error analysis, where we could chose 100 mislabeled dev set examples and see where we are making an error. \vspace*{1mm} \\
+	Say we are using our cat classifier on dogs as well. We can create a spreadsheet for the 100 images we selected to help us fix dogs being classified as cats, fix images being misrecognized, and improve performance on blurry images. We can put each of these in a column with rows being the corresponding 100 pictures, and then total each column to find where our model is making the greatest error and where to improve. \\~\\
+	If we have \textbf{incorrectly labeled examples} in our training data, we must look at the type of error. Deep learning algorithms are robust to \textit{random errors}, so if the number of mislabeled data is very small and the data set is very large, it is usually okay to leave the mislabeled data in the training set. However, if it is a \textit{systematic error} (such as all white dogs are labeled as cats), then it will need to be fixed. \newpage
+%%%% PAGE 70 %%%%
+
+	\noindent If we have mislabeled data in the dev set, we want to look at the overall dev set error. In this error, we want to see what percentage of these errors are from incorrect labels, and then errors due to other causes. If the error from incorrect labels is much smaller than errors from other causes, we want to focus on the bigger error that we can reduce to increase our accuracy. Some guidelines: \vspace*{.5mm} \\
+	\hspace*{3mm} - Apply same process to your dev and test sets to make sure they come from same distribution. \\
+	\hspace*{3mm} - Consider examining examples your algorithm got right as well as ones it got wrong (reduce bias). \\
+	\hspace*{3mm} - Train and dev/test data may now come from different distributions (this is okay). \\~\\
+	One method to speed up the process of improving a model is to build your first system quickly and then iterate. This means set up your dev/test set and metric, build your initial system quickly, and then use Bias/Variance analysis and Error analysis to prioritize the next steps. 	
+	\subsubsection{Mismatched Data Distributions}
+	We often want to train our models on as much data as possible, but we also want it all to come from the same distribution. For example, if we were building a cat classifier and we had 200,000 professional images from webpages and 10,000 images from a mobile app (which are blurry and not professional), instead of shuffling we would want to evenly distribute the mobile app images. So we can have all 200,000 web images in the training set along with 5,000 images from the mobile app. Then in our test/dev set, it will contain 5,000 mobile app images since this is what our model will be using when we deploy it. \\~\\
+	Estimating bias and variance helps you prioritize what to work on next, but the way we analyze bias and variance changes when our training set comes from a different distribution than the dev/test sets. For example, our cat classifier that uses professional training images and mobile app dev images, the difference between the training error and dev error is because the data is different. \vspace*{1.5mm}\\ 
+	To avoid this, we set up a \textbf{training-dev set}, which has the same distribution as the training set, but not used for training. Lets say we have the following error values: \\
+	\hspace*{3mm} - Training error : 1\% \\
+	\hspace*{3mm} - Training-dev error : 9\%\\
+	\hspace*{3mm} - Dev error : 10\%\\
+	This means we have a variance problem, because the model is not generalizing well on the training data (since we see it is performing well on the dev data). However, if the difference between the training-dev and dev error is higher, that means we have a \textit{data mismatch} problem. \vspace*{2mm} \\
+	To judge bias/variance on mismatched training and dev/test sets, we look at: \vspace*{.5mm} \\
+	\hspace*{3mm} - The difference between human level error and training set error, \textbf{avoidable bias}. \\
+	\hspace*{3mm} - The difference between training set error and training-dev error, the \textbf{variance}. \\
+	\hspace*{3mm} - The difference between training-dev error and dev error, the \textbf{data mismatch}. \\
+	\hspace*{3mm} - The difference between dev error and test error, the \textbf{degree of overfitting to dev set}. \\~\\
+	There is no exact method that we can use to improve our error between the training-dev error and the dev error. However, if you perform error analysis and find that you have a \textbf{data mismatch} problem, we can try: \\
+	\hspace*{3mm} - Carry out manual error analysis to try to understand difference between training and dev/test sets.\\
+	\hspace*{3mm} - Make training data more similar, or collect more data similar to dev/test sets. \vspace*{1.5mm} \\
+	One method we can use is \textbf{artificial data synthesis}, where we combine multiple pieces of data to create one that we want. For example, if we have an audio clip of someone speaking and an audio clip of car noise, we can combine these two in order to synthesize in-car audio. Be cautious that you are now synthesizing data from just a small subset of the space of all possible examples. \newpage
+%%%% PAGE 71 %%%%
+
+	\subsubsection{Learning from Multiple Tasks}
+	Sometimes you can take knowledge the neural network has learned from one task and apply that knowledge to a separate task, this is called \textbf{transfer learning}. If it is a small data set, we just retrain the last layer along with $W^{[L]}$ and $b^{[L]}$, then use this new output layer to make predictions on whatever our model does. If we have a large data set, we can retrain all the parameters in the Neural Network. The training from the old model becomes known as \textit{pre-training} and the parameters change we make from retraining is known as \textit{fine-tuning}. We can also add new layers to a Neural Network that has always been created if we want. \vspace*{1.5mm}\\ 
+	We use transfer learning when we have a lot of data we are transferring from (the already built model) and less data for the model we are transferring to. We also want to make sure both models have the same input (images, audio, etc.). We also use transfer learning when we think low level features from A (early nodes in the network) will be helpful for the new model. \\~\\
+	In \textbf{multi-task learning}, you start off simultaneously, trying to have one neural network do several things at the same time. And then each of these task helps hopefully all of the other task. For example, if we train a Neural Network for autonomous cars, we may want our model to be able to recognize multiple objects in an image. This means our output wont just be one label, but can be multiple labels that are all solved at the same time. It makes sense to use this when: \vspace*{.5mm} \\
+	\hspace*{3mm} - Training on a set of tasks that could benefit from having shared lower-level features. \\
+	\hspace*{3mm} - Usually: Amount of data you have for each task is quite similar. \\
+	\hspace*{3mm} - Can train a big enough neural network to do well on all the tasks.
 	
 	
+	\subsubsection{End-to-End Deep Learning}
+	\textbf{End-to-end} deep learning trains a large Neural Network that goes from input to output, without all the steps in between. However, to do this you need a very large amount of data. \vspace*{2mm} \\
+	Benefits for end-to-end learning: \\
+	\hspace*{3mm} - Let the data speak. \\
+	\hspace*{3mm} - Less hand-designing of components needed. \vspace*{1mm} \\
+	Disadvantages for end-to-end learning: \\
+	\hspace*{3mm} - May need a large amount of data. \\
+	\hspace*{3mm} - Excludes potentially useful hand-designed components. \vspace*{2mm} \\
+	When applying end-to-end deep learning, we want to ask ourselves if we have sufficient data to learn a function of the complexity needed to map x to y. \newpage
+%%%% PAGE 72 %%%%
+
+	\section{Convolutional Neural Networks}
+	\subsection{Foundations of Convolutional Neural Networks}
+	\subsubsection{Edge Detection}
+	\begin{center}
+	$\begin{bmatrix}
+	3 & 0 & 1 & 2 & 7 & 4 \\ 1 & 5 & 8 & 9 & 3 & 1 \\ 2 & 7 & 2 & 5 & 1 & 3 \\ 0 & 1 & 3 & 1 & 7 & 8 \\ 4 & 2 & 1 & 6 & 2 & 8 \\ 2 & 4 & 5 & 2 & 3 & 9\end{bmatrix} $ $*$ $\begin{bmatrix} 1 & 0 & -1 \\ 1 & 0 & -1 \\ 1 & 0 & -1 \end{bmatrix}$ = $ \begin{bmatrix}
+	-5 & -4 & 0 & 8 \\ -10 & -2 & 2 & 3 \\ 0 & -2 & -4 & -7 \\ -3 & -2 & -3 & -16 \end{bmatrix}$
+	\end{center}
+	For \textbf{vertical edge detection}, say we have a 6x6 greyscale image. To detect edges, we construct a 3x3 matrix (know as a ``filter" or ``kernel"). We then \textit{convolve} (denoted by $*$) the greyscale image with the filter, which will then result in a 4x4 matrix. To perform \textit{convolution} think of laying the 3x3 filter on top of the 6x6 (starting in the top left corner) and multiplying the values by the filter values, then adding all of them up. We then shift to the right by one and do the same process to get the next value in our 4x4 matrix. After we finish the row, we shift down one and repeat the process until our 4x4 matrix if filled. Below is an example of how this works:
+	\begin{center}
+	\includegraphics[scale=.5]{edge_dect}
+	\end{center}
+	For our greyscale vertical edge detection above, we say that there is an edge in a 3x3 region where there are bright pixels on the left (higher values) and dark pixels on the right (lower values). Note that we are not worried about the middle values. \\~\\
+	We can also perform \textbf{horizontal edge detection}. For our example, a horizontal edge will be a 3x3 region where the pixels are bright on top and relatively dark on the bottom.
+	\begin{center}
+	\includegraphics[scale=.5]{horizontal} \includegraphics[scale=.5]{horizontal_2}	
+	\end{center}
+	When choosing our filter, there are many different options we can chose. We could use the ones above, a Sobel filter, Scharr filter, etc. One idea however is to learn the parameters using backpropagation, which will allow the model to find the best fit (could be one of the filters listed above or a custom one). This will also allow your model to possibly detect edges at any that aren't just horizontal and vertical, but also in between. $$ \begin{bmatrix}
+	w_1 & w_2 & w_3 \\ w_4 & w_5 & w_6 \\ w_7 & w_8 & w_9 \end{bmatrix} $$ \newpage
+%%%% PAGE 73 %%%%
+
+	\subsubsection{Padding and Strides}
+	In general we say that the image dimensions are ($n$ x $n$), filter dimensions are ($f$ x $f$), and our output dimensions are (($n-f+1$) x ($n-f+1$)). One problem with this is that we are shrinking the output, leading to throwing away information from edge. \vspace*{1mm}\\
+	One way to avoid this is by \textbf{padding} the image with an additional border of one pixel around the entire matrix. For example, padding our 6x6 image will turn it into an 8x8 image. We let $p$ be our padding (in this case p=1), and our new output shape will be (($n+2p-f+1$) x ($n+2p-f+1$)). \vspace*{2mm} \\
+	\textbf{Valid convolutions} - no padding, ($n$ x $n$) $*$ ($f$ x $f$) = (($n-f+1$) x ($n-f+1$)) \\
+	\textbf{Same convolutions} - Pad so output matches input, where we want $p = \frac{f-1}{2}$. ($f$ is usually odd). \\~\\
+	We can perform \textbf{strided convolution} by setting a stride value ($s$) and using that as our shift amount. For example, if s=2, then we shift to the right by 2 every time we perform convolution and shift down by 2 every time we start a new row. \vspace*{1mm}\\
+	This means our new output has dimensions (($\frac{n+2p-f}{s}+1$) x ($\frac{n+2p-f}{s}+1$)). Note that we round down the fraction if it is not a whole number (take the \textit{floor} value). This is because if any of the filter box hangs outside of the image (+ padding region), then we do not compute the convolution value.
 	
+	\subsubsection{RGB Image Convolution}
+	We can also perform edge detection on images that aren't just greyscale but also have color. We have the following: \\
+	\hspace*{3mm} - Image: dimensions = (height x width x number of channels) \\
+	\hspace*{3mm} - Filter: dimensions = (height x width x number of channels) \vspace*{1mm} \\
+	We can think of the filter as a small cube that we are placing inside of a larger cube (our image). Each layer in the filter corresponds to the image layer, and each layer can have different filter values. We are then adding up all of the values from each channel together to get our output value. Also, the output will me a 1 dimensional matrix. \vspace*{2mm}\\
+	We can detect \textbf{multiple edges} in an image by using \textbf{multiple filters} at once. Say we want one filter for vertical edges and one for horizontal edges. We use to separate filters, get two output matrices of 4x4, and then stack them on top of each other to get a 4x4x2 matrix. Assume that we used not padding and a normal stride, then we have: \vspace*{.5mm}\\
+	\hspace*{3mm} - Image: ($n$ x $n$ x $n_c$) \\
+	\hspace*{3mm} - Filter: ($f$ x $f$ x $n_c$) \\
+	\hspace*{3mm} - Output: (($n-f+1$) x ($n-f+1$) x ($n_c'$)) \vspace*{.5mm}\\
+	Note that $n_c$ must be the same for the image and filter. Also, $n_c'$ refers to the number of filters used.
+	\begin{center} \includegraphics[scale=.5]{mult_filt} \end{center} \newpage
+%%%% PAGE 74 %%%%
 	
+	\subsubsection{Simple CNN Example}
+	Lets first take a look at \textbf{one layer of a CNN}.
+	\begin{center}
+	\includegraphics[scale=.6]{cnn_layer} \\
+	\includegraphics[scale=.5]{cnn_layer_2} \\
+	\end{center}
+	If layer $l$ is a convolution layer: \vspace*{.5mm}\\
+	\hspace*{3mm} - $f^{[l]}$ = filter size\vspace*{.5mm} \\
+	\hspace*{3mm} - $p^{[l]}$ = padding \vspace*{.5mm}\\
+	\hspace*{3mm} - $s^{[l]}$ = stride \vspace*{.5mm}\\
+	\hspace*{3mm} - $n_c^{[l]}$ = number of filters \vspace*{.5mm}\\
+	\hspace*{3mm} - Filter: ($f^{[l]}$ x $f^{[l]}$ x $n_c^{[l-1]}$)\vspace*{.5mm} \\
+	\hspace*{3mm} - Activations: $a^{[l]} \rightarrow (n^{[l]}_H$ x $n^{[l]}_W$ x $n_c^{[l]})$\vspace*{1mm} \\
+	\hspace*{7mm} - Vectorized Activations: ($m$ x $n^{[l]}_H$ x $n^{[l]}_W$ x $n_c^{[l]}$) \vspace*{1mm}\\
+	\hspace*{3mm} - Weights: ($f^{[l]}$ x $f^{[l]}$ x $n_c^{[l-1]}$ x $n_c^{[l]}$) \\
+	\hspace*{3mm} - Bias: (1 x 1 x 1 x $n_c^{[l]}$) \vspace*{1mm}\\
+	\hspace*{3mm} - Input: ($n^{[l-1]}_H$ x $n^{[l-1]}_W$ x $n_c^{[l-1]}$) \vspace*{1mm} \\
+	\hspace*{3mm} - Output ($n^{[l]}_H$ x $n^{[l]}_W$ x $n_c^{[l]}$) \vspace*{1mm} \\ 
+	\hspace*{3mm} - $n^{[l]}_H$ = floor($\frac{n^{[l-1]}_H + 2p^{[l]} - f^{[l]}}{s^{[l]}}+1$)\vspace*{1mm} \\
+	\hspace*{3mm} - $n^{[l]}_W$ = floor($\frac{n^{[l-1]}_W + 2p^{[l]} - f^{[l]}}{s^{[l]}}+1$) \\~\\
+	Now we can take a look at an example of a \textbf{deep CNN}, which we will say is trying to classify images of cats. 
+	\begin{center}	\includegraphics[scale=.36]{cnn_ex}	\end{center} \newpage
+%%%% PAGE 75 %%%%
+
+	\noindent There are typically 3 \textbf{types of layers} in a Convolutional Network: \\
+	- Convolution (CONV) \\
+	- Pooling (POOL) \\
+	- Fully Connected (FC) 
+	\subsubsection{Pooling Layers}
+	We can use \textbf{pooling layers} to reduce the size of the representation, to speed the computation, as well as make some of the features that detects a bit more robust. \vspace*{1.5mm}\\
+	One method we can use is \textbf{max pooling}, where we break our original input into regions that correspond to the output shape. To compute each number for the output, we take the max value from the given region and put it in the corresponding box in the output. 
+	\begin{center}	\includegraphics[scale=.4]{max_ppol} \end{center}
+	Note that for the above example, this given us the hyperparameters: $f=2$ and $s=2$. When performing gradient descent, there is not need to learn any parameters (they are set). Typically we also don't use padding when we use max pooling. \vspace*{2mm}\\
+	Another method we can use is \textbf{average pooling}, which has the same method as max pooling but instead of taking the max value, we add all of the values in a given region and divide by the number of values inside the region. \vspace*{2mm}\\
+	Now we can take a look at a CNN example that uses \textbf{max pooling and fully connected layers}. Note that fully connected layers are just the same as layers in previous Neural Network sections (using weights and biases).
+	\begin{center}
+		\includegraphics[scale=.33]{pool_ex}
+	\end{center}
+	Note that the height and width for our layers will decrease as we feed them though our Network, but the number of channels will increase. A common pattern to see in CNN's are:
+	\begin{center}
+	CONV $\rightarrow$ POOL $\rightarrow$ CONV $\rightarrow$ POOL $\rightarrow$ FC $\rightarrow$ FC $\rightarrow$ FC $\rightarrow$ SOFTMAX
+	\end{center}
+	Note: to find the \textbf{number of parameters} we use the equation: $$ (f^{[l]} * f^{[l]} * n_c^{[l-1]} + 1) * n_c^{[l]} $$ where ``1" is our \textbf{bias term}. \newpage
+%%%% PAGE 76 %%%%
+
+	\subsubsection{Programming Assignment 1 (Model Setup)}
+	In this assignment we will build CONV and POOL layers using NumPy for both forward and backward propagation. In the next assignment, we will build the same model using TensorFlow.
+	\begin{center}	\includegraphics[scale=.5]{pa1}	\end{center}
+	A \textbf{convolution layer} transforms an input volume into an output volume of different size. In this part, you will build every step of the convolution layer. You will first implement two helper functions: one for \textbf{zero padding} and the other for computing the convolution function itself. \\
+	- \textit{Zero Padding} consists of placing zeros around the border of an image so we don't lose information. \\
+	- \textit{Single step} will be only apply the filter to one position to get a single integer value (think of this as \hspace*{2mm} just one step of applying the filter, multiplying, and summing the values for a given region).
+	\begin{lstlisting}
+	def zero_pad(X, pad):
+		"""
+		Pad with zeros all images of the dataset X.
+		
+		Argument:
+		X - np array of shape (m, n_H, n_W, n_C) representing a batch of m images
+		pad - integer, the padding around each image on vertical and horizontal dimensions
+		
+		Returns:
+		X_pad -- padded image of shape (m, n_H + 2*pad, n_W + 2*pad, n_C)
+		"""
+		X_pad = np.pad(X, ((0,0), (pad, pad), (pad, pad), (0,0)), mode = 'constant', 
+		               constant_values=(0,0))
+		
+		return X_pad 
+		
+	def conv_single_step(a_slice_prev, W, b):
+		"""
+		Apply one filter defined by parameters W on a single slice (a_slice_prev) of the 
+		output activation of the previous layer.
+		
+		Arguments:
+		a_slice_prev - slice of input data of shape (f, f, n_C_prev)
+		W - Weight parameters contained in a window - matrix of shape (f, f, n_C_prev)
+		b - Bias parameters contained in a window - matrix of shape (1, 1, 1)
+		"""
+		s = a_slice_prev * W # Element-wise product
+		Z = np.sum(s) # Sum over all entries of the volume
+		Z = Z + float(b) # Add bias b to Z
+		
+		return Z # scalar value (a single position in output layer) \end{lstlisting} \vspace*{1mm}
+	In the \textbf{forward pass}, you will take many filters and convolve them on the input. Each \textit{convolution} gives you a 2D matrix output. You will then stack these outputs to get a 3D volume. The formulas relating the output shape of the convolution to the input shape is:
+	$$ n_H = \lfloor \frac{n_{H_{prev}} - f + 2*pad}{stride} \rfloor +1 $$ \newpage
+%%%% PAGE 77 %%%%
+
+	$$ n_W = \lfloor \frac{n_{W_{prev}} - f + 2*pad}{stride} \rfloor +1 $$
+	$$ n_C = \text{number of filters used in the convolution}$$
+	\begin{lstlisting}
+	def conv_forward(A_prev, W, b, hparameters):
+		"""
+		Implements the forward propagation for a convolution function
+		
+		Arguments:
+		A_prev -- output activations of the previous layer, 
+		          of shape (m, n_H_prev, n_W_prev, n_C_prev)
+		W -- Weights, numpy array of shape (f, f, n_C_prev, n_C)
+		b -- Biases, numpy array of shape (1, 1, 1, n_C)
+		hparameters -- python dictionary containing "stride" and "pad"
+		
+		Returns:
+		Z -- conv output, numpy array of shape (m, n_H, n_W, n_C)
+		cache -- cache of values needed for the conv_backward() function
+		"""
+		 
+		(m, n_H_prev, n_W_prev, n_C_prev) = A_prev.shape
+		(f, f, n_C_prev, n_C) = W.shape
+		stride = hparameters['stride']
+		pad = hparameters['pad']
+		
+		# Compute the dimensions of the CONV output volume
+		n_H = int((n_H_prev - f + 2*pad)/stride) + 1
+		n_W = int((n_W_prev - f + 2*pad)/stride) + 1
+		
+		Z = np.zeros([m, n_H, n_W, n_C]) # Initialize the output volume Z with zeros
+		
+		A_prev_pad = zero_pad(A_prev, pad) # Create A_prev_pad by padding A_prev
+		
+		for i in range(m): # loop over the batch of training examples
+			a_prev_pad = A_prev_pad[i,:,:,:] # Select ith training example's padded 
+			                                 # activation
+			for h in range(n_H): # loop over vertical axis of the output volume
+				vert_start = h*stride
+				vert_end = h*stride + f
+				
+				for w in range(n_W): # loop over horizontal axis of the output volume
+					horiz_start = w*stride
+					horiz_end = w*stride + f
+					
+					for c in range(n_C):  # loop over channels (= #filters) of the output volume
+						# Use the corners to define the (3D) slice of a_prev_pad
+						a_slice_prev = a_prev_pad[vert_start:vert_end,horiz_start:horiz_end,:]
+						
+						# Convolve the (3D) slice with the correct filter W and bias b, to get back
+						# one output neuron
+						weights = W[:,:,:,c]
+						biases = b[:,:,:,c]
+						Z[i, h, w, c] = conv_single_step(a_slice_prev, weights, biases)
+			
+		assert(Z.shape == (m, n_H, n_W, n_C)) # Making sure your output shape is correct
+		cache = (A_prev, W, b, hparameters) # Save information in "cache" for the backprop
+		
+		return Z, cache	\end{lstlisting} \vspace*{1mm}
+	Note: we would also add an activation after computing Z, such as ReLU(Z), but we wont yet. \newpage
+%%%% PAGE 78 %%%%
+
+	\noindent The \textbf{pooling (POOL) layer} reduces the height and width of the input. It helps reduce computation, as well as helps make feature detectors more invariant to its position in the input. The two types of pooling layers are: \\	
+	- Max-pooling layer: stores the max value of the window in the output.\\
+	- Average-pooling layer: stores the average value of the window in the output. \\
+	Note these layers have no parameters for backward propagation, but they do have hyperparameters (\textit{f}).
+	$$ n_H = \lfloor \frac{n_{H_{prev}} - f}{stride} \rfloor +1 \hspace*{10mm} n_W = \lfloor \frac{n_{W_{prev}} - f}{stride} \rfloor +1 $$
+	$$ n_C = n_{C_{prev}}$$
+	\begin{lstlisting}
+	def pool_forward(A_prev, hparameters, mode = "max"):
+		"""
+		Implements the forward pass of the pooling layer
+		
+		Arguments:
+		A_prev -- Input data, numpy array of shape (m, n_H_prev, n_W_prev, n_C_prev)
+		hparameters -- python dictionary containing "f" and "stride"
+				
+		Returns:
+		A -- output of the pool layer, a numpy array of shape (m, n_H, n_W, n_C)
+		cache -- cache used in the backward pass of the pooling layer 
+		"""
+		(m, n_H_prev, n_W_prev, n_C_prev) = A_prev.shape
+		f = hparameters["f"]
+		stride = hparameters["stride"]
+		
+		# Define the dimensions of the output
+		n_H = int(1 + (n_H_prev - f) / stride)
+		n_W = int(1 + (n_W_prev - f) / stride)
+		n_C = n_C_prev
+		
+		A = np.zeros((m, n_H, n_W, n_C)) # Initialize output matrix A              
+		
+		for i in range(m): # loop over the training examples
+			for h in range(n_H): # loop on the vertical axis of the output volume
+				vert_start = h*stride
+				vert_end = h*stride + f
+				
+				for w in range(n_W): # loop on the horizontal axis of the output volume
+					horiz_start = w*stride
+					horiz_end = w*stride + f
+					
+					for c in range (n_C): # loop over the channels of the output volume
+						# Use the corners to define the current slice on the ith training example
+						a_prev_slice = A_prev[i, horiz_start:horiz_end, vert_start:vert_end, c]
+						
+						# Compute the pooling operation on the slice. 
+						if mode == "max":
+							A[i, h, w, c] = np.max(a_prev_slice)
+						elif mode == "average":
+							A[i, h, w, c] = np.mean(a_prev_slice)
+		
+		# Store the input and hparameters in "cache" for pool_backward()
+		cache = (A_prev, hparameters)
+		
+		assert(A.shape == (m, n_H, n_W, n_C)) # Make sure your output shape is correct
+		
+		return A, cache	\end{lstlisting} \newpage
+%%%% PAGE 79 %%%%
+
+	\subsubsection{Programming Assignment 2 (ConvNet using TensorFlow)}
+	\begin{center} THIS IS TENSORFLOW 1.0 \end{center}
+	Quick Note: In modern deep learning frameworks, you only have to implement the forward pass, and the framework takes care of the backward pass, so most deep learning engineers don't need to bother with the details of the backward pass. The backward pass for Convolutional networks is complicated. \vspace*{2mm}\\
+	In the previous assignment, you built helper functions using NumPy to understand the mechanics behind Convolutional neural networks. Most practical applications of deep learning today are built using programming frameworks, which have many built-in functions you can simply call. \vspace*{2mm}\\ 
+	We will use TensorFlow on our SIGNS dataset, which contains pictures of numbers 0 to 5 in ASL. Let's start by \textbf{loading packages and data} into our workflow. Recall there are 1080 training examples, 120 test examples, and each image has shape 64x63x3.
+	\begin{center}	\includegraphics[scale=.5]{sign_data}	\end{center}
+	\begin{lstlisting}
+	import math
+	import numpy as np
+	import h5py
+	import matplotlib.pyplot as plt
+	import scipy
+	from PIL import Image
+	from scipy import ndimage
+	import tensorflow as tf
+	from tensorflow.python.framework import ops
+	from cnn_utils import *
+	
+	# Loading the data (signs)
+	X_train_orig, Y_train_orig, X_test_orig, Y_test_orig, classes = load_dataset() \end{lstlisting} \vspace*{1mm}
+	We will begin by creating \textbf{placeholders} for the input data that will be find into the model. 
+	\begin{lstlisting}
+	def create_placeholders(n_H0, n_W0, n_C0, n_y):
+		"""
+		Creates the placeholders for the tensorflow session.
+				
+		Returns:
+		X -- placeholder for the data input, of shape [None, n_H0, n_W0, n_C0] 
+		Y -- placeholder for the input labels, of shape [None, n_y] 
+		"""
+		
+		X = tf.placeholder(tf.float32, shape=(None, n_H0, n_W0, n_C0), name='X')
+		Y = tf.placeholder(tf.float32, shape=(None, n_y), name='Y')
+			
+		return X, Y \end{lstlisting} \vspace*{1mm}
+	You will \textbf{initialize weights/filters} W1 and W2. You don't need to worry about bias variables as you will soon see that TensorFlow functions take care of the bias. Note also that you will only initialize the weights/filters for the conv2d functions. TensorFlow initializes the layers for the fully connected part automatically. \newpage
+%%%% PAGE 80 %%%%
+
+	\noindent Note: Normally, functions should take values as inputs rather than hard coding. We will hard code the weights for this example though.
+	\begin{lstlisting}
+	def initialize_parameters():
+		"""
+		Initializes weight parameters to build a NN with tensorflow. The shapes are:
+		W1 : [4, 4, 3, 8]
+		W2 : [2, 2, 8, 16]
+		
+		Returns:
+		parameters -- a dictionary of tensors containing W1, W2
+		"""
+		tf.set_random_seed(1)
+		
+		W1 = tf.get_variable("W1", [4,4,3,8], initializer=tf.contrib.layers.
+		                     xavier_initializer(seed=0))
+		W2 = tf.get_variable("W2", [2,2,8,16], initializer=tf.contrib.layers.
+		                     xavier_initializer(seed=0))
+		
+		parameters = {"W1": W1,	"W2": W2}
+		return parameters	\end{lstlisting} \vspace{1mm}
+	In TensorFlow, there are built-in functions that implement the \textbf{forward propagation} for the convolution steps for us. \vspace*{.5mm}\\
+	- \textbf{tf.nn.conv2d(X,W, strides = [1,s,s,1], padding = `SAME')}: given an input $X$ and a group of filters $W$, this function convolves $W$'s filters on X. The third parameter ([1,s,s,1]) represents the strides for each dimension of the input (m, n\_H\_prev, n\_W\_prev, n\_C\_prev). Normally, you'll choose a stride of 1 for the number of examples (the first value) and for the channels (the fourth value), which is why we wrote the value as `[1,s,s,1]'. \vspace*{.5mm}\\	
+	- \textbf{tf.nn.max\_pool(A, ksize = [1,f,f,1], strides = [1,s,s,1], padding = `SAME')}: given an input A, this function uses a window of size (f, f) and strides of size (s, s) to carry out max pooling over each window.  For max pooling, we usually operate on a single example at a time and a single channel at a time.  So the first and fourth value in `[1,f,f,1]` are both 1. \vspace*{.5mm}\\
+	- \textbf{tf.nn.relu(Z)}: computes the element-wise ReLU of Z (which can be any shape).\vspace*{.5mm}\\	
+	- \textbf{tf.contrib.layers.flatten(P)}: given a tensor "P", this function takes each training (or test) example in the batch and flattens it into a 1D vector. \vspace*{.5mm}\\
+	\hspace*{3mm} - If a tensor P has the shape (m,h,w,c), where m is the number of examples (the batch size), it returns \hspace*{5mm} a flattened tensor with shape (batch\_size, k), where $k=h \times w \times c$.  "k" equals the product of all the \hspace*{5mm} dimension sizes other than the first dimension.\vspace*{.5mm}\\
+	- \textbf{tf.contrib.layers.fully\_connected(F, num\_outputs)}: given the flattened input F, it returns the output computed using a fully connected layer. \vspace*{1mm}\\	
+	In the last function above (tf.contrib.layers.fully\_connected), the fully connected layer automatically initializes weights in the graph and keeps on training them as you train the model. Hence, you did not need to initialize those weights when initializing the parameters. \vspace*{1mm}\\
+	The words ``window", ``kernel", and ``filter" are used to refer to the same thing.  This is why the parameter `ksize' refers to ``kernel size", and we use `(f,f)' to refer to the filter size.  Both ``kernel" and ``filter" refer to the ``window." \\~\\
+	We want to implement forward propagation to build the following model: \\
+	CONV2D $->$ RELU $->$ MP $->$ CONV2D $->$ RELU $->$ MP $->$ FLATTEN $->$ FC	\newpage
+%%%% PAGE 81 %%%%
+
+	\noindent Note that for simplicity and grading purposes, we'll hard-code some values such as the stride and kernel (filter) sizes. Normally, functions should take these values as function parameters.
+	\begin{lstlisting}
+	def forward_propagation(X, parameters):
+		"""
+		Implements the forward propagation for the model
+			
+		Arguments:
+		X -- input dataset placeholder, of shape (input size, m)
+		parameters -- python dictionary containing your parameters "W1", "W2"
+		              the shapes are given in initialize_parameters
+		Returns:
+		Z3 -- the output of the last LINEAR unit
+		"""
+		W1 = parameters['W1']
+		W2 = parameters['W2']
+		
+		# CONV2D: stride of 1, padding 'SAME'
+		Z1 = tf.nn.conv2d(X, W1, strides=[1,1,1,1], padding='SAME')
+		# RELU
+		A1 = tf.nn.relu(Z1)
+		# MAXPOOL: window 8x8, stride 8, padding 'SAME'
+		P1 = tf.nn.max_pool(A1, ksize=[1,8,8,1], strides=[1,8,8,1], padding='SAME')
+		# CONV2D: filters W2, stride 1, padding 'SAME'
+		Z2 = tf.nn.conv2d(P1, W2, strides=[1,1,1,1], padding='SAME')
+		# RELU
+		A2 = tf.nn.relu(Z2)
+		# MAXPOOL: window 4x4, stride 4, padding 'SAME'
+		P2 = tf.nn.max_pool(A2, ksize=[1,4,4,1], strides=[1,4,4,1], padding='SAME')
+		# FLATTEN
+		F = tf.contrib.layers.flatten(P2)
+		# FULLY-CONNECTED without non-linear activation function. 6neurons in output layer
+		Z3 = tf.contrib.layers.fully_connected(F, num_outputs=6, activation_fn=None)
+		
+		return Z3 \end{lstlisting} \vspace*{1mm}
+	Now we will implement the \textbf{compute cost} function. Remember that the cost function helps the neural network see how much the model's predictions differ from the correct labels.  By adjusting the weights of the network to reduce the cost, the neural network can improve its predictions. You might find these two functions helpful: \vspace*{.5mm}\\	
+	- \textbf{tf.nn.softmax\_cross\_entropy\_with\_logits(logits = Z, labels = Y)}: computes the softmax entropy loss. This function both computes the softmax activation function as well as the resulting loss. \vspace*{.5mm}\\
+	- \textbf{tf.reduce\_mean}: computes the mean of elements across dimensions of a tensor. Use this to calculate the sum of the losses over all the examples to get the overall cost.\vspace*{.5mm}\\
+	The function softmax\_cross\_entropy\_with\_logits takes logits as input (and not activations); then uses the model to predict using softmax, and then compares the predictions with the true labels using cross entropy.  These are done with a single function to optimize the calculations.
+	\begin{lstlisting}
+	def compute_cost(Z3, Y):
+		"""
+		Arguments:
+		Z3 -- output of forward prop (output of the last LINEAR unit), of shape (m, 6)
+		Y -- "true" labels vector placeholder, same shape as Z3
+		
+		Returns:
+		cost - Tensor of the cost function
+		"""
+		cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = Z3, 
+		                                                              labels = Y))
+		return cost	\end{lstlisting} \newpage
+%%%% PAGE 82 %%%%
+	
+	\noindent Now we will merge our functions together to \textbf{build a model}. We will implement a 3-layer ConvNet.
+	\begin{lstlisting}
+	def model(X_train, Y_train, X_test, Y_test, learning_rate = 0.009,
+              num_epochs = 100, minibatch_size = 64, print_cost = True):
+		"""	
+		X_train -- training set, of shape (None, 64, 64, 3)
+		Y_train -- test set, of shape (None, n_y = 6)
+		X_test -- training set, of shape (None, 64, 64, 3)
+		Y_test -- test set, of shape (None, n_y = 6)
+		
+		Returns:
+		train_accuracy -- real number, accuracy on the train set (X_train)
+		test_accuracy -- real number, testing accuracy on the test set (X_test)
+		parameters -- parameters learnt by the model. They can then be used to predict.
+		"""
+		
+		ops.reset_default_graph() # to rerun the model without overwriting tf variables
+		tf.set_random_seed(1)  # to keep results consistent (tensorflow seed)
+		seed = 3  # to keep results consistent (numpy seed)
+		(m, n_H0, n_W0, n_C0) = X_train.shape             
+		n_y = Y_train.shape[1]                            
+		costs = [] # To keep track of the cost
+		
+		X, Y = create_placeholders(n_H0, n_W0, n_C0, n_y) # Create Placeholders 
+		
+		parameters = initialize_parameters() # Initialize parameters
+		
+		Z3 = forward_propagation(X, parameters) # Forward propagation
+		
+		cost = compute_cost(Z3, Y) # Cost function
+		### END CODE HERE ###
+		
+		# Backpropagation: Define the tensorflow optimizer.
+		optimizer = tf.train.AdamOptimizer(learning_rate = learning_rate).
+		                     minimize(loss=cost)
+		
+		init = tf.global_variables_initializer() # Initialize all the variables globally
+		
+		with tf.Session() as sess: # Start the session to compute the tensorflow graph
+			sess.run(init) # Run the initialization
+			for epoch in range(num_epochs): # Do the training loop
+				minibatch_cost = 0.
+				num_minibatches = int(m / minibatch_size)
+				seed = seed + 1
+				minibatches = random_mini_batches(X_train, Y_train, minibatch_size, seed)
+				
+				for minibatch in minibatches:
+					(minibatch_X, minibatch_Y) = minibatch # Select a minibatch
+					# Run the session to execute the optimizer and the cost.
+					_ , temp_cost = sess.run(fetches=[optimizer, cost], 
+					                         feed_dict={X:minibatch_X,
+					                                    Y: minibatch_Y})					
+					minibatch_cost += temp_cost / num_minibatches
+					
+				# Print the cost every epoch
+				if print_cost == True and epoch % 5 == 0:
+					print ("Cost after epoch %i: %f" % (epoch, minibatch_cost))
+				if print_cost == True and epoch % 1 == 0:
+					costs.append(minibatch_cost) \end{lstlisting}\newpage
+%%%% PAGE 83 %%%%
+
+	\begin{lstlisting}
+				
+			# plot the cost
+			plt.plot(np.squeeze(costs))
+			plt.ylabel('cost')
+			plt.xlabel('iterations (per tens)')
+			plt.title("Learning rate =" + str(learning_rate))
+			plt.show()
+			
+			# Calculate the correct predictions
+			predict_op = tf.argmax(Z3, 1)
+			correct_prediction = tf.equal(predict_op, tf.argmax(Y, 1))
+			
+			# Calculate accuracy on the test set
+			accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+			print(accuracy)
+			train_accuracy = accuracy.eval({X: X_train, Y: Y_train})
+			test_accuracy = accuracy.eval({X: X_test, Y: Y_test})
+			print("Train Accuracy:", train_accuracy)
+			print("Test Accuracy:", test_accuracy)
+			
+			return train_accuracy, test_accuracy, parameters \end{lstlisting}
+	\begin{center} \includegraphics[scale=.9]{conv_net_2} \hspace*{10mm}	\includegraphics[scale=.9]{conv_net}	\end{center}
+	We were able to get around 80\% test accuracy on our dataset. We can improve its accuracy by spending more time tuning the hyperparameters, or using regularization (as this model clearly has a high variance). \newpage
+%%%% PAGE 84 %%%%
+
+	\subsection{Deep Convolutional Models: Case Studies}
+	\subsubsection{Classic Networks}
+	Let's begin with the \textbf{LeNet-5} architecture. The goal of the LeNet-5 was to be able to recognize handwritten digits (as greyscale images). The network had around 60,000 parameters (relatively small). As we go deeper into the network, the height and width continues to decrease but the number of channels increases. The general layout for this network is:
+	\begin{center}
+	CONV $\rightarrow$ POOL $\rightarrow$ CONV $\rightarrow$ POOL $\rightarrow$ FC $\rightarrow$ FC $\rightarrow$ OUTPUT \\~\\
+	\includegraphics[scale=.5]{lenet_5}
+	\end{center}
+	Next lets look at the \textbf{AlexNet} architecture. This network is very similar to LeNet, but just much bigger (around 60 million parameters). This model uses the ReLU activation function. 
+	\begin{center}	\includegraphics[scale=.6]{alex_net} 	\end{center}
+	The final network architecture we will look at is the \textbf{VGG-16}. This network focus on having CONV layers with 3x3 filters, a stride of 1, and using same pooling. It also uses MAXPOOL layers with a 2x2 filter and a stride of 2. This network has around 138 million parameters with 16 layers that have weights. However, the layout of the network is rather simple in the way that is is uniform (usually a few CONV layers followed by a POOL layer, then repeat this layout). 
+	\begin{center}	\includegraphics[scale=.4]{vgg_16} 	\end{center} \newpage
+%%%% PAGE 85 %%%%
+
+	\subsubsection{ResNets}
+	Very, very deep neural networks are difficult to train because of vanishing and exploding gradient types of problems.  \textbf{Skip connections} allows you to take the activation from one layer and suddenly feed it to another layer even much deeper in the neural network. And using that, you'll build a \textbf{ResNet} which enables you to train very, very deep networks. \vspace*{2mm}\\
+	ResNets are built out of \textbf{residual blocks}. We can think of these as taking the input from one layer, skipping over the next layer, and then using it as part of the input for the following layer (2 away from the original).
+	\begin{center}	\includegraphics[scale=.6]{res_net} 	\end{center}	
+	Doing this on multiple layers in a network will give us a \textbf{Residual Network}. This is helpful when training deep networks because for a regular network, when the layers get too deep the training error starts to increase instead of decrease. A ResNet allows the training error to decrease even when the layers get very deep.
+	\begin{center}	\includegraphics[scale=.6]{res_2} 	\end{center}
+	Note that if $a^{[l+2]}$ does not have the same dimensions as $a^{[l]}$, then you must multiplying $a^{[l]}$ by a weight matrix ($W_s$) that has dimensions ($a^{[l+2]}$ shape, $a^{[l]}$ shape) and is in $\mathbb{R}$. For example, this happening on our pooling layers, so our formula for $a^{[l+2]}$ changes to: $$ a^{[l+2]} = g(z^{[l+2]} + W_s*a^{[l]}) $$ \newpage
+%%%% PAGE 86 %%%%
+
+	\subsubsection{1x1 Convolutions}
+	\begin{center}	\includegraphics[scale=.57]{1x1_ex}	\end{center}
+	When using a 1x1 convolution, this is the same as multiplying a each value in a single layer by a constant. However, if you apply this 1x1 filter to a layer with multiple channels, you can think of this as taking the sum of multiplying all values in that channel by the filter value. So for the above example, multiplying a 6x6x32 layer by a 1x1x32 filter, it will sum the values from the 32 channels multiplied by the filter value to result in a single numeric value in the output layer. 
+	\begin{center} \includegraphics[scale=.57]{1x1}	\end{center}
+	We can use 1x1 convolution to \textbf{shrink channel size} since the output layer with have its $n_c$ = number of filters. For the example above, if we want to reduce the 28x28x192 layer down, we can multiplying it by 32 filters of size 1x1x192, and this will result in an 28x28x32 output layer.
+	
+	\subsubsection{Inception Network}
+	The idea behind an \textbf{Inception Network} is that you don't have to pick what filter size or if you want a pooling layer, instead you do all of them and concatenate them on top of each other. Then the model learns which parameters and filters it wants to use.
+	\begin{center} \includegraphics[scale=.57]{inception}	\end{center}
+	For the example above, we can have 64 1x1 filters, 128 3x3 filters, 32 5x5 filters, and a max pooling filter. We will use a same convolution for the filters to keep the output dimensions equal to 28x28. Note that for pooling, we have to use same padding and a stride of 1. So above we will have an inception module input a 28x28x192 layer and output a 28x28x256 layer. \vspace*{2mm}\\
+	Let's take a look at the computation cost for just the 5x5 filter layer. We want 32 5x5x192 filters. So the total number of multiplies = (28x28x32) * (5x5x192) = 120M. This is quite expensive, but we can reduce this cost to around $\frac{1}{10}^{th}$ the cost by using a 1x1 convolution to reduce the channel size first. \newpage
+%%%% PAGE 87 %%%%
+
+	\begin{center}	\includegraphics[scale=.57]{bottleneck}	\end{center}
+	We can create a \textbf{bottleneck layer} when we use a 1x1 convolution to reduce dimensions before using a CONV layer. For the example above, we can use 16 1x1x192 filters to reduce the size down to 28x28x16. We can then use 32 5x5x16 filters on this new layer to get our desired 28x28x32 output. \vspace*{1mm}\\
+	So the computation cost from the input layer to the bottleneck layer is: (28x28x16) * (1x1x192) = 2.4M. The computational cost from the bottleneck to the output layer is (28x28X32) * (5x5x16) = 10M.\\ So the total number of multiplies is 12.4M, which is greatly reduced from the original 120M. \\
+	\begin{center}	\includegraphics[scale=.4]{incept_mod}	\end{center}
+	Above is an example of an \textbf{Inception block}. Stacking multiple blocks next to one another is the general layout for creating an Inception Network. \\
+	
+	\subsubsection{Programming Assignment 1 (Keras)}
+	In this assignment we will be using Keras in order to classify images that people took of themselves both smiling and not. An example from the dataset is:
+	\begin{center}	\includegraphics[scale=.7]{keras_tut}	\end{center} \newpage
+%%%% PAGE 88 %%%%
+
+	\noindent Let's start by \textbf{importing the packages and dataset}. There are 600 training examples and 150 test examples, both with shapes 64x64x3. 
+	\begin{lstlisting}
+	import numpy as np
+	from keras import layers
+	from keras.layers import Input, Dense, Activation, ZeroPadding2D, BatchNormalization, 
+	                         Flatten, Conv2D
+	from keras.layers import AveragePooling2D, MaxPooling2D, Dropout, GlobalMaxPooling2D, 
+	                         GlobalAveragePooling2D
+	from keras.models import Model
+	from keras.preprocessing import image
+	from keras.utils import layer_utils
+	from keras.utils.data_utils import get_file
+	from keras.applications.imagenet_utils import preprocess_input
+	import pydot
+	from IPython.display import SVG
+	from keras.utils.vis_utils import model_to_dot
+	from keras.utils import plot_model
+	from kt_utils import *
+	
+	import keras.backend as K
+	K.set_image_data_format('channels_last')
+	import matplotlib.pyplot as plt
+	from matplotlib.pyplot import imshow
+	
+	X_train_orig, Y_train_orig, X_test_orig, Y_test_orig, classes = load_dataset()
+	
+	# Normalize image vectors
+	X_train = X_train_orig/255.
+	X_test = X_test_orig/255.
+	
+	# Reshape
+	Y_train = Y_train_orig.T
+	Y_test = Y_test_orig.T \end{lstlisting} \vspace*{1mm}
+	Lets now \textbf{build a model} using Keras. Before that, let's go over some general syntax: \vspace*{.5mm}\\
+	1. Variable naming: \\
+	\hspace*{3mm} - Keras re-uses and overwrites the same variable at each step. \\
+	\hspace*{3mm} - For example, instead of using X, Z1, A1,... we just use X for all of them. \vspace*{.5mm}\\
+	2. Objects as functions \\
+	\hspace*{3mm} - There are two pairs of parentheses in each statement. \\
+	\hspace*{3mm} - The first call is the construct and the second is the input. \\~\\
+	For this example, we want our general architecture to follow this format: \vspace*{.5mm}\\
+	1. Define the input placeholder as a tensor with the shape of the input. (X\_input).\\
+	2. Pad the border of our input with zero padding (create variable X). \\
+	3. Create a CONV layer, normalize the batch, then apply ReLU. (All applied on X) \\
+	4. Create a MAXPOOL layer applied on X. \\
+	5. Flatten X (convert to a vector) and input to an FC layer.\\
+	6. Create the model using the inputs (X\_input) and outputs (X).\newpage
+%%%% PAGE 89 %%%%
+
+	\begin{lstlisting}
+	def HappyModel(input_shape):
+		"""		
+		Arguments:
+		input_shape -- shape of the images of the dataset (height, width, channels)
+		
+		Returns:
+		model -- a Model() instance in Keras
+		"""
+		
+		# Define the input placeholder as a tensor with shape input_shape
+		X_input = Input(input_shape)
+		
+		# Zero-Padding: pads the border of X_input with zeroes
+		X = ZeroPadding2D((3, 3))(X_input)
+		
+		# CONV -> BN -> RELU Block applied to X
+		X = Conv2D(32, (7, 7), strides = (1, 1), name = 'conv0')(X)
+		X = BatchNormalization(axis = 3, name = 'bn0')(X)
+		X = Activation('relu')(X)
+		
+		# MAXPOOL
+		X = MaxPooling2D((2, 2), name='max_pool')(X)
+		
+		# FLATTEN X (means convert it to a vector) + FULLYCONNECTED
+		X = Flatten()(X)
+		X = Dense(1, activation='sigmoid', name='fc')(X)
+		
+		# Create model instance
+		model = Model(inputs = X_input, outputs = X, name='HappyModel')
+		
+		return model	\end{lstlisting} \vspace*{1mm}
+	We have now built a function to describe your model. To train and test this model, there are four steps:\\
+	1. Create the model by calling the function above.\\	
+	2. Compile the model by calling \textit{model.compile(optimizer = "...", loss = "...", metrics = ["accuracy"])}\\	
+	3. Train the model on train data by calling \textit{model.fit(x = ..., y = ..., epochs = ..., batch\_size = ...)}\\ 
+	4. Test the model on test data by calling \textit{model.evaluate(x = ..., y = ...)} 
+	\begin{lstlisting}
+	# Create the model. Use .shape[1:] to exlcude the batch number.
+	happyModel = HappyModel(X_train.shape[1:])
+	
+	# Compile the model (this is a binary problem)
+	happyModel.compile(optimizer='adam', loss='binary_crossentropy', 
+	                   metrics=['accuracy'])
+	                   
+	# Train the model.
+	happyModel.fit(x=X_train, y=Y_train, epochs=8, batch_size=60)
+	# After epoch 8, our loss = 0.0551 and acc = 0.985
+	
+	# Evaluate the model
+	preds = happyModel.evaluate(x=X_test, y=Y_test)
+	print ("Loss = " + str(preds[0])) # 0.378665
+	print ("Test Accuracy = " + str(preds[1])) # 0.92666  \end{lstlisting} \vspace*{1mm}
+	Two other basic functions that are useful are: \\
+	- \textit{model.summary()} : prints the details of layers with given shapes. \\
+	- \textit{plot\_model()} : plots a graph of the layout for your model.
+	\begin{lstlisting}
+	happyModel.summary()
+	plot_model(happyModel, to_file='HappyModel.png')
+	SVG(model_to_dot(happyModel).create(prog='dot', format='svg')) \end{lstlisting} \newpage
+%%%% PAGE 90 %%%%
+
+	\begin{center}
+	\includegraphics[scale=.7]{keras_sum} \hspace*{10mm} \includegraphics[scale=.5]{keras_graph}
+	\end{center} \vspace*{2mm}
+	\subsubsection{Programming Assignment 2 (ResNets)}
+	In this assignment, we will create a deep network using a Residual Network that uses skip connections. Two main types of blocks are used in a ResNet, depending mainly on whether the input/output dimensions are same or different. You are going to implement both of them: the \textit{identity block} and the \textit{convolutional block}. \vspace*{2mm}\\
+	The \textbf{identity block} is the standard block used in ResNets, and corresponds to the case where the input activation (say $a^{[l]}$) has the \textbf{same dimension} as the output activation (say $a^{[l+2]}$). In this assignment, we will implmement an identity block that skips over 3 hidden layers:
+	\begin{center}	\includegraphics[scale=.8]{skip_3}	\end{center}
+	First component of main path: \\
+	- The first CONV2D has $F_1$ filters of shape (1,1) and a stride of (1,1). Its padding is "valid".\\
+	- The first BatchNorm is normalizing the `channels' axis. \\
+	- Then apply the ReLU activation function. This has no name and no hyperparameters. \vspace*{1mm}\\
+	Second component of main path:\\
+	- The second CONV2D has $F_2$ filters of shape $(f,f)$ and a stride of (1,1). Its padding is "same".\\
+	- The second BatchNorm is normalizing the `channels' axis. \\
+	- Then apply the ReLU activation function. This has no name and no hyperparameters. \vspace*{1mm}\\
+	Third component of main path:\\
+	- The third CONV2D has $F_3$ filters of shape (1,1) and a stride of (1,1). Its padding is "valid".\\
+	- The third BatchNorm is normalizing the `channels' axis. \\
+	- Note that there is no ReLU activation function in this component. \newpage
+%%%% PAGE 91 %%%%
+
+	\noindent Final step: \\
+	- The \textit{X\_shortcut} and the output from the 3rd layer \textit{X} are added together.\\
+	- Then apply the ReLU activation function. This has no name and no hyperparameters.
+	\begin{lstlisting}
+	def identity_block(X, f, filters, stage, block):
+		"""		
+		Arguments:
+		X -- input tensor of shape (m, n_H_prev, n_W_prev, n_C_prev)
+		f -- integer, specifying the shape of the middle CONV's window 
+		filters -- list of integers, defining the number of filters in the CONV layers
+		stage -- integer to name the layers, depending on their position in the network
+		block -- string/character, used to name the layers, depending on their position
+		
+		Returns:
+		X -- output of the identity block, tensor of shape (n_H, n_W, n_C)
+		"""
+		# defining name basis
+		conv_name_base = 'res' + str(stage) + block + '_branch'
+		bn_name_base = 'bn' + str(stage) + block + '_branch'
+		
+		F1, F2, F3 = filters # Retrieve Filters
+		
+		X_shortcut = X # Save the input value
+		
+		# First component of main path
+		X = Conv2D(filters=F1, kernel_size=(1, 1), strides=(1,1), padding='valid', 
+		           name=conv_name_base+'2a', kernel_initializer=glorot_uniform(seed=0))(X)
+		X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
+		X = Activation('relu')(X)
+		
+		# Second component of main path
+		X = Conv2D(filters= F2, kernel_size=(f,f), strides=(1,1), padding='same', 
+		           name=conv_name_base+'2b', kernel_initializer=glorot_uniform(seed=0))(X)
+		X = BatchNormalization(axis=3, name=bn_name_base+'2b')(X)
+		X = Activation('relu')(X)
+		
+		# Third component of main path
+		X = Conv2D(filters= F3, kernel_size=(1,1), strides=(1,1), padding='valid', 
+		           name=conv_name_base+'2c', kernel_initializer=glorot_uniform(seed=0))(X)
+		X = BatchNormalization(axis=3, name=bn_name_base+'2c')(X)
+		
+		# Final step
+		X = Add()([X_shortcut, X])
+		X = Activation('relu')(X)
+		
+		return X \end{lstlisting} \vspace*{1mm}
+	The ResNet \textbf{convolutional block} is the second block type. You can use this type of block when the input and output \textbf{dimensions are different}. The difference with the identity block is that there is a CONV2D layer in the shortcut path: 
+	\begin{center}	\includegraphics[scale=.9]{conv_block}	\end{center} \newpage
+%%%% PAGE 92 %%%%
+
+	\noindent The CONV2D layer in the shortcut path is used to resize the input $x$ to a different dimension, so that the dimensions match up in the final addition needed to add the shortcut value back to the main path (similar to the matrix $W_s$ in 4.2.2). The CONV2D layer on the shortcut path does not use any non-linear activation function, it's main use is only to reduce input dimensions. \vspace*{2mm}\\
+	The components for the main path are very similar to the identity block, with just a few changes: \vspace*{1mm}\\
+	First component of main path: \\
+	- Has the same filter size, but a stride of (s,s) instead of (1,1). \vspace*{1mm}\\
+	Shortcut path: \\
+	- The CONV2D has $F_3$ filters of shape (1,1) and a stride of (s,s). Its padding is ``valid".\\
+	- The BatchNorm is normalizing the `channels' axis. \vspace*{1mm}\\
+	NOTE: The default padding parameter for Conv2D() is `valid'.
+	\begin{lstlisting}
+	def convolutional_block(X, f, filters, stage, block, s = 2):
+		"""
+		X -- input tensor of shape (m, n_H_prev, n_W_prev, n_C_prev)
+		f -- integer, specifying the shape of the middle CONV's
+		filters -- list of integers, defining the number of filters in the CONV layers
+		stage -- integer to name the layers, depending on their position in the network
+		block -- char used to name the layers, depending on their position in the network
+		s -- Integer, specifying the stride to be used
+		
+		Returns:
+		X -- output of the convolutional block, tensor of shape (n_H, n_W, n_C)
+		"""
+		conv_name_base = 'res' + str(stage) + block + '_branch'
+		bn_name_base = 'bn' + str(stage) + block + '_branch'
+		
+		F1, F2, F3 = filters # Retrieve Filters
+		
+		X_shortcut = X # Save the input value
+		
+		# First component of main path 
+		X = Conv2D(F1, (1, 1), strides=(s,s), name = conv_name_base+'2a', 
+		           kernel_initializer=glorot_uniform(seed=0))(X)
+		X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
+		X = Activation('relu')(X)
+		
+		# Second component of main path 
+		X = Conv2D(F2, (f, f), strides=(1,1), name=conv_name_base+'2b', padding='same', 
+		           kernel_initializer=glorot_uniform(seed=0))(X)
+		X = BatchNormalization(axis = 3, name = bn_name_base + '2b')(X)
+		X = Activation('relu')(X)
+		
+		# Third component of main path 
+		X = Conv2D(F3, (1, 1), strides =(1,1), name=conv_name_base+'2c', 
+		           kernel_initializer=glorot_uniform(seed=0))(X)
+		X = BatchNormalization(axis = 3, name = bn_name_base + '2c')(X)
+		
+		# Shortcut path
+		X_shortcut = Conv2D(F3, (1,1), strides=(s,s), name=conv_name_base+'1', 
+		                    kernel_initializer=glorot_uniform(seed=0))(X_shortcut)
+		X_shortcut = BatchNormalization(axis = 3, name = bn_name_base + '1')(X_shortcut)
+		
+		# Final step
+		X = Add()([X_shortcut, X])
+		X = Activation('relu')(X)
+		
+		return X	\end{lstlisting} \newpage
+%%%% PAGE 93 %%%%
+
+	\noindent You now have the necessary blocks to \textbf{build a very deep ResNet}. The following figure describes in detail the architecture of this neural network. 
+	\begin{center} \includegraphics[scale=.65]{deep_res}	\end{center}
+	The details of this ResNet-50 model are: \vspace*{.5mm}\\
+	- Zero-padding pads the input with a pad of (3,3)\vspace*{.5mm}\\
+	- Stage 1:\\
+	\hspace*{4mm} - The 2D Convolution has 64 filters of shape (7,7) and uses a stride of (2,2). \\
+	\hspace*{4mm} - BatchNorm is applied to the 'channels' axis of the input.\\
+	\hspace*{4mm} - MaxPooling uses a (3,3) window and a (2,2) stride.\vspace*{.5mm}\\
+	- Stage 2:\\
+	\hspace*{4mm} - The convolutional block uses three sets of filters of size [64,64,256], f=3, s=1, block=a.\\
+	\hspace*{4mm} - The 2 identity blocks use three sets of filters of size [64,64,256], f=3, block= b \& c.\vspace*{.5mm}\\
+	- Stage 3:\\
+	\hspace*{4mm} - The convolutional block uses three sets of filters of size [128,128,512], f=3, s=2, block=a.\\
+	\hspace*{4mm} - The 3 identity blocks use three sets of filters of size [128,128,512], f=3, block= b, c, \& d.\vspace*{.5mm}\\
+	- Stage 4:\\
+	\hspace*{4mm} - The convolutional block uses three sets of filters of size [256, 256, 1024], f=3, s=2, block=a.\\
+	\hspace*{4mm} - The 5 identity blocks use three sets of filters of size [256, 256, 1024], f=3, block= b, c, d, e, \& f.\vspace*{.5mm}\\
+	- Stage 5:\\
+	\hspace*{4mm} - The convolutional block uses three sets of filters of size [512, 512, 2048], f=3, s=2, block=a.\\
+	\hspace*{4mm} - The 2 identity blocks use three sets of filters of size [512, 512, 2048], f=3, block= b \& c.\vspace*{.5mm}\\
+	- The 2D Average Pooling uses a window of shape (2,2).\\
+	- The \textit{flatten} layer doesn't have any hyperparameters or name.\\
+	- The Fully Connected (Dense) layer reduces its input to the number of classes using a softmax activation.
+	\begin{lstlisting}
+	def ResNet50(input_shape = (64, 64, 3), classes = 6):
+		"""
+		Arguments:
+		input_shape -- shape of the images of the dataset
+		classes -- integer, number of classes
+		"""
+		X_input = Input(input_shape) # Define the input as a tensor with shape input_shape
+		
+		X = ZeroPadding2D((3, 3))(X_input) # Zero-Padding
+		
+		# Stage 1
+		X = Conv2D(64, (7, 7), strides = (2, 2), name = 'conv1', 
+		           kernel_initializer = glorot_uniform(seed=0))(X)
+		X = BatchNormalization(axis = 3, name = 'bn_conv1')(X)
+		X = Activation('relu')(X)
+		X = MaxPooling2D((3, 3), strides=(2, 2))(X)
+		
+		# Stage 2
+		X = convolutional_block(X, f=3, filters=[64, 64, 256], stage=2, block='a', s=1)
+		X = identity_block(X, 3, [64, 64, 256], stage=2, block='b')
+		X = identity_block(X, 3, [64, 64, 256], stage=2, block='c') \end{lstlisting} \newpage
+%%%% PAGE 94 %%%%
+		
+	\begin{lstlisting}
+		# Stage 3 
+		X = convolutional_block(X, f=3, filters=[128, 128, 512], stage=3, block='a', s=2)
+		X = identity_block(X, 3, [128, 128, 512], stage=3, block='b')
+		X = identity_block(X, 3, [128, 128, 512], stage=3, block='c')
+		X = identity_block(X, 3, [128, 128, 512], stage=3, block='d')
+		
+		# Stage 4 
+		X = convolutional_block(X, f=3, filters=[256, 256, 1024], stage=4, block='a', s=2)
+		X = identity_block(X, 3, [256, 256, 1024], stage=4, block='b')
+		X = identity_block(X, 3, [256, 256, 1024], stage=4, block='c')
+		X = identity_block(X, 3, [256, 256, 1024], stage=4, block='d')
+		X = identity_block(X, 3, [256, 256, 1024], stage=4, block='e')
+		X = identity_block(X, 3, [256, 256, 1024], stage=4, block='f')
+		
+		# Stage 5 
+		X = convolutional_block(X, f=3, filters=[512, 512, 2048], stage=5, block='a', s=2)
+		X = identity_block(X, 3, [512, 512, 2048], stage=5, block='b')
+		X = identity_block(X, 3, [512, 512, 2048], stage=5, block='c')
+		
+		# AVGPOOL
+		X = AveragePooling2D(pool_size=(2,2), name='avg_pool')(X)
+		
+		# output layer
+		X = Flatten()(X)
+		X = Dense(classes, activation='softmax', name='fc' + str(classes), kernel_initializer = glorot_uniform(seed=0))(X)
+		
+		# Create model
+		model = Model(inputs = X_input, outputs = X, name='ResNet50')
+		
+		return model \end{lstlisting} \vspace*{1mm}
+	Now we can \textbf{build the model's graph}. We also have to configure the learning process by compiling the model before we begin training.
+	\begin{lstlisting}
+	model = ResNet50(input_shape = (64, 64, 3), classes = 6)
+	
+	model.compile(optimizer='adam', loss='categorical_crossentropy', 
+	              metrics=['accuracy'])	\end{lstlisting} \vspace*{1mm}
+	We can also now \textbf{load our dataset}. Note that there are 1080 training examples and 120 test examples. We also want to normalize and convert labels using one hot matrices.
+	\begin{lstlisting}
+	X_train_orig, Y_train_orig, X_test_orig, Y_test_orig, classes = load_dataset()
+	
+	# Normalize image vectors
+	X_train = X_train_orig/255.
+	X_test = X_test_orig/255.
+	
+	# Convert training and test labels to one hot matrices
+	Y_train = convert_to_one_hot(Y_train_orig, 6).T
+	Y_test = convert_to_one_hot(Y_test_orig, 6).T	\end{lstlisting} \vspace*{1mm}
+	Now we will begin to \textbf{train our model}. We will only use 2 epochs since we are training on a CPU and each epoch will take around 5 minutes. 
+	\begin{lstlisting}
+	model.fit(X_train, Y_train, epochs = 2, batch_size = 32) # loss = 1.287, acc = 0.69 \end{lstlisting} \vspace*{1mm}
+	Note that if we were to continue training this model, we could achieve around a 0.53 loss and test accuracy of around 87\%. ResNet50 is a powerful model for image classification when it is trained for an adequate number of epochs. Note that we can use the \textit{summary} function to see the shapes for each of our layers, or the \textit{plot\_model} function to see a graph of our model (it's a very large picture). \newpage
+%%%% PAGE 95 %%%%
+
+	\subsection{Object Detection Algorithms}
+	\subsubsection{Object Localization}
+	For \textbf{object localization}, we want to identify an image as well as put a \textit{boundary box} around the object. These problems usually have 1 large object that we want to identify.
+	\begin{center}	\includegraphics[scale=.6]{obj_loc}	\end{center}
+	Lets say we want to localize a car in an image. We run it through a network similar to the one above, but we will have \textbf{2 outputs}. Our \textit{softmax} output will tell us the class for the object, and our \textbf{bounding box} output will give us the dimensions of a box that will tell us when the object is located in an image ($b_x$, $b_y$, $b_h$, $b_w$). \vspace*{1mm}\\
+	Note that we will say the upper left corner of our image is (0,0) and bottom right corner is (1,1). Then ($b_x$, $b_y$) corresponds to the middle of the box, and $b_h$, $b_w$ correspond to the height and width of the box, respectively. \vspace*{2mm}\\
+	Let's look at the \textbf{target label y}, assuming we only have one object to identify: \\
+	(1) pedestrian,	(2) car, (3) motorcycle, (4) background \vspace*{1mm}\\
+	Note that $P_c$ denoted by 0 or 1, corresponds to if there is an object in an image. Only class 1,2,3 are objects, class 4 is an image with no object. $$ y = \begin{bmatrix}	P_c \\ b_x \\ b_y \\ b_h \\ b_w \\ C_1 \\ C_2 \\ C_3 \end{bmatrix} $$
+	Lets also take a look at the \textbf{loss function}: \\
+	If $y_1 = 1$ (there is an object): 
+	$$ (\hat{y}_1 - y_1)^2 + (\hat{y}_2 - y_2)^2 + ... + (\hat{y}_n - y_n)^2 \;\; \text{(note that \textit{n} is the number of elements in y)}$$
+	If $y_1 = 0$ (there is no object):
+	$$ (\hat{y}_1 - y_1)^2 $$ \\
+	You can have a neural network just output X and Y coordinates of important points of an image, sometimes called \textbf{landmarks}, that you want the neural networks to recognize. Note that in order to do this, our training set y labels will have to have the landmarks coordinates in them. We can then use these to output landmarks coordinates $l_x$ and $l_y$ (note that they are outputted separately as not as a tuple). \newpage
+%%%% PAGE 96 %%%%
+
+	\subsubsection{Sliding Windows (Object Detection)}
+	Lets say you want to detect cars in an image. We want our training set X to be closely cropped images of cars (labeled as 1) and closely cropped images of background (labeled as 0). \vspace*{2mm}\\
+	We can use the \textbf{sliding windows} algorithm for object detection. To do this, we take a small square of the image we want to identify, feed this into a ConvNet, and have it make a prediction (0 or 1). We then slide this small square over, feed it in, and have the ConvNet make another prediction. We repeat this process for the entire image. \vspace*{1mm} \\
+	Note that we repeat the process above multiple times, each time with a bigger square to detect objects.
+	\begin{center}	\includegraphics[scale=.7]{slid_wind}	\end{center}
+	We can turn our fully connected layer in our Network into convolutional layers in order to reduce the computational cost. When moving from the final CONV layer to the FC layer, we instead use 400 5x5x16 filters in order to turn our FC layer into a 1x1x400 CONV layer. We then use 400 1x1x400 filters to go from the new CONV layer to the final FC layer. We also want to convert our softmax layer into a 1x1x4 CONV layer. This converts the above network into:
+	\begin{center}	\includegraphics[scale=.7]{slid_wind_2}	\end{center}
+	The \textbf{convolutional implementation} for sliding windows is that we want to calculate each of the squares in one pass through the ConvNet. Say we trained on the network above which has an input of 14x14x3. When we go to test the network, say on a 28x28x3 image, and run the same forward propagation we used when training, then the resulting output will be an 8x8x4 matrix.
+	\begin{center}	\includegraphics[scale=.7]{slid_wind_3}	\end{center}
+	The output is calculated by taking a 14x14x3 square on the input and sliding it over by a stride over 2. So each box in the output above corresponds to a 14x14x3 square in the input. So this means that each of the boxes in the output will have a 0 or 1 label to identify any objects. \newpage
+%%%% PAGE 97 %%%%
+
+	\subsubsection{YOLO Algorithm}
+	One way we can make our bounding box predictions more accurate through the use of the \textbf{YOLO} algorithm. We do this by drawing a grid on the image and applying the object localization algorithm on it in order to detect any objects in each grid region. The coordinates for the bounding box is outputted relative to the grid region, not the entire image. Notes the the height and width could be greater than 1 if it overlaps onto another grid region. \vspace*{2mm}\\
+	In order to use this algorithm, we have to have a training label for each grid cell:
+	$$ y = \begin{bmatrix}	P_c \\ b_x \\ b_y \\ b_h \\ b_w \\ C_1 \\ C_2 \\ C_3 \end{bmatrix} $$
+	Note that this means our output will have the shape: (\textit{Grid Height})x(\textit{Grid Width})x8. \\~\\
+	The \textbf{Intersection over Union (IoU)} function is used to evaluate how well your estimated bounding box is performing compared to the true boundary box. It takes the size of the overlap between the estimated and true box, and divides it by the total area of the estimated and true box. We say it is ``correctly" localized if the IoU value is greater than 0.5. \\~\\
+	Your algorithm may find multiple detection's of the same objects. \textbf{Non-max suppression} is a way for you to make sure that your algorithm detects each object only once. The way this works is if you have multiple boxes for one object, it takes the box with the highest probability and selects that one. It then suppresses the remaining boxes that have a high overlap (IoU $\geq$ 0.5) with that given box. \\~\\
+	If a grid cell wants to detect multiple objects, or the object spans over multiple grid boxes, we can use \textbf{anchor boxes}. This changes our label \textit{y} by stacking anchor boxes in our output. So previously we had 8 values in our labels (see above matrix), now we will stack anchor boxes (these 8 values) on top of one another in our layer. So say previously y was 3x3x8, then if it had two anchor boxes it would by 3x3x16. \\~\\
+	\textbf{Training}:\\
+	- We input our image with a grid on it with its corresponding y label. \\
+	- The y label will be: (\textit{Grid Height})x(\textit{Grid Width})x(\textit{\# of anchors})x(\textit{5 + \# of classes}) \\
+	- We then input our image into a ConvNet, and the output shape should be the same as our y label. \vspace*{1mm}\\
+	\textbf{Making Predictions}:\\
+	- In our output layer, if $P_c$ = 0, then there is on object. If $P_c$ = 1, then we have an object. \\
+	- If we have an object, we want our output to give us an estimate from a box along with which class. \vspace*{1mm}\\
+	\textbf{Outputting Non-Max Suppressed Outputs}: \\
+	- For each grid cell, get (\# of anchors) predicted bounding boxes. \\
+	- Get ride of low probability predictions. \\
+	- For each class, use non-max suppression to generate final predictions (1 box per object). \newpage
+%%%% PAGE 98 %%%%
+
+	\subsubsection{Programming Assignment (Car Detection with YOLO)}
+	In this assignment, we will use the YOLO algorithm to detect cars in images captured from a hood mounted car camera that is driving around Silicon Valley. Because the YOLO model is very computationally expensive to train, we will load pre-trained weights for you to use. Note that there are 80 classes in total.
+	\begin{center}	\includegraphics[scale=.75]{car_hood} \end{center}
+	Lets go over some details about our model: \vspace*{1mm}\\
+	\textbf{Inputs/Outputs}:\\
+	- The input is batch of images, each with shape (m, 608, 608, 3).\\
+	- The output is a list of bounding boxes along with the recognized class (6 numbers in total). \vspace*{1mm}\\
+	\textbf{Anchor Boxes}: \\
+	- 5 anchor boxes were chosen for us and stored in \textit{./model\_data/yolo\_anchors.txt} \\
+	- Dimension for the anchor boxes is the 2nd to last dimension in encoding (m, $n_H$, $n_W$, anchors, classes).\\
+	- The YOLO architecture is: Image input $\rightarrow$ Deep CNN $\rightarrow$ Encoding (m, 19, 19, 5, 85). \vspace*{1mm}\\
+	\textbf{Encoding}: \\
+	If the center/midpoint of an object falls into a grid cell, that grid cell is responsible for detecting that object. Since we are using 5 anchor boxes, each of the 19 x19 cells thus encodes information about 5 boxes. For simplicity, we will flatten the last two last dimensions of the shape (19, 19, 5, 85) encoding, so the output of the Deep CNN is (19, 19, 425). 
+	\begin{center}	\includegraphics[scale=.8]{flat_encode} \end{center} \newpage
+%%%% PAGE 99 %%%%
+
+	\noindent \textbf{Class Score}: \\
+	For each box of each cell, we will compute the element-wise product and extract a probability that the box contains a certain class	. We will then take the highest probability from these computed values as our \textit{probability score} and use the corresponding label as our class predictions.
+	\begin{center}	\includegraphics[scale=.7]{class_score} \end{center}
+	\textbf{Non-Max Suppression}:\\
+	- Get rid of boxes with low score (low probability of an object of low probability of a class).\\
+	- Select only one box when several overlap with each other over the same object. \\~\\
+	We want to get ride of any box for which the class score is less than a chosen threshold. This is called \textbf{filtering with a threshold}. The model gives you a total of 19x19x5x85 numbers, with each box described by 85 numbers. It is convenient to rearrange the (19,19,5,85) dimensional tensor into the following variables: \vspace*{1mm}\\
+	- \textit{box\_confidence}: (19x19,5,1) tensor containing $p_c$ for the 5 boxes predicted in each of the 19x19 cells.\\
+	- \textit{boxes}: (19x19,5,4) tensor containing midpoint/dimensions ($b_x, b_y, b_h, b_w$) for the 5 boxes in each cell.\\
+	- \textit{box\_class\_probs}: (19x19,5,80) tensor containing the class probabilities for the 80 classes.
+	\begin{lstlisting}
+	def yolo_filter_boxes(box_confidence, boxes, box_class_probs, threshold = .6):
+		"""
+		Arguments:
+		box_confidence -- tensor of shape (19, 19, 5, 1)
+		boxes -- tensor of shape (19, 19, 5, 4)
+		box_class_probs -- tensor of shape (19, 19, 5, 80)
+		threshold -- if highest class probability score < threshold
+		
+		Returns:
+		scores -- (None,) tensor containing the class probability score for selected boxes
+		boxes -- (None, 4) tensor containing (b_x, b_y, b_h, b_w) of selected boxes
+		classes -- (None,) tensor containing index of class detected by the selected boxes
+		"""
+		
+		# Step 1: Compute box scores
+		box_scores = box_confidence * box_class_probs
+		
+		# Step 2: Find index and score for highest box score
+		box_classes = K.argmax(box_scores, axis=-1)
+		box_class_scores = K.max(box_scores, axis=-1, keepdims=False)
+		
+		# Step 3: Create a filtering mask based on "box_class_scores" by using "threshold"
+		filtering_mask = (box_class_scores >= threshold)
+		
+		# Step 4: Apply the mask to box_class_scores, boxes and box_classes
+		scores = tf.boolean_mask(box_class_scores,filtering_mask, name='scores_mask')
+		boxes = tf.boolean_mask(boxes, filtering_mask, name='boxes_mask')
+		classes = tf.boolean_mask(box_classes, filtering_mask, name='classes_mask')
+		
+		return scores, boxes, classes \end{lstlisting} \vspace*{1mm}
+		Note: ``None" is in the return values because you don't know the exact number of selected boxes, as it depends on the threshold. \newpage
+%%%% PAGE 100 %%%%
+
+	\noindent Even after filtering by thresholding over the class scores, you still end up with a lot of overlapping boxes. A second filter for selecting the right boxes is called \textbf{non-maximum suppression (NMS)}. We will first implement \textbf{Intersection over Union (IoU)} to find the overlap between two boxes.
+	\begin{center}	\includegraphics[scale=.75]{iou}	\end{center}
+	- We let the top left corner of an image be (0,0) and the bottom right corner be (1,1). \\
+	- X increases as we move right, Y increases as we move down. \\
+	- Two boxes can have no intersection if \textit{inter\_width} or \textit{inter\_height} are negative, hence we will take \\
+	\hspace*{2mm} \textit{max(var, 0)} to chose 0 if our overlap is negative.
+	\begin{lstlisting}
+	def iou(box1, box2):
+		"""		
+		Arguments:
+		box1 -- first box, with coordinates (box1_x1, box1_y1, box1_x2, box_1_y2)
+		box2 -- second box, with coordinates (box2_x1, box2_y1, box2_x2, box2_y2)
+		"""
+		# Assign variable names to coordinates for clarity
+		(box1_x1, box1_y1, box1_x2, box1_y2) = box1
+		(box2_x1, box2_y1, box2_x2, box2_y2) = box2
+		
+		# Calculate the coordinates of the intersection and its area
+		xi1 = max(box1_x1, box2_x1) # value closest to the right
+		yi1 = max(box1_y1, box2_y1) # value closest to the bottom
+		xi2 = min(box1_x2, box2_x2) # value closest to the left
+		yi2 = min(box1_y2, box2_y2) # value closest to the top
+		inter_width = (xi2 - xi1) # compute length of x
+		inter_height = (yi2 - yi1) # compute length of y
+		inter_area = max(inter_width,0) * max(inter_height,0)
+		
+		# Calculate the Union area by : Union(A,B) = A + B - Inter(A,B)
+		box1_area = (box1_x2 - box1_x1) * (box1_y2 - box1_y1)
+		box2_area = (box2_x2 - box2_x1) * (box2_y2 - box2_y1)
+		union_area = box1_area + box2_area - inter_area
+		
+		# compute the IoU
+		iou = inter_area / union_area
+		
+		return iou \end{lstlisting} \vspace*{1mm}
+	We are now ready to \textbf{implement non-max suppression}. The key steps are: \\
+	1. Select the box that has the highest score. \\
+	2. Compute the overlap of this box with all other boxes, and remove boxes that overlap significantly\\ \hspace*{2.5mm}
+	(iou $\geq$ iou\_threshold).\\
+	3. Repeat until there are no more boxes with a lower score than the currently selected box. \vspace*{1mm}\\
+	This will remove all boxes that have a large overlap with the selected boxes. Only the ``best" remain. \vspace*{1.5mm}\\
+	There are two functions we will use for this (we don't need our iou function above): \\
+	- \textit{tf.image.non\_max\_suppression()} : Greedily selects subset of bounding boxes in descending order of score. \\
+	- \textit{tf.keras.backend.gather()} : Retrieves element of given indices in a given tensor. \newpage
+%%%% PAGE 101 %%%%
+
+	\begin{lstlisting}
+	def yolo_non_max_suppression(scores,boxes,classes, max_boxes=10, iou_threshold=0.5):
+		"""		
+		Arguments:
+		scores, classes, boxes -- output of yolo_filter_boxes()
+		max_boxes -- integer, maximum number of predicted boxes you'd like
+		
+		Returns:
+		scores -- tensor of shape (, None), predicted score for each box
+		boxes -- tensor of shape (4, None), predicted box coordinates
+		classes -- tensor of shape (, None), predicted class for each box
+		"""
+		max_boxes_tensor = K.variable(max_boxes, dtype='int32') 
+		K.get_session().run(tf.variables_initializer([max_boxes_tensor]))
+		
+		# Get the list of indices corresponding to boxes you keep
+		nms_indices = tf.image.non_max_suppression(boxes, scores, max_boxes, 
+		                                           iou_threshold=iou_threshold, name=None)
+		
+		# Select only nms_indices from scores, boxes and classes
+		scores = K.gather(scores, nms_indices)
+		boxes = K.gather(boxes, nms_indices)
+		classes = K.gather(classes, nms_indices)
+		
+		return scores, boxes, classes \end{lstlisting} \vspace*{1mm}
+	It's time to implement a function taking the output of the deep CNN (the 19x19x5x85 dimensional encoding) and filtering through all the boxes using the functions you've just implemented. 
+	\begin{lstlisting}
+	def yolo_eval(yolo_outputs, image_shape = (720., 1280.), max_boxes=10, 
+	              score_threshold=.6, iou_threshold=.5):
+		"""		
+		Arguments:
+		yolo_outputs -- output of encoding model, contains 4 tensors:
+		                box_confidence: tensor of shape (None, 19, 19, 5, 1)
+		                box_xy: tensor of shape (None, 19, 19, 5, 2)
+		                box_wh: tensor of shape (None, 19, 19, 5, 2)
+	                    box_class_probs: tensor of shape (None, 19, 19, 5, 80)
+		image_shape -- tensor of shape (2,) containing the input shape (608., 608.)
+		
+		Returns:
+		scores -- tensor of shape (None, ), predicted score for each box
+		boxes -- tensor of shape (None, 4), predicted box coordinates
+		classes -- tensor of shape (None,), predicted class for each box
+		"""
+		# Retrieve outputs of the YOLO model
+		box_confidence, box_xy, box_wh, box_class_probs = yolo_outputs
+		
+		# Convert boxes to be ready for filtering functions (corner coordinates)
+		boxes = yolo_boxes_to_corners(box_xy, box_wh)
+		
+		# Perform Score-filtering
+		scores, boxes, classes = yolo_filter_boxes(box_confidence, boxes, box_class_probs, 
+		                                           score_threshold)
+		
+		boxes = scale_boxes(boxes, image_shape) # Scale boxes back to original image shape.
+		
+		# Perform NMS
+		scores, boxes, classes = yolo_non_max_suppression(scores, boxes, classes, 
+		                                                  max_boxes, iou_threshold)
+		
+		return scores, boxes, classes \end{lstlisting} \newpage
+%%%% PAGE 102 %%%%
+
+	\noindent Summary of YOLO: \\
+	- Input image (608, 608, 3) \\
+	- The input image goes through a CNN, resulting in a (19,19,5,85) dimensional output. \\
+	- After flattening the last two dimensions, the output is a volume of shape (19, 19, 425): \\
+	\hspace*{2mm} - Each cell in a 19x19 grid over the input image gives 425 numbers.  \\
+	\hspace*{2mm} - 425 = 5 x 85 because each cell contains predictions for 5 boxes, corresponding to 5 anchor boxes.  \\
+	\hspace*{2mm} - 85 = 5 is because $(p_c, b_x, b_y, b_h, b_w)$, and 80 is the number of classes we'd like to detect \\
+	- You then select only few boxes based on: \\
+	\hspace*{2mm} - Score-thresholding: throw away boxes that have a class with a score less than the threshold \\
+	\hspace*{2mm} - Non-max suppression: Compute the IoU and avoid selecting overlapping boxes \\
+	- This gives you YOLO's final output.  \\~\\
+	Now, we are going to use a \textbf{pre-trained model} and \textbf{test} it on the car detection dataset. We'll need a session to execute the computation graph and evaluate the tensors.
+	\begin{lstlisting}
+	sess = K.get_session()	\end{lstlisting} \vspace*{1mm}
+	We need to define class names and anchors, which we will read in from text files. The car detection dataset has 720x1280 images, which have been pre-processed into 608x608 images.
+	\begin{lstlisting}
+	class_names = read_classes("model_data/coco_classes.txt")
+	anchors = read_anchors("model_data/yolo_anchors.txt")
+	image_shape = (720., 1280.) \end{lstlisting} \vspace*{1mm}
+	Training a YOLO model takes a very long time and requires a fairly large dataset of labeled bounding boxes for a large range of target classes. We are going to \textbf{load an existing pre-trained Keras YOLO model} stored in ``yolo.h5". There are around 51 million total parameters in the model.
+	\begin{lstlisting}
+	yolo_model = load_model("model_data/yolo.h5") \end{lstlisting} \vspace*{1mm}
+	The output of yolo\_model is a (m, 19, 19, 5, 85) tensor that needs to pass through non-trivial processing and conversion. The following cell does that for you. This set of 4 tensors is ready to be used as input by your yolo\_eval function.
+	\begin{lstlisting}
+	yolo_outputs = yolo_head(yolo_model.output, anchors, len(class_names))	\end{lstlisting} \vspace*{1mm}
+	yolo\_outputs gave you all the predicted boxes of yolo\_model in the correct format. We're now ready to \textbf{perform filtering} and select only the best boxes. Let's now call yolo\_eval: 
+	\begin{lstlisting}
+	scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)	\end{lstlisting} \vspace*{1mm}
+	Now we can run the graph to \textbf{test YOLO on an image}. 
+	\begin{lstlisting}
+	def predict(sess, image_file):
+		"""
+		Runs the graph stored in "sess" to predict boxes for "image_file".
+		
+		Arguments:
+		sess -- your tensorflow/Keras session containing the YOLO graph
+		image_file -- name of an image stored in the "images" folder.
+		
+		Returns:
+		out_scores -- tensor of shape (None, ), scores of the predicted boxes
+		out_boxes -- tensor of shape (None, 4), coordinates of the predicted boxes
+		out_classes -- tensor of shape (None, ), class index of the predicted boxes
+		"""
+		
+		# Preprocess your image
+		image, image_data = preprocess_image("images/" + image_file, 
+		                                     model_image_size = (608, 608)) \end{lstlisting} \newpage
+%%%% PAGE 103 %%%%		                                   
+		                                     
+		\begin{lstlisting}
+		# Run the session 
+		out_scores, out_boxes, out_classes = sess.run(fetches=[scores, boxes, classes],
+		                                              feed_dict={yolo_model.input: 
+		                                                         image_data,
+		                                                         K.learning_phase():0})
+	
+		# Print predictions info
+		print('Found {} boxes for {}'.format(len(out_boxes), image_file))
+		# Generate colors for drawing bounding boxes.
+		colors = generate_colors(class_names)
+		# Draw bounding boxes on the image file
+		draw_boxes(image, out_scores, out_boxes, out_classes, class_names, colors)
+		# Save the predicted bounding box on the image
+		image.save(os.path.join("out", image_file), quality=90)
+		# Display the results in the notebook
+		output_image = scipy.misc.imread(os.path.join("out", image_file))
+		imshow(output_image)
+		
+		return out_scores, out_boxes, out_classes 
+		
+	out_scores, out_boxes, out_classes = predict(sess, "test.jpg") \end{lstlisting} \vspace*{1mm}
+	\begin{center}	\includegraphics[scale=.8]{yolo_test}	\end{center} \newpage
+%%%% PAGE 104 %%%%
+
+	\subsection{Facial Recognition \& Neural Style Transfer}
+	\subsubsection{Facial Recognition}
+	\textbf{Face verification}: \\
+	- Input image, name/ID \\
+	- Output whether the input image is that of the claimed person. \\
+	- This a 1:1 problem (just need to verify a person is who they say they are). \vspace*{1mm}\\
+	\textbf{Face recognition}: \\
+	- Has a database of K persons.\\
+	- Get an input image. \\
+	- Output ID if the image is any of the K persons (or ``not recognized").\\
+	- This is a 1:K problem (needs extremely high accuracy). \\~\\	
+	We face the \textbf{one shot learning problem}, where we need to to recognize a person given just one single image. Typically, deep learning algorithms don't work well with only one training example. \vspace*{2mm}\\
+	We want our network to learn a \textbf{similarity function}, where it looks at two images and outputs the degree of difference between the two images:
+	\begin{center}
+	If $d(img1,img2) \leq \tau\; \rightarrow$ ``same" \\
+	If $d(img1,img2) > \tau\; \rightarrow$ ``different"
+	\end{center} \vspace*{1.5mm}
+	We can use a \textbf{Siamese Network} when we want to use our similarity function to determine how similar two images are.
+	\begin{center}
+	\includegraphics[scale=.5]{siamese}
+	\end{center}
+	Given any input $x^{(i)}$, our Network will output an encoding $f(x^{(i)})$. We want to learn parameters so that:\vspace*{1mm}\\
+	- If $x^{(i)}, x^{(j)}$ are the same person, $||f(x^{(i)}) - f(x^{(j)})||^2$ is small. \vspace*{1mm}\\
+	- If $x^{(i)}, x^{(j)}$ are different persons, $||f(x^{(i)}) - f(x^{(j)})||^2$ is large. \\~\\	
+	One way to learn the parameters of the neural network so that it gives you a good encoding for your pictures of faces is to define an applied gradient descent on the \textbf{triplet loss function}. We do this by looking at 3 images: Anchor (A) which is our image we want to identify, Positive (P) which is another image of the person we want to identify, and Negative (N) which is an image that isn't the person we want to identify. We want: 
+	\begin{center}
+	$ ||f(A) - f(P)||^2 \; \leq \; ||f(A) - f(N)||^2 $ \vspace*{1mm}\\
+	$ ||f(A) - f(P)||^2 \; - \; ||f(A) - f(N)||^2 \; \leq\; 0 $
+	\end{center}
+	We want to add a \textbf{margin}, $\alpha$, to the LHS of our equation above so that our model does not just output 0 for both d(A,P) and d(A,N) and encode every image the exact same. This pushes the error between d(A,P) and d(A,N) farther apart so they are not encoded in the same exact way. \newpage
+%%%% PAGE 105 %%%%
+
+	\noindent Lets define our \textbf{loss function}. Given any 3 images A,P,N:
+	\begin{center}
+	$L(A,P,N) \; = \; max(||f(A) - f(P)||^2 \; - \; ||f(A) - f(N)||^2 \; + \; \alpha, \; 0)$ \vspace*{1mm} \\
+	$J \; = \; \sum_{i=1}^{m} L(A^{(i)}, P^{(i)}, N^{(i)})$
+	\end{center}
+	Note that we need multiple images for each person in our training set so we can have sets of (A,P). \vspace*{2mm}\\
+	When \textbf{choosing the triplets}, we don't want to choose randomly because $d(A,P) + \alpha \leq d(A,N)$ will easily be satisfied since d(A,N) will be a very large value. Instead we want to choose triplets that are ``hard" to train on. In other words, we want d(A,P) to be very close to d(A,N) so that it creates a margin of difference. This will also increase the computational efficiency of our algorithm. \\
+	\begin{center}
+	\includegraphics[scale=.6]{bin_face} \\
+	$\hat{y} = \sigma (\sum_{k=1}^{128} w_k |f(x^{(i)})_k - f(x^{(j)})_k| + b)$
+	\end{center}
+	We can also treat facial recognition as a \textbf{binary classification} problem in order to learn the similarity functions. We can do this by feeding our encoding into a logistic regression unit in order to make a prediction if the images match (1 or 0). We are still using a Siamese Network, but instead of triplet loss we use a logistic regression unit. We also use a training set where our X is pairs of images and y are labels (1 or 0). \\
+	
+	\subsubsection{Neural Style Transfer}
+	\textbf{Neural Style Transfer} is taking a Content image (C) and a Style image (S) and using it to create a Generated image (G). This generated image will be the content image in the form of the style image. 
 	
 	
 	
