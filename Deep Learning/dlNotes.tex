@@ -4144,27 +4144,122 @@
 	Note that we need multiple images for each person in our training set so we can have sets of (A,P). \vspace*{2mm}\\
 	When \textbf{choosing the triplets}, we don't want to choose randomly because $d(A,P) + \alpha \leq d(A,N)$ will easily be satisfied since d(A,N) will be a very large value. Instead we want to choose triplets that are ``hard" to train on. In other words, we want d(A,P) to be very close to d(A,N) so that it creates a margin of difference. This will also increase the computational efficiency of our algorithm. \\
 	\begin{center}
-	\includegraphics[scale=.6]{bin_face} \\
+	\includegraphics[scale=.75]{bin_face} \\
 	$\hat{y} = \sigma (\sum_{k=1}^{128} w_k |f(x^{(i)})_k - f(x^{(j)})_k| + b)$
 	\end{center}
 	We can also treat facial recognition as a \textbf{binary classification} problem in order to learn the similarity functions. We can do this by feeding our encoding into a logistic regression unit in order to make a prediction if the images match (1 or 0). We are still using a Siamese Network, but instead of triplet loss we use a logistic regression unit. We also use a training set where our X is pairs of images and y are labels (1 or 0). \\
 	
 	\subsubsection{Neural Style Transfer}
-	\textbf{Neural Style Transfer} is taking a Content image (C) and a Style image (S) and using it to create a Generated image (G). This generated image will be the content image in the form of the style image. 
+	\textbf{Neural Style Transfer} is taking a Content image (C) and a Style image (S) and using it to create a Generated image (G). This generated image will be the content image in the form of the style image. \vspace*{2mm}\\
+	We can look deeper into what exactly ConvNets are learning. For example, the first layer may be looking for edges that maximize the activation function for that layer. As we move deeper in the layers, they are looking at more complicated image details to maximize the activation function. Even just a few layers in the patterns can be complete images the model can already detect. \\~\\
+	We want to define a \textbf{cost function} for our NST Model. We define this as J(G), and use gradient descent to minimize this function the generate an image. We will define a \textit{content} class for J, which measures how similar C and G are. We also define a \textit{style} class, which measures how similar S and G are. We also define two hyperparamteres to define the weight for a given class. 
+	$$ J(G) = \alpha J_{content}(C,G) + \beta J_{style}(S,G)$$
+	Now to find a generated image G, we do the following: \\
+	1) Initialize G randomly to whatever dimensions we want it to be. \\
+	2) Use gradient descent to minimize $J(G)$ where: $G = G - \frac{\partial}{\partial G} J(G)$ \newpage
+%%%% PAGE 106 %%%%
+
+	\noindent Lets take a deeper look at the \textbf{content cost function}: \\
+	- We use hidden layer $l$ to compute cost (usually $l$ is somewhere in the middle). \\
+	- Use a pretrained ConvNet (ex: VGG Network). \\
+	- Let $a^{[l](C)}$ and $a^{[l](G)}$ be the activation of layer $l$ on the images. \\
+	- If $a^{[l](C)}$ and $a^{[l](G)}$ are similar, both images have similar content.
+	$$ J_{content}(C,G) = \frac{1}{2} || a^{[l](C)} - a^{[l](G)}||^2$$
+	We can think of this as the element wise sum of squared differences between the two activations in a given layer for C and G. \\~\\
+	Now we can take a deeper look at the \textbf{style cost function}. If we are using layer $l$'s activation to measure ``style", then we define \textbf{style} as the correlation between activations across channels.
+	\begin{center}
+	\includegraphics[scale=0.6]{n_s_corr}
+	\end{center}
+	We want to ask how correlated the activations are across different channels For example, say for the above layer the red channel is looking for vertical patterns and the yellow layer is looking for orange tint in an image. If the two channels have high correlation, then when there is a vertical pattern there is also an orange tint. If the two channels have low correlation, then when there is a vertical pattern there is no orange tint. The \textbf{correlation} tells us which high level texture components occur together in an image (and how often). We can find correlation by comparing the activations between the two channels. \vspace*{2mm}\\
+	So given an image, we will compute a \textbf{style matrix} (gram matrix) which measures all of the correlations.\\
+	- Let $a^{[l]}_{i,j,k}$ be the activation at ($i,j,k$), the index at (height, width, channel). \\
+	- We compute a matrix, $G^{[l]}$ of shape $n_c^{[l]}\; x\; n_c^{[l]}$ \\
+	- We want to compare how similar the activations are for $k$ and $k'$, where k = 1,...,$n_c^{[l]}$.\\
+	- So to compute this for one element in layer $l$ we use:
+	$$\text{For the style image, we find: } G^{[l](S)}_{k,k'} = \sum_{i=1}^{n_H^{[l]}}\sum_{j=1}^{n_W^{[l]}} a^{[l](S)}_{i,j,k}\; a^{[l](S)}_{i,j,k'} $$
+	$$\text{For the generated image, we find: } G^{[l](G)}_{k,k'} = \sum_{i=1}^{n_H^{[l]}}\sum_{j=1}^{n_W^{[l]}} a^{[l](G)}_{i,j,k}\; a^{[l](G)}_{i,j,k'} $$
+	We can think of this as summing over the height and width of an image, and multiplying the activations together for channels $k$ and $k'$. The larger G is, the more correlated our activations are. \vspace*{1mm}\\
+	We can now use these style matrices within our cost function J: 
+	$$ J_{style}^{[l]}(S,G) = || G^{[l](S)} - G^{[l](G)} ||^2_F = \sum_k \sum_{k'}  (G^{[l](S)}_{k,k'} - G^{[l](G)}_{k,k'})^2 $$
+	We get more visually pleasing results if you use the style cost function from multiple different layers. We can do this by summing over all the cost functions and multipling by a set of weighted hyperparameters.
+	$$ J_{style}^{[l]}(S,G) = \sum_l \lambda^{[l]} J_{style}^{[l]}(S,G) $$ \newpage
+%%%% PAGE 107 %%%%
+
+	\noindent We can now define the \textbf{overall cost function}. We want to find an image G that minimizes our cost function J. We can write this as : 
+	$$ J(G) = \alpha J_{content}(C,G)  + \beta J_{style}(S,G) $$
+	
+	\subsubsection{1D and 3D Images}
+	\begin{center}	\includegraphics[scale=0.6]{EKG} \end{center}
+	An example of using \textbf{1D} images would be an EKG reading (where each spike is a heart beat) to diagnos medical conditions. Say we have a 14x1 input, and convolve with 15 5x1 filters on this layer, we would then get a 10x16 output. \vspace*{2mm}\\
+	We work with \textbf{3D} data when we input blocks of data into a model. An example of this is taking a CT scan (which gives a 3D x-ray model of your body). We now work with the depth of an input image, so our input will be $n_H$ x $n_W$ x $n_D$ x $n_C$. This means our filters are also now 3D. \vspace*{1mm}\\
+	Say we have a 14x14x14x1 input block. We then convolve it with 16 5x5x5x1 filters, and our output will be a 10x10x10x16 block. 
+	
+	\subsubsection{Programming Assignment 1 (Art Generator)}
+	We are going to generate an image of the Louvre museum in Paris (content image C), mixed with a painting by Claude Monet, a leader of the impressionist movement (style image S). Neural Style Transfer (NST) uses a previously trained convolutional network, and builds on top of that. The idea of using a network trained on a different task and applying it to a new task is called transfer learning. \vspace*{1mm} \\ 
+	We'll use \textbf{VGG-19}, a 19-layer version of the VGG network. This model has already been trained on the very large ImageNet database, and thus has learned to recognize a variety of low level features (at the shallower layers) and high level features (at the deeper layers).
+	\begin{center} \includegraphics[scale=0.6]{nst} \end{center}
+	We want to \textbf{load the parameters} from the VGG model. The model is stored in a dictionary where the `key' is the variable name and the `value' is the tensor for that layer.
+	\begin{lstlisting}
+	pp = pprint.PrettyPrinter(indent=4)
+	model = load_vgg_model("pretrained-model/imagenet-vgg-verydeep-19.mat")
+	pp.pprint(model) \end{lstlisting} \newpage
+%%%% PAGE 108 %%%%
+
+	\noindent To run an image through this network, you just have to feed the image to the model.
+	\begin{lstlisting} 
+	model["input"].assign(image) # tf.assign() \end{lstlisting} \vspace*{1mm}
+	After this, if you want to access the activations of a particular layer, say layer 4\_2 when the network is run on this image, you would run a TensorFlow session on the correct tensor 
+	\begin{lstlisting}
+	sess.run(model["conv4_2"]) \end{lstlisting} \vspace*{1mm}
+	We will build the Neural Style Transfer (NST) algorithm in three steps:\\
+	- Build the content cost function $J_{content}(C,G)$ \\
+	- Build the style cost function $J_{style}(S,G)$ \\
+	- Put it together to get $J(G) = \alpha J_{content}(C,G) + \beta J_{style}(S,G)$ \\~\\
+	We will begin by \textbf{computing the content cost function}. Our content image is the Louvre Museum, and we want to make the generated image G match the content of image C. We would like the generated image G to have similar content as the input image C, so we want to chose some layer's activations to represent the content of an image. Idieally, we want to chose a layer that is near the \textit{middle} of the network. \vspace*{1mm}\\
+	Forward propagate image C:\\
+	- Set the image C as the input to the pretrained VGG network, and run forward propagation.\\  
+	- Let $a^{(C)}$ be the hidden layer activations in the layer you had chosen. And $n_H \times n_W \times n_C$ tensor. \vspace*{1mm}\\
+	Forward propagate image G: \\
+	- Repeat this process with the image G: Set G as the input, and run forward progation. \\
+	- Let $a^{(G)}$ be the corresponding hidden layer activation. \\
+	$$J_{content}(C,G) =  \frac{1}{4 \times n_H \times n_W \times n_C}\sum _{ \text{all entries}} (a^{(C)} - a^{(G)})^2 $$
+	Note that $a^{(C)}$ and $a^{(G)}$ are the 3D volumes corresponding to a hidden layer's activations. In order to compute the cost $J_{content}(C,G)$, it might also be convenient to unroll these 3D volumes into a 2D matrix, as shown below.
+	\begin{center} \includegraphics[scale=0.2]{unroll}	\end{center}
+	\begin{lstlisting}
+	def compute_content_cost(a_C, a_G):
+		m, n_H, n_W, n_C = a_G.get_shape().as_list()
+		
+		# Reshape/Unroll a_C and a_G
+		a_C_unrolled = tf.reshape(a_C, shape=[m, n_W*n_H, n_C])
+		a_G_unrolled = tf.reshape(a_G, shape=[m, n_W*n_H, n_C])
+		
+		# compute the cost
+		J_content = 1/(4*n_H*n_W*n_C)*tf.reduce_sum(tf.square(tf.subtract(a_C, a_G)))
+		
+		return J_content \end{lstlisting} \newpage
+%%%% PAGE 109 %%%%
+
+	\noindent We can now \textbf{compute the style cost function}. We will use an impressionist painting as our style image S. We will want to compute a \textit{style (gram) matrix} where $G_{ij}$ compares how similar $v_i$ is to $v_j$: If they are highly similar, you would expect them to have a large dot product, and thus for $G_{ij}$ to be large.\vspace*{1mm}\\
+	In NST, we can compute the Style matrix by multiplying the ``unrolled" filter matrix with its transpose:
+	$$ G_{gram} = A_{unrolled}A_{unrolled}^T $$
+	\begin{center} \includegraphics[scale=0.25]{gm}	\end{center}
+	$G_{(gram)i,j}$ : The result is a matrix of dimension $(n_C,n_C)$ where $n_C$ is the number of filters (channels). The value measures how similar the activations of filter $i$ are to the activations of filter $j$. \vspace*{1mm}\\
+	$G_{(gram),i,i}$ : The diagonal elements $G_{(gram)ii}$ measure how ``active" a filter $i$ is. It measures how common textures or patterns are in the image as a whole.
+	\begin{lstlisting}
+	def gram_matrix(A):
+		GA = tf.matmul(A, tf.transpose(A))
+		return GA	\end{lstlisting} \vspace*{1mm}
+	Our goal will be to minimize the distance between the Gram matrix of the style image S and the gram matrix of the generated image G. This cost is computed using the hidden layer activations for a particular hidden layer in the network $a^{[l]}$:
+	$$J_{style}^{[l]}(S,G) = \frac{1}{4 \times {n_C}^2 \times (n_H \times n_W)^2} \sum _{i=1}^{n_C}\sum_{j=1}^{n_C}(G^{(S)}_{(gram)i,j} - G^{(G)}_{(gram)i,j})^2$$
+	\begin{lstlisting}
 	
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	\end{lstlisting} \newpage
+%%%% PAGE 110 %%%%
+
+	\noindent Next we want to find the \textbf{style weights}.
 	
 	
 	

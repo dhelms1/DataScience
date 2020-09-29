@@ -1,77 +1,79 @@
-\contentsline {section}{\numberline {1}Neural Networks and Deep Learning}{1}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Logistic Regression as a Neural Network}{1}{subsection.1.1}%
-\contentsline {subsubsection}{\numberline {1.1.1}Introduction to Logistic Regression}{1}{subsubsection.1.1.1}%
-\contentsline {subsubsection}{\numberline {1.1.2}Logistic Regression Cost Function}{1}{subsubsection.1.1.2}%
-\contentsline {subsubsection}{\numberline {1.1.3}Gradient Descent}{2}{subsubsection.1.1.3}%
-\contentsline {subsubsection}{\numberline {1.1.4}Vectorizing Logistic Regression}{3}{subsubsection.1.1.4}%
-\contentsline {subsubsection}{\numberline {1.1.5}Programming Assignment}{4}{subsubsection.1.1.5}%
-\contentsline {subsection}{\numberline {1.2}Shallow Neural Network}{9}{subsection.1.2}%
-\contentsline {subsubsection}{\numberline {1.2.1}Overview and Representation}{9}{subsubsection.1.2.1}%
-\contentsline {subsubsection}{\numberline {1.2.2}Computing a Neural Network Output}{9}{subsubsection.1.2.2}%
-\contentsline {subsubsection}{\numberline {1.2.3}Vectorizing Across Multiple Examples}{10}{subsubsection.1.2.3}%
-\contentsline {subsubsection}{\numberline {1.2.4}Activation Functions}{10}{subsubsection.1.2.4}%
-\contentsline {subsubsection}{\numberline {1.2.5}Gradient Descent for Neural Networks}{11}{subsubsection.1.2.5}%
-\contentsline {subsubsection}{\numberline {1.2.6}Programming Assignment}{11}{subsubsection.1.2.6}%
-\contentsline {subsection}{\numberline {1.3}Deep L-Layer Neural Network}{17}{subsection.1.3}%
-\contentsline {subsubsection}{\numberline {1.3.1}Forward and Backward Propagation}{18}{subsubsection.1.3.1}%
-\contentsline {subsubsection}{\numberline {1.3.2}Programming Assignment (Building)}{19}{subsubsection.1.3.2}%
-\contentsline {subsubsection}{\numberline {1.3.3}Programming Assignment 2 (Classifier)}{26}{subsubsection.1.3.3}%
-\contentsline {section}{\numberline {2}Improving Deep Neural Networks}{32}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Regularizing \& Optimizing Your Neural Network}{32}{subsection.2.1}%
-\contentsline {subsubsection}{\numberline {2.1.1}Bias/Variance}{32}{subsubsection.2.1.1}%
-\contentsline {subsubsection}{\numberline {2.1.2}Regularization}{32}{subsubsection.2.1.2}%
-\contentsline {subsubsection}{\numberline {2.1.3}Dropout Regularization}{33}{subsubsection.2.1.3}%
-\contentsline {subsubsection}{\numberline {2.1.4}Normalizing Inputs}{34}{subsubsection.2.1.4}%
-\contentsline {subsubsection}{\numberline {2.1.5}Weight Initialization}{34}{subsubsection.2.1.5}%
-\contentsline {subsubsection}{\numberline {2.1.6}Gradient Checking}{35}{subsubsection.2.1.6}%
-\contentsline {subsubsection}{\numberline {2.1.7}Programming Assignment (Initialization)}{36}{subsubsection.2.1.7}%
-\contentsline {subsubsection}{\numberline {2.1.8}Programming Assignment (Regularization)}{39}{subsubsection.2.1.8}%
-\contentsline {subsubsection}{\numberline {2.1.9}Programming Assignment (Gradient Checking)}{45}{subsubsection.2.1.9}%
-\contentsline {subsection}{\numberline {2.2}Optimization Algorithms}{49}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Mini-Batch Gradient Descent}{49}{subsubsection.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}Exponentially Weighted Averages}{49}{subsubsection.2.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.3}Gradient Descent with Momentum}{50}{subsubsection.2.2.3}%
-\contentsline {subsubsection}{\numberline {2.2.4}RMSprop}{50}{subsubsection.2.2.4}%
-\contentsline {subsubsection}{\numberline {2.2.5}Adam}{50}{subsubsection.2.2.5}%
-\contentsline {subsubsection}{\numberline {2.2.6}Learning Rate Decay}{51}{subsubsection.2.2.6}%
-\contentsline {subsubsection}{\numberline {2.2.7}Programming Assignment (Optimization)}{51}{subsubsection.2.2.7}%
-\contentsline {subsection}{\numberline {2.3}Hyperparameter Tuning, Batch Normalization, and Frameworks}{59}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}Tuning process}{59}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Batch Normalization}{59}{subsubsection.2.3.2}%
-\contentsline {subsubsection}{\numberline {2.3.3}Multi-Class Classification (Softmax Regression)}{60}{subsubsection.2.3.3}%
-\contentsline {subsubsection}{\numberline {2.3.4}Programming Frameworks (TensorFlow)}{61}{subsubsection.2.3.4}%
-\contentsline {subsubsection}{\numberline {2.3.5}Programming Assignment (TensorFlow 1)}{62}{subsubsection.2.3.5}%
-\contentsline {section}{\numberline {3}Structuring Machine Learning Projects}{68}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Machine Learning Strategy 1}{68}{subsection.3.1}%
-\contentsline {subsubsection}{\numberline {3.1.1}Evaluation Metrics}{68}{subsubsection.3.1.1}%
-\contentsline {subsubsection}{\numberline {3.1.2}Setting up the Dev and Test sets}{68}{subsubsection.3.1.2}%
-\contentsline {subsubsection}{\numberline {3.1.3}Comparing to Human-Level Performance}{69}{subsubsection.3.1.3}%
-\contentsline {subsection}{\numberline {3.2}Machine Learning Strategy 2}{69}{subsection.3.2}%
-\contentsline {subsubsection}{\numberline {3.2.1}Error Analysis}{69}{subsubsection.3.2.1}%
-\contentsline {subsubsection}{\numberline {3.2.2}Mismatched Data Distributions}{70}{subsubsection.3.2.2}%
-\contentsline {subsubsection}{\numberline {3.2.3}Learning from Multiple Tasks}{71}{subsubsection.3.2.3}%
-\contentsline {subsubsection}{\numberline {3.2.4}End-to-End Deep Learning}{71}{subsubsection.3.2.4}%
-\contentsline {section}{\numberline {4}Convolutional Neural Networks}{72}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Foundations of Convolutional Neural Networks}{72}{subsection.4.1}%
-\contentsline {subsubsection}{\numberline {4.1.1}Edge Detection}{72}{subsubsection.4.1.1}%
-\contentsline {subsubsection}{\numberline {4.1.2}Padding and Strides}{73}{subsubsection.4.1.2}%
-\contentsline {subsubsection}{\numberline {4.1.3}RGB Image Convolution}{73}{subsubsection.4.1.3}%
-\contentsline {subsubsection}{\numberline {4.1.4}Simple CNN Example}{74}{subsubsection.4.1.4}%
-\contentsline {subsubsection}{\numberline {4.1.5}Pooling Layers}{75}{subsubsection.4.1.5}%
-\contentsline {subsubsection}{\numberline {4.1.6}Programming Assignment 1 (Model Setup)}{76}{subsubsection.4.1.6}%
-\contentsline {subsubsection}{\numberline {4.1.7}Programming Assignment 2 (ConvNet using TensorFlow)}{79}{subsubsection.4.1.7}%
-\contentsline {subsection}{\numberline {4.2}Deep Convolutional Models: Case Studies}{84}{subsection.4.2}%
-\contentsline {subsubsection}{\numberline {4.2.1}Classic Networks}{84}{subsubsection.4.2.1}%
-\contentsline {subsubsection}{\numberline {4.2.2}ResNets}{85}{subsubsection.4.2.2}%
-\contentsline {subsubsection}{\numberline {4.2.3}1x1 Convolutions}{86}{subsubsection.4.2.3}%
-\contentsline {subsubsection}{\numberline {4.2.4}Inception Network}{86}{subsubsection.4.2.4}%
-\contentsline {subsubsection}{\numberline {4.2.5}Programming Assignment 1 (Keras)}{87}{subsubsection.4.2.5}%
-\contentsline {subsubsection}{\numberline {4.2.6}Programming Assignment 2 (ResNets)}{90}{subsubsection.4.2.6}%
-\contentsline {subsection}{\numberline {4.3}Object Detection Algorithms}{95}{subsection.4.3}%
-\contentsline {subsubsection}{\numberline {4.3.1}Object Localization}{95}{subsubsection.4.3.1}%
-\contentsline {subsubsection}{\numberline {4.3.2}Sliding Windows (Object Detection)}{96}{subsubsection.4.3.2}%
-\contentsline {subsubsection}{\numberline {4.3.3}YOLO Algorithm}{97}{subsubsection.4.3.3}%
-\contentsline {subsubsection}{\numberline {4.3.4}Programming Assignment (Car Detection with YOLO)}{98}{subsubsection.4.3.4}%
-\contentsline {subsection}{\numberline {4.4}Facial Recognition \& Neural Style Transfer}{104}{subsection.4.4}%
-\contentsline {subsubsection}{\numberline {4.4.1}Facial Recognition}{104}{subsubsection.4.4.1}%
-\contentsline {subsubsection}{\numberline {4.4.2}Neural Style Transfer}{105}{subsubsection.4.4.2}%
+\contentsline {section}{\numberline {1}Neural Networks and Deep Learning}{1}{section.1}% 
+\contentsline {subsection}{\numberline {1.1}Logistic Regression as a Neural Network}{1}{subsection.1.1}% 
+\contentsline {subsubsection}{\numberline {1.1.1}Introduction to Logistic Regression}{1}{subsubsection.1.1.1}% 
+\contentsline {subsubsection}{\numberline {1.1.2}Logistic Regression Cost Function}{1}{subsubsection.1.1.2}% 
+\contentsline {subsubsection}{\numberline {1.1.3}Gradient Descent}{2}{subsubsection.1.1.3}% 
+\contentsline {subsubsection}{\numberline {1.1.4}Vectorizing Logistic Regression}{3}{subsubsection.1.1.4}% 
+\contentsline {subsubsection}{\numberline {1.1.5}Programming Assignment}{4}{subsubsection.1.1.5}% 
+\contentsline {subsection}{\numberline {1.2}Shallow Neural Network}{9}{subsection.1.2}% 
+\contentsline {subsubsection}{\numberline {1.2.1}Overview and Representation}{9}{subsubsection.1.2.1}% 
+\contentsline {subsubsection}{\numberline {1.2.2}Computing a Neural Network Output}{9}{subsubsection.1.2.2}% 
+\contentsline {subsubsection}{\numberline {1.2.3}Vectorizing Across Multiple Examples}{10}{subsubsection.1.2.3}% 
+\contentsline {subsubsection}{\numberline {1.2.4}Activation Functions}{10}{subsubsection.1.2.4}% 
+\contentsline {subsubsection}{\numberline {1.2.5}Gradient Descent for Neural Networks}{11}{subsubsection.1.2.5}% 
+\contentsline {subsubsection}{\numberline {1.2.6}Programming Assignment}{11}{subsubsection.1.2.6}% 
+\contentsline {subsection}{\numberline {1.3}Deep L-Layer Neural Network}{17}{subsection.1.3}% 
+\contentsline {subsubsection}{\numberline {1.3.1}Forward and Backward Propagation}{18}{subsubsection.1.3.1}% 
+\contentsline {subsubsection}{\numberline {1.3.2}Programming Assignment (Building)}{19}{subsubsection.1.3.2}% 
+\contentsline {subsubsection}{\numberline {1.3.3}Programming Assignment 2 (Classifier)}{26}{subsubsection.1.3.3}% 
+\contentsline {section}{\numberline {2}Improving Deep Neural Networks}{32}{section.2}% 
+\contentsline {subsection}{\numberline {2.1}Regularizing \& Optimizing Your Neural Network}{32}{subsection.2.1}% 
+\contentsline {subsubsection}{\numberline {2.1.1}Bias/Variance}{32}{subsubsection.2.1.1}% 
+\contentsline {subsubsection}{\numberline {2.1.2}Regularization}{32}{subsubsection.2.1.2}% 
+\contentsline {subsubsection}{\numberline {2.1.3}Dropout Regularization}{33}{subsubsection.2.1.3}% 
+\contentsline {subsubsection}{\numberline {2.1.4}Normalizing Inputs}{34}{subsubsection.2.1.4}% 
+\contentsline {subsubsection}{\numberline {2.1.5}Weight Initialization}{34}{subsubsection.2.1.5}% 
+\contentsline {subsubsection}{\numberline {2.1.6}Gradient Checking}{35}{subsubsection.2.1.6}% 
+\contentsline {subsubsection}{\numberline {2.1.7}Programming Assignment (Initialization)}{36}{subsubsection.2.1.7}% 
+\contentsline {subsubsection}{\numberline {2.1.8}Programming Assignment (Regularization)}{39}{subsubsection.2.1.8}% 
+\contentsline {subsubsection}{\numberline {2.1.9}Programming Assignment (Gradient Checking)}{45}{subsubsection.2.1.9}% 
+\contentsline {subsection}{\numberline {2.2}Optimization Algorithms}{49}{subsection.2.2}% 
+\contentsline {subsubsection}{\numberline {2.2.1}Mini-Batch Gradient Descent}{49}{subsubsection.2.2.1}% 
+\contentsline {subsubsection}{\numberline {2.2.2}Exponentially Weighted Averages}{49}{subsubsection.2.2.2}% 
+\contentsline {subsubsection}{\numberline {2.2.3}Gradient Descent with Momentum}{50}{subsubsection.2.2.3}% 
+\contentsline {subsubsection}{\numberline {2.2.4}RMSprop}{50}{subsubsection.2.2.4}% 
+\contentsline {subsubsection}{\numberline {2.2.5}Adam}{50}{subsubsection.2.2.5}% 
+\contentsline {subsubsection}{\numberline {2.2.6}Learning Rate Decay}{51}{subsubsection.2.2.6}% 
+\contentsline {subsubsection}{\numberline {2.2.7}Programming Assignment (Optimization)}{51}{subsubsection.2.2.7}% 
+\contentsline {subsection}{\numberline {2.3}Hyperparameter Tuning, Batch Normalization, and Frameworks}{59}{subsection.2.3}% 
+\contentsline {subsubsection}{\numberline {2.3.1}Tuning process}{59}{subsubsection.2.3.1}% 
+\contentsline {subsubsection}{\numberline {2.3.2}Batch Normalization}{59}{subsubsection.2.3.2}% 
+\contentsline {subsubsection}{\numberline {2.3.3}Multi-Class Classification (Softmax Regression)}{60}{subsubsection.2.3.3}% 
+\contentsline {subsubsection}{\numberline {2.3.4}Programming Frameworks (TensorFlow)}{61}{subsubsection.2.3.4}% 
+\contentsline {subsubsection}{\numberline {2.3.5}Programming Assignment (TensorFlow 1)}{62}{subsubsection.2.3.5}% 
+\contentsline {section}{\numberline {3}Structuring Machine Learning Projects}{68}{section.3}% 
+\contentsline {subsection}{\numberline {3.1}Machine Learning Strategy 1}{68}{subsection.3.1}% 
+\contentsline {subsubsection}{\numberline {3.1.1}Evaluation Metrics}{68}{subsubsection.3.1.1}% 
+\contentsline {subsubsection}{\numberline {3.1.2}Setting up the Dev and Test sets}{68}{subsubsection.3.1.2}% 
+\contentsline {subsubsection}{\numberline {3.1.3}Comparing to Human-Level Performance}{69}{subsubsection.3.1.3}% 
+\contentsline {subsection}{\numberline {3.2}Machine Learning Strategy 2}{69}{subsection.3.2}% 
+\contentsline {subsubsection}{\numberline {3.2.1}Error Analysis}{69}{subsubsection.3.2.1}% 
+\contentsline {subsubsection}{\numberline {3.2.2}Mismatched Data Distributions}{70}{subsubsection.3.2.2}% 
+\contentsline {subsubsection}{\numberline {3.2.3}Learning from Multiple Tasks}{71}{subsubsection.3.2.3}% 
+\contentsline {subsubsection}{\numberline {3.2.4}End-to-End Deep Learning}{71}{subsubsection.3.2.4}% 
+\contentsline {section}{\numberline {4}Convolutional Neural Networks}{72}{section.4}% 
+\contentsline {subsection}{\numberline {4.1}Foundations of Convolutional Neural Networks}{72}{subsection.4.1}% 
+\contentsline {subsubsection}{\numberline {4.1.1}Edge Detection}{72}{subsubsection.4.1.1}% 
+\contentsline {subsubsection}{\numberline {4.1.2}Padding and Strides}{73}{subsubsection.4.1.2}% 
+\contentsline {subsubsection}{\numberline {4.1.3}RGB Image Convolution}{73}{subsubsection.4.1.3}% 
+\contentsline {subsubsection}{\numberline {4.1.4}Simple CNN Example}{74}{subsubsection.4.1.4}% 
+\contentsline {subsubsection}{\numberline {4.1.5}Pooling Layers}{75}{subsubsection.4.1.5}% 
+\contentsline {subsubsection}{\numberline {4.1.6}Programming Assignment 1 (Model Setup)}{76}{subsubsection.4.1.6}% 
+\contentsline {subsubsection}{\numberline {4.1.7}Programming Assignment 2 (ConvNet using TensorFlow)}{79}{subsubsection.4.1.7}% 
+\contentsline {subsection}{\numberline {4.2}Deep Convolutional Models: Case Studies}{84}{subsection.4.2}% 
+\contentsline {subsubsection}{\numberline {4.2.1}Classic Networks}{84}{subsubsection.4.2.1}% 
+\contentsline {subsubsection}{\numberline {4.2.2}ResNets}{85}{subsubsection.4.2.2}% 
+\contentsline {subsubsection}{\numberline {4.2.3}1x1 Convolutions}{86}{subsubsection.4.2.3}% 
+\contentsline {subsubsection}{\numberline {4.2.4}Inception Network}{86}{subsubsection.4.2.4}% 
+\contentsline {subsubsection}{\numberline {4.2.5}Programming Assignment 1 (Keras)}{87}{subsubsection.4.2.5}% 
+\contentsline {subsubsection}{\numberline {4.2.6}Programming Assignment 2 (ResNets)}{90}{subsubsection.4.2.6}% 
+\contentsline {subsection}{\numberline {4.3}Object Detection Algorithms}{95}{subsection.4.3}% 
+\contentsline {subsubsection}{\numberline {4.3.1}Object Localization}{95}{subsubsection.4.3.1}% 
+\contentsline {subsubsection}{\numberline {4.3.2}Sliding Windows (Object Detection)}{96}{subsubsection.4.3.2}% 
+\contentsline {subsubsection}{\numberline {4.3.3}YOLO Algorithm}{97}{subsubsection.4.3.3}% 
+\contentsline {subsubsection}{\numberline {4.3.4}Programming Assignment (Car Detection with YOLO)}{98}{subsubsection.4.3.4}% 
+\contentsline {subsection}{\numberline {4.4}Facial Recognition \& Neural Style Transfer}{104}{subsection.4.4}% 
+\contentsline {subsubsection}{\numberline {4.4.1}Facial Recognition}{104}{subsubsection.4.4.1}% 
+\contentsline {subsubsection}{\numberline {4.4.2}Neural Style Transfer}{105}{subsubsection.4.4.2}% 
+\contentsline {subsubsection}{\numberline {4.4.3}1D and 3D Images}{107}{subsubsection.4.4.3}% 
+\contentsline {subsubsection}{\numberline {4.4.4}Programming Assignment 1 (Art Generator)}{107}{subsubsection.4.4.4}% 
