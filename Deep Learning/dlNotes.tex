@@ -4252,14 +4252,401 @@
 	Our goal will be to minimize the distance between the Gram matrix of the style image S and the gram matrix of the generated image G. This cost is computed using the hidden layer activations for a particular hidden layer in the network $a^{[l]}$:
 	$$J_{style}^{[l]}(S,G) = \frac{1}{4 \times {n_C}^2 \times (n_H \times n_W)^2} \sum _{i=1}^{n_C}\sum_{j=1}^{n_C}(G^{(S)}_{(gram)i,j} - G^{(G)}_{(gram)i,j})^2$$
 	\begin{lstlisting}
-	
-	
-	
-	
-	\end{lstlisting} \newpage
+	def compute_layer_style_cost(a_S, a_G):
+		"""
+		Arguments:
+		a_S -- hidden layer activations representing style of the image S 
+		a_G -- hidden layer activations representing style of the image G
+		
+		Returns: 
+		J_style_layer -- tensor representing a scalar value (style cost)
+		"""
+		m, n_H, n_W, n_C = a_G.get_shape().as_list()
+		
+		# Reshape the images to have them of shape (n_C, n_H*n_W) 
+		a_S = tf.transpose(tf.reshape(a_S, shape=[n_H*n_W, n_C]))
+		a_G = tf.transpose(tf.reshape(a_G, shape=[n_H*n_W, n_C]))
+		
+		# Computing gram_matrices for both images S and G 
+		GS = gram_matrix(a_S)
+		GG = gram_matrix(a_G)
+		
+		# Computing the loss
+		J_style_layer = (1/(4*(n_C**2)*((n_H*n_W)**2)))*tf.reduce_sum(tf.square(GS-GG))
+		
+		return J_style_layer \end{lstlisting} \newpage
 %%%% PAGE 110 %%%%
 
-	\noindent Next we want to find the \textbf{style weights}.
+	\noindent Next we want to find the \textbf{style weights}. We'll get better results if we ``merge" style costs from several different layers. Each layer will be given weights ($\lambda^{[l]}$) that reflect how much each layer will contribute to the style. Each layer weight is initialized equally, ($\sum_{l}^L\lambda^{[l]} = 1$). 
+	$$J_{style}(S,G) = \sum_{l} \lambda^{[l]} J^{[l]}_{style}(S,G)$$
+	\begin{lstlisting}
+	STYLE_LAYERS = [
+			('conv1_1', 0.2),
+			('conv2_1', 0.2),
+			('conv3_1', 0.2),
+			('conv4_1', 0.2),
+			('conv5_1', 0.2)]
+			
+	def compute_style_cost(model, STYLE_LAYERS):
+		"""
+		Computes the overall style cost from several chosen layers
+		
+		Arguments:
+		model -- our tensorflow model
+		STYLE_LAYERS -- A python list containing:
+			- the names of the layers we would like to extract style from
+			- a coefficient for each of them
+		
+		Returns: 
+		J_style -- tensor representing a scalar value, style cost
+		"""
+		# initialize the overall style cost
+		J_style = 0
+		
+		for layer_name, coeff in STYLE_LAYERS:
+			# Select the output tensor of the currently selected layer
+			out = model[layer_name]
+			
+			# Set a_S to be the hidden layer activation from the layer we have selected
+			a_S = sess.run(out)
+			
+			# Set a_G to be the hidden layer activation from same layer.
+			a_G = out
+			
+			# Compute style_cost for the current layer
+			J_style_layer = compute_layer_style_cost(a_S, a_G)
+			
+			# Add coeff * J_style_layer of this layer to overall style cost
+			J_style += coeff * J_style_layer
+		
+		return J_style \end{lstlisting} \vspace*{1mm}
+	Important notes: \\
+	- The style of an image can be represented using the Gram matrix of a hidden layer's activations. \\
+	- We get even better results by combining this representation from multiple different layers.  \\
+	- This is in contrast to the content representation, where using a single hidden layer is sufficient. \\
+	- Minimizing the style cost will cause the image $G$ to follow the style of the image $S$. \newpage
+%%%% PAGE 111 %%%%
+
+	\noindent Finally, let's create a \textbf{total cost function} that minimizes both the style and the content cost. 
+	$$J(G) = \alpha J_{content}(C,G) + \beta J_{style}(S,G)$$
+	- The total cost is a linear combination of the content cost $J_{content}(C,G)$ and the style cost $J_{style}(S,G)$. \\
+	- $\alpha$ and $\beta$ are hyperparameters that control the relative weighting between content and style.
+	\begin{lstlisting}
+	def total_cost(J_content, J_style, alpha = 10, beta = 40):
+		J = alpha*J_content + beta*J_style
+		return J \end{lstlisting} \vspace*{1mm}
+	Finally, let's put everything together to \textbf{implement Neural Style Transfer}. We will have to: \\
+	1. Create an Interactive Session \\
+	2. Load the content image  \\
+	3. Load the style image \\
+	4. Randomly initialize the image to be generated  \\
+	5. Load the VGG19 model \\
+	6. Build the TensorFlow graph: \\
+	\hspace*{2mm} - Run the content image through the VGG19 model and compute the content cost \\
+	\hspace*{2mm} - Run the style image through the VGG19 model and compute the style cost \\
+	\hspace*{2mm} - Compute the total cost \\
+	\hspace*{2mm} - Define the optimizer and the learning rate \\
+	7. Initialize the TF graph and run it for a large number of iterations, updating image G at every step.
+	\begin{lstlisting}
+	# Reset the graph
+	tf.reset_default_graph()
+	
+	# 1. Start interactive session (lets you run variables without referring to sess)
+	sess = tf.InteractiveSession()
+	
+	# 2. Load, reshape, and normalize our "content" image (the Louvre museum picture):
+	content_image = scipy.misc.imread("images/louvre_small.jpg")
+	content_image = reshape_and_normalize_image(content_image)
+	
+	# 3. Load, reshape and normalize our "style" image (Claude Monet's painting):
+	style_image = scipy.misc.imread("images/monet.jpg")
+	style_image = reshape_and_normalize_image(style_image)
+	
+	# 4. Add random noise to content image to generate image G (slightly correlated)
+	generated_image = generate_noise_image(content_image)
+	
+	# 5. Load the VGG19 pre-trained model
+	model = load_vgg_model("pretrained-model/imagenet-vgg-verydeep-19.mat")	\end{lstlisting} \vspace*{1mm}
+	Next, to begin step 6, we want to compute the content cost and the style cost. 
+	\begin{lstlisting}
+	# Assign the content image to be the input of the VGG model.  
+	sess.run(model['input'].assign(content_image))
+	
+	# Select the output tensor of layer conv4_2
+	out = model['conv4_2']
+	
+	# Set a_C to be the hidden layer activation from the layer we have selected
+	a_C = sess.run(out)
+	
+	# Set a_G to be the hidden layer activation from same layer.
+	a_G = out
+	
+	# Compute the content cost
+	J_content = compute_content_cost(a_C, a_G)	\end{lstlisting} \newpage
+%%%% PAGE 112 %%%%
+
+	\begin{lstlisting}
+	# Assign the input of the model to be the "style" image 
+	sess.run(model['input'].assign(style_image))
+	
+	# Compute the style cost (STYLE_LAYERS defined on pg. 110)
+	J_style = compute_style_cost(model, STYLE_LAYERS) 
+	
+	# Compute the total cost
+	J = total_cost(J_content, J_style, alpha=10, beta=40)
+	
+	# define optimizer & training step (learning rate of 2.0)
+	optimizer = tf.train.AdamOptimizer(2.0)
+	train_step = optimizer.minimize(J)	\end{lstlisting} \vspace*{1mm}
+	Step 7: implement the model
+	\begin{lstlisting}
+	def model_nn(sess, input_image, num_iterations = 200):
+	
+		# Initialize global variables
+		sess.run(tf.global_variables_initializer())
+		
+		# Run the noisy input image (initial generated image) through the model	
+		generated_image = sess.run(model['input'].assign(input_image))
+		
+		for i in range(num_iterations):
+			
+			# Run the session on the train_step to minimize the total cost	
+			sess.run(train_step)
+			
+			# Compute the generated image by running the session on the current model['input']
+			generated_image = sess.run(model['input'])
+			
+			# Print every 20 iteration.
+			if i%20 == 0:
+				Jt, Jc, Js = sess.run([J, J_content, J_style])
+				print("Iteration " + str(i) + " :")
+				print("total cost = " + str(Jt))
+				print("content cost = " + str(Jc))
+				print("style cost = " + str(Js))
+		
+		# save current generated image in the "/output" directory
+		save_image("output/" + str(i) + ".png", generated_image)
+		
+		# save last generated image
+		save_image('output/generated_image.jpg', generated_image)
+		
+		return generated_image \end{lstlisting} \vspace*{1mm}
+	Takeaway: \\
+	- NST is an algorithm that given a content image C and a style image S can generate an artistic image.\\
+	- It uses representations (hidden layer activations) based on a pretrained ConvNet. \\
+	- The content cost function is computed using one hidden layer's activations.\\
+	- The style cost function for one layer is computed using the Gram matrix of that layer's activations.\\
+	- The overall style cost function is obtained using several hidden layers.\\
+	- Optimizing the total cost function results in synthesizing new images. \newpage
+%%%% PAGE 113 %%%%
+
+	\subsubsection{Programming Assignment 2 (Facial Recognition)}
+	In this assignment, you will build a face recognition system using FaceNet. \textbf{FaceNet} learns a neural network that encodes a face image into a vector of 128 numbers. By comparing two such vectors, you can then determine if two pictures are of the same person. \vspace*{2mm}\\
+	In this exercise, we will be using a pre-trained model which represents ConvNet activations using a \textit{channels first} convention. In other words, a batch of images will be of shape $(m, n_C, n_H, n_W)$ instead of $(m, n_H, n_W, n_C)$. \\~\\
+	The FaceNet model takes a lot of data and a long time to train, so let's \textbf{load pretrained weights} that someone else has already trained. Two important features of this model: \\
+	- This network uses 96x96 dimensional RGB images as its input. Specifically, inputs a face image (or \hspace*{2mm} batch of $m$ face images) as a tensor of shape $(m, n_C, n_H, n_W) = (m, 3, 96, 96)$ \\
+	- It outputs a matrix of shape $(m, 128)$ that encodes each input face image into a 128-dimensional vector.
+	\begin{lstlisting}
+	FRmodel = faceRecoModel(input_shape=(3, 96, 96)) \end{lstlisting} \vspace*{1mm}
+	By using a 128-neuron fully connected layer as its last layer, the model ensures that the output is an encoding vector of size 128. You then use the encodings to compare two face images as follows:
+	\begin{center}	\includegraphics[scale=.5]{face_model}	\end{center}
+	The \textbf{triplet loss function} formalizes this, and tries to ``push" the encodings of two images of the same person (Anchor and Positive) closer together, while ``pulling" the encodings of two images of different persons (Anchor, Negative) further apart. For an image $x$, we denote its encoding $f(x)$, where $f$ is the function computed by the neural network. \vspace*{1mm}\\	
+	Training will use triplets of images $(A, P, N)$:  \\	
+	- A is an ``Anchor" image - a picture of a person. \\
+	- P is a ``Positive" image - a picture of the same person as the Anchor image. \\
+	- N is a ``Negative" image - a picture of a different person than the Anchor image. \vspace*{1mm} \\
+	These triplets are picked from our training dataset. We will write $(A^{(i)}, P^{(i)}, N^{(i)})$ to denote the $i$-th training example. You'd like to make sure that an image $A^{(i)}$ of an individual is closer to the Positive $P^{(i)}$ than to the Negative image $N^{(i)}$) by at least a margin $\alpha$. We want to minimize the triplet cost: 
+	$$\mathcal{J} = \sum^{m}_{i=1} \large[ \small \underbrace{\mid \mid f(A^{(i)}) - f(P^{(i)}) \mid \mid_2^2}_\text{(1)} - \underbrace{\mid \mid f(A^{(i)}) - f(N^{(i)}) \mid \mid_2^2}_\text{(2)} + \alpha \large ] \small_+$$
+	Here, we are using the notation "$[z]_+$" to denote $max(z,0)$. \vspace*{1mm}\\
+	- The term (1) is the squared distance between the anchor "A" and the positive "P" for a given triplet; \hspace*{2mm} you want this to be small. \\
+	- The term (2) is the squared distance between the anchor "A" and the negative "N" for a given triplet, \hspace*{2mm} you want this to be relatively large. It has a minus sign preceding it because minimizing the negative \hspace*{2mm} of the term is the same as maximizing that term. \\
+	- $\alpha$ is called the margin. It is a hyperparameter that you pick manually. We will use $\alpha = 0.2$. \newpage
+%%%% PAGE 114 %%%%
+
+	\begin{lstlisting}
+	def triplet_loss(y_true, y_pred, alpha = 0.2):
+		"""
+		Arguments:
+		y_true -- true labels, required when you define a loss in Keras
+		y_pred -- python list containing three objects:
+			anchor -- the encodings for the anchor images, of shape (None, 128)
+			positive -- the encodings for the positive images, of shape (None, 128)
+			negative -- the encodings for the negative images, of shape (None, 128)
+		
+		Returns:
+		loss -- real number, value of the loss
+		"""
+		anchor, positive, negative = y_pred[0], y_pred[1], y_pred[2]
+		
+		# Step 1: Compute the (encoding) distance between the anchor and the positive
+		pos_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, positive)), axis=-1)
+		# Step 2: Compute the (encoding) distance between the anchor and the negative
+		neg_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, negative)), axis=-1)
+		# Step 3: subtract the two previous distances and add alpha.
+		basic_loss = tf.add(tf.subtract(pos_dist, neg_dist), alpha)
+		# Step 4: Take the maximum of basic_loss and 0.0. Sum over the training examples.
+		loss = tf.reduce_sum(tf.maximum(basic_loss, 0.0))
+		
+		return loss	\end{lstlisting} \vspace*{1mm}
+	Note: we used \textit{axis=-1} since we want to sum over the 128 values in our variables. \\~\\
+	FaceNet is trained by minimizing the triplet loss. But since training requires a lot of data and a lot of computation, we won't train it from scratch here. Instead, we \textbf{load a previously trained model}.
+	\begin{lstlisting}
+	FRmodel.compile(optimizer = 'adam', loss = triplet_loss, metrics = ['accuracy'])
+	load_weights_from_FaceNet(FRmodel) \end{lstlisting} \vspace*{1mm}
+	We'd like to build a \textbf{Face verification system} that gives access to the list of people who live or work in a building. To get admitted, each person has to swipe an ID card (identification card) to identify themselves at the entrance. The face recognition system then checks that they are who they claim to be. Let's build a database containing one encoding vector (of 128-dimensions) for each person who is allowed to enter.
+	\begin{lstlisting}
+	database = {}
+	database["danielle"] = img_to_encoding("images/danielle.png", FRmodel)
+	database["younes"] = img_to_encoding("images/younes.jpg", FRmodel)
+	database["tian"] = img_to_encoding("images/tian.jpg", FRmodel)
+	database["andrew"] = img_to_encoding("images/andrew.jpg", FRmodel)
+	database["kian"] = img_to_encoding("images/kian.jpg", FRmodel)
+	database["dan"] = img_to_encoding("images/dan.jpg", FRmodel)
+	database["sebastiano"] = img_to_encoding("images/sebastiano.jpg", FRmodel)
+	database["bertrand"] = img_to_encoding("images/bertrand.jpg", FRmodel)
+	database["kevin"] = img_to_encoding("images/kevin.jpg", FRmodel)
+	database["felix"] = img_to_encoding("images/felix.jpg", FRmodel)
+	database["benoit"] = img_to_encoding("images/benoit.jpg", FRmodel)
+	database["arnaud"] = img_to_encoding("images/arnaud.jpg", FRmodel) \end{lstlisting} \vspace*{1mm}
+	Now we will implement the verify() function which checks if the front-door camera picture (image\_path) is actually the person called ``identity". \vspace*{1mm}\\
+	Arguments: \\
+	\hspace*{3mm} image\_path -- path to an image\\
+	\hspace*{3mm} identity -- string, name of the person you'd like to verify the identity.\\
+	\hspace*{3mm} database -- dictionary: people's names (strings) and their encodings (vectors).\\
+	\hspace*{3mm} model -- your Inception model instance in Keras \newpage
+%%%% PAGE 115 %%%%
+
+	\begin{lstlisting}
+	def verify(image_path, identity, database, model):
+		"""
+		Function that verifies if the person on the "image_path" image is "identity"
+		"""	
+		# Step 1: Compute the encoding for the image. 
+		encoding = img_to_encoding(image_path, model)
+		
+		# Step 2: Compute distance with identity's image (
+		dist = np.linalg.norm(encoding - database[identity])
+		
+		# Step 3: Open the door if dist < 0.7, else don't open
+		if dist < 0.7:
+			print("It's " + str(identity) + ", welcome in!")
+			door_open = True
+		else:
+			print("It's not " + str(identity) + ", please go away")
+			door_open = False
+		
+		return dist, door_open \end{lstlisting} \vspace*{1mm}
+	We'll implement a \textbf{face recognition system} that takes as input an image, and figures out if it is one of the authorized persons (and if so, who). Unlike the previous face verification system, we will no longer get a person's name as one of the inputs.
+	\begin{lstlisting}
+	def who_is_it(image_path, database, model):
+		"""
+		Returns:
+		min_dist -- the minimum distance between image_path encoding and database encoding
+		identity -- string, the name prediction for the person on image_path
+		"""	
+		# Step 1: Compute the target "encoding" for the image. 
+		encoding = img_to_encoding(image_path, model)
+		
+		# Step 2: Find the closest encoding 
+		min_dist = 100 # Initialize "min_dist" to a large value
+		
+		# Loop over the database dictionary's names and encodings.
+		for (name, db_enc) in database.items():
+			
+			# Compute L2 distance
+			dist = np.linalg.norm(encoding - db_enc)
+			
+			if dist < min_dist:
+				min_dist = dist
+				identity = name
+		
+		if min_dist > 0.7:
+			print("Not in the database.")
+		else:
+			print ("it's " + str(identity) + ", the distance is " + str(min_dist))
+		
+		return min_dist, identity \end{lstlisting} \vspace*{1mm}
+	- Face verification solves an 1:1 matching problem; face recognition addresses a 1:K matching problem. \\
+	- The triplet loss is an effective loss function for training a NN to learn an encoding of a face image. \\
+	- The same encoding can be used for verification and recognition. Measuring distances between two \hspace*{2mm} images' encodings allows you to determine whether they are pictures of the same person. \newpage
+%%%% PAGE 116 %%%%
+
+	\section{Sequence Models}
+	\subsection{Recurrent Neural Networks}
+	\subsubsection{Notation}
+	$x^{(i)<t>}$ : the $t^{th}$ element of the $i^{th}$ input training example. \\
+	$T_x^{(i)}$ : the length of the input sequence of the $i^{th}$ training example. \\
+	$y^{(i)<t>}$ : the $t^{th}$ element of the $i^{th}$ output training example. \\
+	$T_y^{(i)}$ : the length of the output sequence of the $i^{th}$ training example. \vspace*{2mm}\\
+	How we represent individual words in a sentence: \\
+	- Make a vocabulary (dictionary) of the words you will use in your representation. \\
+	- Each word has a position (index) in the dictionary. \\
+	- Dictionary size of 30,000 - 50,000 are most common for commercial use. \\
+	- We then use \textit{one-hot} representation for each word (1 at dictionary position, 0 everywhere else).
+	
+	\subsubsection{Recurrent Neural Network Model}
+	A RNN model scans the data from left to right, and the parameters it uses are all shared. This means it can use the information from previous sequence layers to help predict the current layer output. One problem is that the model only uses inputs from earlier in the sequence and not later in the sequence (missing out on information). Note: the first activation $a^{<0>}$ is a vector of 0's.
+	\begin{center}
+	\includegraphics[scale=.6]{rnn}
+	\end{center}
+	Note that the parameters governing the connections are: \\
+	- $W_{ax}$ : used when going from input to the hidden layer. \\
+	- $W_{aa}$ : used on the activations. \\
+	- $W_{ya}$ : used to help govern the output predictions ($\hat{y}$). \vspace*{2mm}\\
+	\textbf{Forward Propagation}:
+	\begin{center}
+	$ a^{<t>} = g_1(W_{aa} a^{<t-1>} + W_{ax} x^{<t>} + b_a)$ (where g is \textit{tanh}) \vspace*{.5mm}\\
+	$ \hat{y}^{<t>} = g_2(W_{ya} a^{<t>} + b_y)$ (where g is \textit{sigmoid})
+	\end{center}
+	We can simplify the computation of $a^{<t>}$ and $\hat{y}^{<t>}$  by: 
+	\begin{center}
+	$ a^{<t>} = g_1(W_{a}[a^{<t-1>}, x^{<t>}] + b_a$ \\
+	$ \hat{y}^{<t>} = g_2(W_{y} a^{<t>} + b_y)$
+	\end{center}
+	Where $W_a$ is a horizontally stacked matrix in the form $[W_{aa} \; W_{ax}]$  \vspace*{1mm}\\
+	Where $[a^{<t-1>}, x^{<t>}]$ is a vertically stack matrix $\begin{bmatrix} a^{<t-1>} \\ x^{<t>} \end{bmatrix}$ \\
+	When we go to multiply, we just multiply a 2x1 matrix by a 1x2 matrix, and get $W_{aa} a^{<t-1>} + W_{ax} x^{<t>}$ \newpage
+%%%% PAGE 117 %%%%
+
+	\noindent \textbf{Back Propagation}: \\
+	Note that most programming frameworks will do this for you automatically, but we will see what goes on behind the scenes. \vspace*{1.5mm}\\
+	$\mathcal{L}^{<t>} (\hat{y}^{<t>}, y^{<t>}) = -y^{<t>}log(\hat{y}^{<t>}) - (1-y^{<t>})log(1-\hat{y}^{<t>})$ \vspace*{1mm}\\
+	$\mathcal{L}(\hat{y},y) = \sum_{t=1}^{T_x} \mathcal{L}^{<t>} (\hat{y}^{<t>}, y^{<t>})$ \\
+	\begin{center}
+	\includegraphics[scale=.5]{rnn_models}
+	\end{center}	
+	\textbf{Different RNN Architectures}: \\
+	Many-to-many : each input has a corresponding output. \\
+	Many-to-one : many inputs that are used for one final output (sentiment classification). \\
+	One-to-one : one input to one output. \\
+	One-to-many : one input used to create multiple outputs (music generation). \vspace*{2mm}\\
+	Sometimes our $T_x$ and $T_y$ are not always the same length. For problems that use machine translation, you input all of your $x$ values, and after you do this, then you begin to output all of your $y$ values. This is still a many-to-many architecture, but is just split into two different parts (encoder for inputs, decoder for  outputs). \\
+	
+	\subsubsection{Language Model (Sequence Generation)}
+	A \textbf{language model} takes a sentence, and tells you what the probability of a sentence of that particular sentence is. This is an essential part of speech recognition and machine translation. The model will estimate the probability of a particular sequence of words, denoted by $P(y^{<1>}, y^{<2>}, ..., y^{<T_y>})$. \vspace*{2mm}\\
+	To build the model, we need: \\
+	- Training set : large corpus (set) of English text. \\
+	- Tokenize our input sentence into one hot encoding vectors. \\
+	- Replace words in our input that are not in our vocab dictionary with $<UNK>$. \vspace*{2mm}\\
+	The way the model works is it takes an input (for the first input it is just an array of 0's, but for every other input it will be the output of the previous layer) and computes the probability of the next word given the previous word. \vspace*{1mm}\\
+	Ex: $P(y^{<1>}, y^{<2>}, y^{<3>}) = P(y^{<1>}) * P(y^{<2>}|y^{<1>}) * P(y^{<3>}|y^{<1>},y^{<2>})$ \vspace*{1.5mm}\\
+	We also need to define a loss function as:
+	\begin{center}
+	$\mathcal{L} (\hat{y}^{<t>}, y^{<t>}) = -\sum_i y_i^{<t>}log(\hat{y}_i^{<t>})$ \\
+	$\mathcal{L} = \sum_t \mathcal{L}^{<t>}(\hat{y}^{<t>}, y^{<t>})$
+	\end{center} \newpage
+%%%% PAGE 118 %%%%
+
+	\subsubsection{Sampling Novel Sequences}
+	After you train a sequence model, one of the ways you can informally get a sense of what is learned is to have a sample novel sequences. 
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

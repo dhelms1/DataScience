@@ -1,0 +1,5 @@
+\contentsline {section}{\numberline {1}Introduction to TensorFlow for AI, ML, and DL}{1}{section.1}%
+\contentsline {subsubsection}{\numberline {1.0.1}Callbacks}{1}{subsubsection.1.0.1}%
+\contentsline {subsubsection}{\numberline {1.0.2}Upload Custom Images}{1}{subsubsection.1.0.2}%
+\contentsline {subsubsection}{\numberline {1.0.3}ImageDataGenerator}{2}{subsubsection.1.0.3}%
+\contentsline {section}{\numberline {2}CNN's in TensorFlow}{3}{section.2}%
