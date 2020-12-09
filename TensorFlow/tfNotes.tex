@@ -403,7 +403,267 @@
 %%%% PAGE 7 %%%%
 
 	\section{Natural Language Processing}
+	\subsubsection{Setup \& Reading CSVs}
+	\begin{lstlisting}
+	vocab_size = 1000
+	embedding_dim = 16
+	max_length = 120
+	trunc_type = 'post'
+	pad_type = 'post'
+	oov_tok = '<OOV>'
+	training_portion = .8
+	sentences = []
+	labels = []
+	# stopwords is an array of 153 words to be removed
+	
+	with open("/tmp/bbc-text.csv", 'r') as csvfile:
+		reader = csv.reader(csvfile, delimiter=',')
+		next(reader)
+		for row in reader:
+			labels.append(row[0])
+			sentence = row[1]
+			for word in stopwords:
+				token = ' ' + word + ' '
+				sentence = sentence.replace(token, ' ')
+				sentence = sentence.replace('  ', ' ')
+			sentences.append(sentence)	\end{lstlisting} \vspace*{1mm}
+	
+	\subsubsection{Tokenizer}
+	\begin{lstlisting}
+	train_size = int(len(sentences)*training_portion)
+	
+	train_sentences = sentences[:train_size] # 1780
+	train_labels = labels[:train_size] # 1780
+	
+	validation_sentences = sentences[train_size:] # 445
+	val_labels = labels[train_size:] # 445
+	
+	tokenizer = Tokenizer(num_words=vocab_size, oov_token=oov_tok)
+	tokenizer.fit_on_texts(train_sentences)
+	word_index = tokenizer.word_index
+	
+	train_sequences = tokenizer.texts_to_sequences(train_sentences)
+	train_padded = pad_sequences(train_sequences, padding=pad_type, maxlen=max_length)
+	
+	validation_sequences = tokenizer.texts_to_sequences(validation_sentences)
+	validation_padded = pad_sequences(validation_sequences, padding=pad_type, 
+	                                  maxlen=max_length)
+	
+	label_tokenizer = Tokenizer()
+	label_tokenizer.fit_on_texts(labels)
+	
+	training_label_seq = np.array(label_tokenizer.texts_to_sequences(train_labels))
+	validation_label_seq = np.array(label_tokenizer.texts_to_sequences(val_labels))                                  
+	\end{lstlisting} \newpage
+%%%% PAGE 8 %%%%
+
+	\subsubsection{Modeling}
+	\begin{lstlisting}
+	model = tf.keras.Sequential([
+		tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
+		tf.keras.layers.GlobalAveragePooling1D(),
+		tf.keras.layers.Dense(24, activation='relu'),
+		tf.keras.layers.Dense(6, activation='softmax')
+	])
+	model.compile(loss='sparse_categorical_crossentropy',optimizer='adam',
+	              metrics=['accuracy'])
+	
+	num_epochs = 30
+	history = model.fit(train_padded, training_label_seq, 
+	                    epochs=num_epochs, 
+	                    validation_data=(validation_padded, validation_label_seq), 
+	                    verbose=1)
+	
+	def plot_graphs(history, string):
+		plt.plot(history.history[string])
+		plt.plot(history.history['val_'+string])
+		plt.xlabel("Epochs")
+		plt.ylabel(string)
+		plt.legend([string, 'val_'+string])
+		plt.show()
+	
+	plot_graphs(history, "accuracy")
+	plot_graphs(history, "loss")
+	\end{lstlisting} \vspace*{1mm}
+	
+	\subsubsection{Visualizing Clustering}
+	\begin{lstlisting}
+	reverse_word_index = dict([(value, key) for (key, value) in word_index.items()])
+	e = model.layers[0]
+	weights = e.get_weights()[0]
+	
+	out_v = io.open('vecs.tsv', 'w', encoding='utf-8')
+	out_m = io.open('meta.tsv', 'w', encoding='utf-8')
+	for word_num in range(1, vocab_size):
+		word = reverse_word_index[word_num]
+		embeddings = weights[word_num]
+	out_m.write(word + "\n")
+	out_v.write('\t'.join([str(x) for x in embeddings]) + "\n")
+	out_v.close()
+	out_m.close()
+	
+	try:
+		from google.colab import files
+	except ImportError:
+		pass
+	else:
+		files.download('vecs.tsv')
+		files.download('meta.tsv')
+	\end{lstlisting} \vspace*{1mm}
+	Go to \href{https://projector.tensorflow.org/}{TensorFlow Projector} and upload both the \textit{vecs.tsv} and \textit{meta.tsv} files.\\
+	Click \textit{sphereize data}. \newpage
+%%%% PAGE 9 %%%%
+
+	\subsubsection{Sequence Model with Pretrained Weights}
+	Note that the word vector can be downloaded \href{https://nlp.stanford.edu/projects/glove/}{here}.
+	\begin{lstlisting}
+	# TOKENIZE THE TEXTS 
+	sentences=[]
+	labels=[]
+	random.shuffle(corpus) # corpus contains our sentences and labels
+	for x in range(training_size):
+		sentences.append(corpus[x][0])
+		labels.append(corpus[x][1])
+	
+	tokenizer = Tokenizer()
+	tokenizer.fit_on_texts(sentences)
+	word_index = tokenizer.word_index
+	vocab_size=len(word_index)
+	
+	sequences = tokenizer.texts_to_sequences(sentences)
+	padded = pad_sequences(sequences, maxlen=max_length, padding=padding_type, 
+	                       truncating=trunc_type)
+	
+	split = int(test_portion * training_size)
+	
+	test_sequences = padded[0:split]
+	training_sequences = padded[split:training_size]
+	test_labels = labels[0:split]
+	training_labels = labels[split:training_size]
+	
+	# LOAD THE PRETRAINED VECTORS (138532)
+	embeddings_index = {};
+	with open('/tmp/glove.6B.100d.txt') as f:
+		for line in f:
+			values = line.split();
+			word = values[0];
+			coefs = np.asarray(values[1:], dtype='float32');
+			embeddings_index[word] = coefs;
+	
+	embeddings_matrix = np.zeros((vocab_size+1, embedding_dim));
+	for word, i in word_index.items():
+		embedding_vector = embeddings_index.get(word);
+		if embedding_vector is not None:
+			embeddings_matrix[i] = embedding_vector;
+			
+	# CREATE THE MODEL		
+	model = tf.keras.Sequential([
+		tf.keras.layers.Embedding(vocab_size+1, embedding_dim, input_length=max_length, 
+		                          weights=[embeddings_matrix], trainable=False),
+		tf.keras.layers.Dropout(0.2),
+		tf.keras.layers.Conv1D(64, 5, activation='relu'),
+		tf.keras.layers.MaxPooling1D(pool_size=4),
+		tf.keras.layers.LSTM(64),
+		tf.keras.layers.Dense(1, activation='sigmoid')
+	])
+	model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
+	
+	training_padded = np.array(training_sequences)
+	training_labels = np.array(training_labels)
+	testing_padded = np.array(test_sequences)
+	testing_labels = np.array(test_labels)
+	
+	history = model.fit(training_padded, training_labels, epochs=num_epochs, 
+	                    validation_data=(testing_padded, testing_labels), verbose=1) \end{lstlisting}\newpage
+%%%% PAGE 10 %%%%
+
+	\subsubsection{Predicting Words}
+	\href{https://www.tensorflow.org/tutorials/text/text_generation}{Click here} to see how to generate text using characters instead of words.
+	\begin{lstlisting}
+	tokenizer = Tokenizer()
+	!wget --no-check-certificate \
+		https://storage.googleapis.com/laurencemoroney-blog.appspot.com/sonnets.txt \
+		-O /tmp/sonnets.txt
+	data = open('/tmp/sonnets.txt').read()
+	
+	corpus = data.lower().split("\n")
+	
+	tokenizer.fit_on_texts(corpus)
+	total_words = len(tokenizer.word_index) + 1
+	
+	input_sequences = []
+	for line in corpus:
+		token_list = tokenizer.texts_to_sequences([line])[0] # [0] converts to 1D array
+		for i in range(1, len(token_list)): # loop over length of each sequence
+			n_gram_sequence = token_list[:i+1]
+			input_sequences.append(n_gram_sequence)
+	
+	max_sequence_len = max([len(x) for x in input_sequences])
+	input_sequences = np.array(pad_sequences(input_sequences, maxlen=max_sequence_len, 
+	                                         padding='pre'))
+	
+	# Use last word in sequence as label (to predict)
+	predictors, label = input_sequences[:,:-1],input_sequences[:,-1]
+	
+	# One-Hot Encode our labels (each label has size 3211)
+	label = ku.to_categorical(label, num_classes=total_words)
+	
+	print(input_sequences[:5])
+	# [[  0,   0,   0,   0,   0,   0,   0,   0,   0,  34, 417],
+	#  [  0,   0,   0,   0,   0,   0,   0,   0,  34, 417, 877],
+	#  [  0,   0,   0,   0,   0,   0,   0,  34, 417, 877, 166],
+	#  [  0,   0,   0,   0,   0,   0,  34, 417, 877, 166, 213],
+	#  [  0,   0,   0,   0,   0,  34, 417, 877, 166, 213, 517]]	\end{lstlisting} \vspace*{1mm}
+	Note that the \textit{input\_sequences} that is built from the for loop is just adding the next word of each sentence into the next line. We then use the last element of each row as the label to predict. This helps us choose which words come after certain inputs. So for row 1, [34, 417] is input and [877] is the label.            
+	\begin{lstlisting}
+	model = Sequential()
+	model.add(Embedding(total_words, 100, input_length=max_sequence_len-1))
+	model.add(Bidirectional(LSTM(120, return_sequences=True)))
+	model.add(Dropout(0.2))
+	model.add((LSTM(100, return_sequences=False)))
+	model.add(Dense(total_words/2, activation='relu', 
+	                kernel_regularizer=regularizers.l2(0.01)))
+	model.add(Dense(total_words, activation='softmax'))
+	model.compile(loss='categorical_crossentropy', optimizer='adam', 
+	              metrics=['accuracy'])
+	              
+	history = model.fit(predictors, label, epochs=100, verbose=1) 	\end{lstlisting} \vspace*{1mm}
+	Note that for our \textit{input\_length}, we had to subtract 1. This is because we used the last value as our label, so out longest sequence length was reduced by 1. One thing to note is that our accuracy will start very low (near 2\%) but will climb steadily as we train for a long period of time (high 90\%'s). \newpage
+%%%% PAGE 11 %%%%
+
+	\begin{lstlisting}
+	seed_text = "Help me Obi Wan Kenobi, you're my only hope"
+	next_words = 100
+	
+	# Predict next 100 words in the sequence
+	for _ in range(next_words):
+		token_list = tokenizer.texts_to_sequences([seed_text])[0]
+		token_list = pad_sequences([token_list], maxlen=max_sequence_len-1, padding='pre')
+		predicted = np.argmax(model.predict(token_list), axis=1)
+		output_word = ""
+		for word, index in tokenizer.word_index.items():
+			if index == predicted:
+				output_word = word
+				break
+		seed_text += " " + output_word
+	print(seed_text) \end{lstlisting} \newpage
+%%%% PAGE 12 %%%%
+
+	\section{Sequences: Time Series and Predictions}
 	\subsubsection{...}
+	\textbf{Time series} are an ordered sequence of values that are usually equally spaced over time. Time series data can be used for forecasting, imputing (previous or filling in missing data), anomalies, sound waves, etc. \vspace*{2mm}\\
+	\textbf{Trend}: time series is moving in a specific direction.\\
+	\textbf{Seasonality}: patterns repeat at predicted intervals.\\
+	\textbf{Combination}: directional trend with repeated patterns. \\
+	\textbf{Neither}: random values that create white noise. \\
+	\textbf{Fixed Partitioning}: split the time series data in only train and validation sets.\\
+	\hspace*{3mm} - Note that we need to include full seasons (don't split data in mid season). \\
+	\hspace*{3mm} - Skip creating a test set, and just retrain model on train \& validation sets.\vspace*{2mm}\\
+	Common metrics for \textbf{evaluation} include: errors (forecast-actual), mse, rmse, mae, mape. \\
+	\hspace*{3mm} - We can use the keras.metrics library. \\
+	\textbf{Differencing}: looking at difference between data at time \textit{t} and time \textit{t-a}. \\
+	\hspace*{3mm} - Forecast = trailing moving average of differencing + centered moving average of \textit{t-a}. \\
+	
 	
 	
 	

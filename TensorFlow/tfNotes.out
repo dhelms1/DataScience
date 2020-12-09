@@ -9,4 +9,11 @@
 \BOOKMARK [3][-]{subsubsection.2.0.4}{Reading Images from CSVs}{subsubsection.2.0.1}% 9
 \BOOKMARK [3][-]{subsubsection.2.0.5}{Multi-Class Classification}{subsubsection.2.0.1}% 10
 \BOOKMARK [1][-]{section.3}{Natural Language Processing}{}% 11
-\BOOKMARK [2][-]{subsubsection.3.0.1}{...}{section.3}% 12
+\BOOKMARK [2][-]{subsubsection.3.0.1}{Setup \046 Reading CSVs}{section.3}% 12
+\BOOKMARK [3][-]{subsubsection.3.0.2}{Tokenizer}{subsubsection.3.0.1}% 13
+\BOOKMARK [3][-]{subsubsection.3.0.3}{Modeling}{subsubsection.3.0.1}% 14
+\BOOKMARK [3][-]{subsubsection.3.0.4}{Visualizing Clustering}{subsubsection.3.0.1}% 15
+\BOOKMARK [3][-]{subsubsection.3.0.5}{Sequence Model with Pretrained Weights}{subsubsection.3.0.1}% 16
+\BOOKMARK [3][-]{subsubsection.3.0.6}{Predicting Words}{subsubsection.3.0.1}% 17
+\BOOKMARK [1][-]{section.4}{Sequences: Time Series and Predictions}{}% 18
+\BOOKMARK [2][-]{subsubsection.4.0.1}{...}{section.4}% 19

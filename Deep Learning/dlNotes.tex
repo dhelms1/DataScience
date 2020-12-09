@@ -4637,22 +4637,495 @@
 	\end{center} \newpage
 %%%% PAGE 118 %%%%
 
-	\subsubsection{Sampling Novel Sequences}
-	After you train a sequence model, one of the ways you can informally get a sense of what is learned is to have a sample novel sequences. 
+	\subsubsection{Fixing Vanishing Gradients}
+	If our network is too deep, our RNN will struggle when computing back propagation. This means it might be difficult to get the model to recognize sequences. Each output, $\hat{y}$, if strongly influenced by the inputs $x$ around them, and less by the inputs farther away.\\~\\
+	\textbf{Gated Recurrent Unit (GRU)}\vspace*{1mm}\\
+	The \textbf{Gated Recurrent Unit} is a modification to the RNN hidden layer that makes it much better capturing long range connections and helps a lot with the vanishing gradient problems. \vspace*{2mm}\\
+	$c$ = memory cell \\
+	$c^{<t>} = a^{<t>}$\\
+	$\tilde{c} = tanh(W_c[\Gamma_r*c^{<t-1>}, x^{(t)}] + b_c)$\\
+	$\Gamma_u = \sigma(W_u[c^{<t-1>}, x^{(t)}] + b_u)$\\
+	$\Gamma_r = \sigma(W_r[c^{<t-1>}, x^(t)] + b_r)$ \\
+	$c^{<t>} = \Gamma_u * \tilde{c}^{<t>} +(1-\Gamma_u) * c^{<t-1>}$\vspace*{2mm}\\
+	Note that $\Gamma_u$ (update gate) is either 0 or 1, and decides whether or not to update the value of $c$. \\~\\	
+	\textbf{Long Short Term Memory (LSTM)}
+	\begin{center}
+	\includegraphics[scale=.7]{lstm}
+	\end{center}
+	$\tilde{c} = tanh(W_c[a^{<t-1>}, x^{(t)}] + b_c)$\\
+	$\Gamma_u = \sigma(W_u[a^{<t-1>}, x^{(t)}] + b_u)$\\
+	$\Gamma_f = \sigma(W_f[a^{<t-1>}, x^{(t)}] + b_f)$\\
+	$\Gamma_o = \sigma(W_o[c^{<t-1>}, x^{(t)}] + b_o)$\\
+	$c^{<t>} = \Gamma_u * \tilde{c}^{<t>} + \Gamma_f * c^{<t-1>}$\\
+	$a^{<t>} = \Gamma_o * tanh(c^{<t>})$
+	\subsubsection{Deep RNN}
+	\begin{center}
+	\includegraphics[scale=.7]{deep_rnn}
+	\end{center} \newpage
+%%%% PAGE 119 %%%%
+
+	\subsection{Word Embedding}
+	\subsubsection{Intro to Word Embeddings}
+	We use \textbf{word embeddings} to create a featurized representation that associates the words in our dictionary with certain features (gender, age, food, size, noun, verb, etc.). This allows us to group together words that are similar, and when visualizing we can see these as clusters of words that have high correlation. \\~\\	
+	To find the similarity between two embedding vectors, we can use a \textbf{cosine similarity}. $$\text{CosineSimilarity(u, v)} = \frac {u \cdot v} {||u||_2 ||v||_2} = cos(\theta)$$
+	We can use our \textbf{embedding matrix}, which contains the feature values for each of our dictionary words with shape (\textit{num of features}, \textit{num of words}), to create embedding vectors for our words. Let $E$ denoted the embedding matrix and $O_k$ denote the one hot encoding of $kth$ word. By performing $E * O_k$, we will get $e_k$, which is a (\textit{num of features}, 1) shaped vector that has the embedding features for the $kth$ word. \vspace*{2mm}\\
+	Note that in practice, you use built in functions to look up an embedding for a specific column rather than use matrix multiplication. For example, in keras we can use the \textit{Embedding} layer to pull up a specific column from the embedding matrix. \\~\\
+	When you want to use context in order to predict a target word, we can use the following pairs: \\
+	- Last 4 words (use previous 4 words before target to predict the target). Good for building model \\
+	- 4 words on left and right around the target (good for learning word embeddings).\\
+	- Last 1 word (word before the target). Good for learning word embeddings.\\
+	- Nearby 1 word (close to the target). Good for learning word embeddings.
+	
+	\subsubsection{Embedding Algorithms}
+	\href{https://www.tensorflow.org/tutorials/text/word2vec}{Word2Vec Algorithm} (Skip-Gram model). \vspace*{1mm}\\
+	\href{https://www.tensorflow.org/tutorials/text/word2vec#negative_sampling_for_one_skip-gram}{Negative Sampling}. Idea to is to set the target label for a context word to 1, then randomly sample \textit{k} words for our dictionary and set their target labels to 0. Note that k=2-5 for large datasets, and k=5-20 for small datasets. We then input these (context, word) pairs and try to predict the target label (this is our training set). The context word is the same in all the pairs, but each target word \textit{t} is different. \vspace*{1mm}\\ 
+	\textbf{GloVe word vectors} are used to figure out how often a word occurs with another word. In other terms, $X_{ij}$ = the number of times $j$ appears in the context of $i$. With this, we want to minimize:
+	$$ \sum_{i=1}^{vocab\,size} \sum_{j=1}^{vocab\,size} f(X_{ij})(\theta_i^T e_j + b_i +b_j' - log(X_{ij}))^2 $$
+	
+	\subsubsection{Debiasing Word Embeddings}
+	Word embeddings can reflect gender, ethnicity, age, sexual orientation, and other biases of the text used to train the model. To address this bias, we want to take the following steps: \vspace*{.7mm}\\
+	1. Identify bias direction by taking average vector difference for definitional words. \\
+	2. Neutralize: for every word that is not definitional (babysitter, doctor, etc.), project to get rid of bias. \\
+	3. Equalize pairs (definitional words are same distance from non-definitional words). \newpage
+%%%% PAGE 120 %%%%
+
+	\subsubsection{Programming Assignment (Debiasing)}
+	Note that we are use GloVe vectors in this assignment for our embeddings. \textit{words} is a set of words in the vocabulary, \textit{word\_to\_vec\_map} is a dictionary mappings words to their GloVe vector representation. \vspace*{1mm}\\
+	\textbf{Cosine similarity}
+	\begin{center}
+	\includegraphics[scale=.5]{cosine_sim}
+	\end{center}
+	\begin{lstlisting}
+	def cosine_similarity(u, v):
+		distance = 0.0
+
+		dot = np.dot(u,v)
+		norm_u = np.sqrt(np.sum(np.multiply(u,u))) # Compute the L2 norm of u
+		norm_v = np.sqrt(np.sum(np.multiply(v,v))) # Compute the L2 norm of v
+		cosine_similarity = dot/(norm_u*norm_v) # Compute the cosine similarity
+		
+		return cosine_similarity \end{lstlisting} \vspace*{1mm}
+	\textbf{Word Analogy Task} \\
+	We want to find \textit{a} is to \textit{b} as \textit{c} is to \textit{d} such that we know \textit{a,b,c} already but want to find \textit{d} by using cosine similarity. We need $e_b - e_a \approx e_d - e_c$
+	\begin{lstlisting}
+	def complete_analogy(word_a, word_b, word_c, word_to_vec_map):
+		"""
+		word_to_vec_map -- dictionary that maps words to their corresponding vectors. 
+		"""
+		word_a, word_b, word_c = word_a.lower(), word_b.lower(), word_c.lower()
+		
+		# Get the word embeddings
+		e_a, e_b, e_c = word_to_vec_map[word_a], word_to_vec_map[word_b], 
+		                word_to_vec_map[word_c]
+		
+		words = word_to_vec_map.keys()
+		max_cosine_sim = -100 # Initialize max_cosine_sim to a large negative number
+		best_word = None # Initialize best_word with None
+		
+		input_words_set = set([word_a, word_b, word_c])
+		
+		for w in words:        
+			if w in input_words_set: # Skip input words
+				continue
+			
+			# Compute cosine similarity between the vectors
+			cosine_sim = cosine_similarity((e_b-e_a), (word_to_vec_map[w]-e_c))
+			
+			if cosine_sim > max_cosine_sim:
+				max_cosine_sim = cosine_sim
+				best_word = w
+		
+		return best_word \end{lstlisting} \newpage
+%%%% PAGE 121 %%%%
+
+	\noindent \textbf{Neutralize bias for non-gender specific words}
+	\begin{center}
+		\includegraphics[scale=.3]{neutral}
+	\end{center}
+	We have the bias-direction $g$, and the remaining dimensions, which we'll call $g_{\perp}$ (which is orthogonal to $g$). Given an input embedding $e$, you can use the following formulas to compute $e^{debiased}$: 	
+	$$e^{bias\_component} = \frac{e \cdot g}{||g||_2^2} * g$$
+	$$e^{debiased} = e - e^{bias\_component}$$
+	The best way to find $g$, our estimate of ``gender", is to compute $g_1 = e_{woman} - e_{man}$; $g_2 = e_{mother} - e_{father}$; $g_3 = e_{girl} - e_{boy}$ and so on and averaging over them. However, in this example we will just use $g_1$.
+	\begin{lstlisting}
+	g = word_to_vec_map['woman'] - word_to_vec_map['man'] # Concept of "gender"
+	
+	def neutralize(word, g, word_to_vec_map):
+		# Select word vector representation of "word"
+		e = word_to_vec_map[word]
+		
+		e_biascomponent = (np.dot(e,g)/np.sum(np.multiply(g,g)))*g
+		
+		# Neutralize e by subtracting e_biascomponent from it 
+		e_debiased = e - e_biascomponent
+	
+		return e_debiased \end{lstlisting} \vspace*{1mm}
+	\textbf{Equalization algorithm for gender-specific words}
+	\begin{center}
+		\includegraphics[scale=.3]{equalize10}
+	\end{center}
+	Equalization is applied to pairs of words that you might want to have differ only through the gender property, which is achieved by setting them an equal distance apart from the orthogonal axis. The key idea behind equalization is to make sure that a particular pair of words are equi-distant from the 49-dimensional $g_\perp$. The equalization step also ensures that the two equalized steps are now the same distance from any word that has been neutralized.
+	$$ \mu = \frac{e_{w1} + e_{w2}}{2}$$ 
+	$$ \mu_{B} = \frac {\mu \cdot \text{bias\_axis}}{||\text{bias\_axis}||_2^2} *\text{bias\_axis}$$ \newpage
+%%%% PAGE 122 %%%%
+
+	$$\mu_{\perp} = \mu - \mu_{B} $$
+	$$ e_{w1B} = \frac {e_{w1} \cdot \text{bias\_axis}}{||\text{bias\_axis}||_2^2} *\text{bias\_axis}$$ 
+	$$ e_{w2B} = \frac {e_{w2} \cdot \text{bias\_axis}}{||\text{bias\_axis}||_2^2} *\text{bias\_axis}$$
+	$$e_{w1B}^{corrected} = \sqrt{ |{1 - ||\mu_{\perp} ||^2_2} |} * \frac{e_{\text{w1B}} - \mu_B} {||(e_{w1} - \mu_{\perp}) - \mu_B||}$$	
+	$$e_{w2B}^{corrected} = \sqrt{ |{1 - ||\mu_{\perp} ||^2_2} |} * \frac{e_{\text{w2B}} - \mu_B} {||(e_{w2} - \mu_{\perp}) - \mu_B||}$$
+	$$e_1 = e_{w1B}^{corrected} + \mu_{\perp}$$
+	$$e_2 = e_{w2B}^{corrected} + \mu_{\perp}$$
+	\begin{lstlisting}
+	def equalize(pair, bias_axis, word_to_vec_map):
+		"""
+		pair -- pair of strings of gender specific words to debias
+		bias_axis -- np-array of shape (50,), vector corresponding to the bias axis
+		word_to_vec_map -- dictionary mapping words to their corresponding vectors
+		"""
+		
+		# Step 1: Select word vector representation of "word"
+		w1, w2 = pair
+		e_w1, e_w2 = word_to_vec_map[w1], word_to_vec_map[w2]
+		
+		# Step 2: Compute the mean of e_w1 and e_w2
+		mu = np.add(e_w1, e_w2)/2
+		
+		# Step 3: Compute the projections of mu over the bias axis and the orthogonal axis
+		mu_B = (np.dot(mu, bias_axis)/np.sum(np.multiply(bias_axis, bias_axis)))*bias_axis
+		mu_orth = mu - mu_B
+		
+		# Step 4: Use equations (7) and (8) to compute e_w1B and e_w2B
+		e_w1B = (np.dot(e_w1, bias_axis)/np.sum(np.multiply(bias_axis, bias_axis)))*
+		        bias_axis
+		e_w2B = (np.dot(e_w2, bias_axis)/np.sum(np.multiply(bias_axis, bias_axis)))*
+		        bias_axis
+		
+		# Step 5: Adjust the Bias part of e_w1B and e_w2B 
+		corrected_e_w1B = np.sqrt(np.abs(1-np.sum(np.power(mu_orth, 2))))*
+		                  ((e_w1B-mu_B)/np.linalg.norm(((e_w1 - mu_orth) - mu_B)))
+		corrected_e_w2B = np.sqrt(np.abs(1-np.sum(np.power(mu_orth, 2))))*
+		                  ((e_w2B-mu_B)/np.linalg.norm(((e_w2 - mu_orth) - mu_B)))
+		
+		# Step 6: Debias by equalizing e1 and e2 to the sum of their corrected projections
+		e1 = corrected_e_w1B + mu_orth
+		e2 = corrected_e_w2B + mu_orth
+		
+		return e1, e2	
+	
+	e1, e2 = equalize(("man", "woman"), g, word_to_vec_map)
+	print("cosine_similarity(e1, gender) = ", cosine_similarity(e1, g)) # -0.700436428931
+	print("cosine_similarity(e2, gender) = ", cosine_similarity(e2, g)) # 0.700436428931
+	\end{lstlisting} \newpage
+%%%% PAGE 123 %%%%
+	
+	\subsubsection{Programming Assignment (TensorFlow, GloVe Vectors)}
+	We will use pre-trained GloVe vectors that can be \href{https://nlp.stanford.edu/projects/glove/}{downloaded here}. 
+	\begin{lstlisting}
+	from keras.models import Model
+	from keras.layers import Dense, Input, Dropout, LSTM, Activation
+	from keras.layers.embeddings import Embedding
+		
+	word_to_index, index_to_word, word_to_vec_map = read_glove_vecs('../../readonly/glove
+	                                                                 .6B.50d.txt')
+	X_train, Y_train = read_csv('data/train_emoji.csv')
+	X_test, Y_test = read_csv('data/tesss.csv')	\end{lstlisting}
+	
+	\begin{lstlisting}
+	def pretrained_embedding_layer(word_to_vec_map, word_to_index):
+		"""
+		Creates Embedding() layer and loads in pre-trained GloVe 50-dimensional vectors.
+		"""
+		vocab_len = len(word_to_index) + 1 # add 1 to handle UNK words               
+		emb_dim = word_to_vec_map["cucumber"].shape[0] # 50
+
+		# Initialize the embedding matrix as a numpy array of zeros.
+		emb_matrix = np.zeros((vocab_len, emb_dim))
+		
+		# Set each row "idx" of the embedding matrix to be the word vector representation
+		for word, idx in word_to_index.items():
+			emb_matrix[idx, :] = word_to_vec_map[word]
+		
+		# Define Keras embedding layer with the correct input and output sizes
+		embedding_layer = Embedding(vocab_len, emb_dim, trainable=False)
+		
+		# Build the embedding layer
+		embedding_layer.build((None,))
+		
+		# Set the weights of the embedding layer to the embedding matrix.
+		embedding_layer.set_weights([emb_matrix])
+		
+		return embedding_layer	\end{lstlisting} \vspace*{1mm}
+		
+	\begin{lstlisting}
+	def Emojify_V2(input_shape, word_to_vec_map, word_to_index):
+		"""
+		Function creating the Emojify-v2 model's graph.
+		"""
+		# Define sentence_indices as the input of the graph.
+		sentence_indices = Input(input_shape, dtype='int32')
+		
+		# Create the embedding layer pretrained with GloVe Vectors
+		embedding_layer = pretrained_embedding_layer(word_to_vec_map, word_to_index)
+		
+		# Propagate sentence_indices through your embedding layer
+		embeddings = embedding_layer(sentence_indices)   
+		
+		X = LSTM(128, return_sequences=True)(embeddings)
+		X = Dropout(.5)(X)
+		X = LSTM(128, return_sequences=False)(X)
+		X = Dropout(.5)(X)
+		X = Dense(5)(X)
+		X = Activation('softmax')(X)
+		model = Model(inputs=sentence_indices, outputs=X)
+		
+		return model \end{lstlisting} \newpage
+%%%% PAGE 124 %%%%
+
+	\subsection{Sequence to Sequence Architectures}
+	\begin{center}
+	\includegraphics[scale=.7]{m_tr}
+	\end{center}
+	The \textbf{machine translation models}, also called \textit{conditional language models}, take a sequences as input to an encoding network (green section above) and feeds it into a decoding network (purple section). We are trying to estimate the probability of sequence $y$ given the input sequence $x$.
+	$$ argmax\,\, P(y^{<1>},...,y^{<T_y>}|x) $$
+	Meaning we want to pick the sequence that maximizes the joint probability (not just the individual probability of each $y$ like a greedy search would do). We want to use beam search (an approximate search algorithm) in order to choose the most likely sequence.
+	
+	\subsubsection{Beam Search}
+	Note that at each step in the algorithm, you instantiate $B$ copies of the network with the correct number of $y$ outputs to try out the $B$ most likely words.\vspace*{2mm}\\
+	\textbf{Step 1:} \\
+	Beam search will consider the $B$ most likely words from the dictionary for a given position $y$, where $B$ is the ``beam width" parameters that determines how many words to consider. These values, $P(y^{<1>}|x)$, are then stored in memory. \vspace*{2mm}\\
+	\textbf{Step 2:} \\
+	To find the second word in the sequence, we ``hard code" these $B$ most likely words as the $y$ output and try them in combination with all the words in our dictionary. We then chose the $B$ most likely from these sets of words. These values, $P(y^{<1>}, y^{<2>}|x)$, are then stored in memory. \vspace*{2mm}\\
+	\textbf{Step 3 to end}:\\
+	We repeat step 2 until we reach our desired output, in which case we will have the ``most likely" sentence for our translation.\vspace*{2mm}\\
+	\textbf{Improving Beam Search}: \\
+	- Length normalization: $ argmax_y\,\, \frac{1}{T_y^{\alpha}}\sum_{t=1}^{T_y} log[P(y^{<t>}|x, y^{<1>},..., y^{<t-1>})] $ \vspace*{.5mm}\\
+	\hspace*{3mm} - $\alpha$ is a hyperparameter between 0 and 1 that determines how much to normalize by. \\
+	- Choosing $B$: large $B$ gives better results but is slower, small $B$ gives worse result but is faster. \\
+	\hspace*{3mm} - A $B$ value of 10 is very common. \vspace*{2mm}\\
+	\textbf{Error Analysis}: \\
+	We have a human translation of sentence $x$ denoted by $y^*$ and our RNN output of the sentence denoted $\hat{y}$. We then run both of these through the network to calculate $P(y^*|x)$ and $P(\hat{y}|x)$ and see which value is bigger. \\
+	- If $P(y^*|x) > P(\hat{y}|x)$ then beam search algorithm is at fault. \\
+	- If $P(y^*|x) \leq P(\hat{y}|x)$ then the RNN model is at fault. \vspace*{2mm}\\
+	Note: we can use a \textit{Bleu Score} to determine how good our translations are (single evaluation metric). \newpage
+%%%% PAGE 125 %%%%
+
+	\subsubsection{Attention Model}
+	\begin{center}
+	\includegraphics[scale=.6]{attention_model}
+	\end{center}
+	\href{https://www.tensorflow.org/tutorials/text/nmt_with_attention}{Click here} for how to implement in TensorFlow. \vspace*{2mm}\\
+	For long sequences, we don't want to read in the entire sentence at one time in order to translate them. Note that Bleu score drops in accuracy as words get longer, but attention models can fix this. For this, we want to translate one word at a time, only paying attention to part of an input sentence while generating the single word. We feed the output model a context vector \textit{c}, which tells our model how much influence the words around it should have.
+	
+	\subsubsection{Programming Assignment (Trigger Word)}
+	We want to synthesize our data by overlaying positive (trigger word) and negative (non-trigger words) on top of background noise at random times. We have to make sure not to overlap these words as well. Note we can initialize $y^{<t>}$ to all 0's since we only have 1's when we hear the trigger word. When we overlay a positive word, update the label $y^{<t>}$ by adding fifty 1's at a given position (makes data more balanced). Use a GRU to detect when someone finishes saying trigger word. \vspace*{1mm}\\
+	- All of these functions will use a 1ms discretization interval \\
+	- The 10 seconds of audio is always discretized into 10,000 steps. 
+	\begin{lstlisting}
+	def get_random_time_segment(segment_ms):
+		"""
+		Gets a random time segment of duration segment_ms in a 10,000 ms audio clip.
+		
+		Returns:
+		segment_time -- a tuple of (segment_start, segment_end) in ms
+		"""
+		# Make sure segment doesn't run past the 10sec background
+		segment_start = np.random.randint(low=0, high=10000-segment_ms) 
+		segment_end = segment_start + segment_ms - 1
+		return (segment_start, segment_end)
+	
+	def is_overlapping(segment_time, previous_segments):
+		"""
+		Checks if the time of a segment overlaps with the times of existing segments.
+		
+		segment_time -- a tuple for the new segment
+		previous_segments -- a list of tuples for the existing segments
+		"""
+		segment_start, segment_end = segment_time
+		overlap = False # Step 1: Initialize overlap flag
+		
+		# Loop over the previous_segments start and end times.
+		for previous_start, previous_end in previous_segments:
+			if segment_start <= previous_end and segment_end >= previous_start:
+				overlap = True
+				
+		return overlap	\end{lstlisting} \newpage
+%%%% PAGE 126 %%%%
+
+	\begin{lstlisting}
+	def insert_audio_clip(background, audio_clip, previous_segments):
+		"""
+		Insert a new audio segment over the background noise at a random time step, 
+		ensuring the audio segment does not overlap with existing segments.
+		
+		Arguments:
+		background -- a 10 second background audio recording.  
+		audio_clip -- the audio clip to be inserted/overlaid. 
+		previous_segments -- times where audio segments have already been placed
+		"""
+		segment_ms = len(audio_clip) # Get the duration of the audio clip in ms
+		
+		# Pick a random time segment onto which to insert the new audio clip.
+		segment_time = get_random_time_segment(segment_ms)
+		
+		# Check if the new segment_time overlaps with one of the previous_segments. 
+		# If so, keep picking new segment_time at random until it doesn't overlap.
+		while is_overlapping(segment_time, previous_segments):
+			segment_time = get_random_time_segment(segment_ms)
+		
+		# Append the new segment_time to the list of previous_segments
+		previous_segments.append(segment_time)
+		
+		# Superpose audio segment and background (using pydub)
+		new_background = background.overlay(audio_clip, position = segment_time[0])
+		
+		return new_background, segment_time
+		
+	
+	# Test Function
+	audio_clip, segment_time = insert_audio_clip(backgrounds[0], activates[0], 
+	                                             [(3790, 4400)])
+	audio_clip.export("insert_test.wav", format="wav")
+	IPython.display.Audio("insert_test.wav") # allows you to play audio
 	
 	
+	def insert_ones(y, segment_end_ms):
+		"""
+		Update the label vector y. Set 50 labels after trigger word to 1, but
+		be sure not to set values out of vector range.		
+		Arguments:
+		y -- numpy array of shape (1, Ty), the labels of the training example
+		segment_end_ms -- the end time of the segment in ms
+		"""
+		# duration of the background (in terms of spectrogram time-steps)
+		segment_end_y = int(segment_end_ms * Ty / 10000.0)
+		
+		for i in range(segment_end_y+1, segment_end_y+51):
+			if i < Ty:
+				y[0, i] = 1
+
+		return y \end{lstlisting} \newpage
+%%%% PAGE 127 %%%%
+
+	\begin{lstlisting}
+	def create_training_example(background, activates, negatives):
+		"""
+		Creates a training example with a given background, activates, and negatives.
+		
+		Arguments:
+		background -- a 10 second background audio recording
+		activates -- a list of audio segments of the word "activate"
+		negatives -- a list of audio segments of random words that are not "activate"
+		
+		Returns:
+		x -- the spectrogram of the training example
+		y -- the label at each time step of the spectrogram
+		"""
+		np.random.seed(18) # Set the random seed
+		background = background - 20 # Make background quieter
+		y = np.zeros((1, Ty)) # Initialize y (label vector) of zeros
+		previous_segments = [] # Initialize segment times as an empty list
+		
+		# Select 0-4 random "activate" audio clips from the list of recordings
+		number_of_activates = np.random.randint(0, 5)
+		random_indices = np.random.randint(len(activates), size=number_of_activates)
+		random_activates = [activates[i] for i in random_indices]
+		
+		# Loop over randomly selected "activate" clips and insert in background
+		for random_activate in random_activates:
+			# Insert the audio clip on the background
+			background, segment_time = insert_audio_clip(background, random_activate, 
+			                                             previous_segments)
+			segment_start, segment_end = segment_time
+			y = insert_ones(y, segment_end) # Insert labels in "y"
+		
+		# Select 0-2 random negatives audio recordings from the list of recordings
+		number_of_negatives = np.random.randint(0, 3)
+		random_indices = np.random.randint(len(negatives), size=number_of_negatives)
+		random_negatives = [negatives[i] for i in random_indices]
+		
+		# Loop over randomly selected negative clips and insert in background
+		for random_negative in random_negatives:
+			# Insert the audio clip on the background 
+			background, _ = insert_audio_clip(background, random_negative, previous_segments)
+		
+		# Standardize the volume of the audio clip 
+		background = match_target_amplitude(background, -20.0)
+		
+		# Export new training example 
+		file_handle = background.export("train" + ".wav", format="wav")
+		print("File (train.wav) was saved in your directory.")
+	
+		x = graph_spectrogram("train.wav") # Get and plot spectrogram of the new recording
+		
+		return x, y	\end{lstlisting} \vspace*{1mm}
+	Now we can create the model. We import training sets that are created using our functions above, but dev sets that use real audio (not synthesized). We want our dev set to be as close to our training set as possible. Our model will ingest a spectogram and output a signal when it detects the trigger word. This means our 5511 inputs feed into a Conv1D layer, to a dropout layer, to a GRU, another GRU, and finally a Dense layer. Our total outputs will be 1375 values. \newpage
+%%%% PAGE 128 %%%%
+
+	\noindent Conv1D - helps speed up model by cutting down from 5511 timesteps to 1375 (key layer). \\
+	GRU - two layers read the sequence of inputs from left to right. \\
+	Unidirectional RNN - we want to detect the trigger word immediately (not analyze the whole clip).
+	\begin{lstlisting}
+	def model(input_shape):
+		"""
+		Function creating the model's graph in Keras.
+		"""
+		X_input = Input(shape = input_shape)
+		
+		# Build the CONV layer
+		X = Conv1D(filters=196, kernel_size=15, strides=4)(X_input)
+		X = BatchNormalization()(X)                            
+		X = Activation('relu')(X)                                  
+		X = Dropout(0.8)(X)  
+		
+		# Build the first GRU Layer
+		X = GRU(units=128, return_sequences=True)(X)
+		X = Dropout(0.8)(X)
+		X = BatchNormalization()(X)
+		
+		#Build the second GRU Layer
+		X = GRU(units=128, return_sequences=True)(X)
+		X = Dropout(0.8)(X)
+		X = BatchNormalization()(X)
+		X = Dropout(0.8)(X)
+		
+		# Build the Time-distributed dense layer
+		X = TimeDistributed(Dense(1, activation='sigmoid'))(X)
+		
+		model = Model(inputs = X_input, outputs = X)
+		
+		return model
+	
+	opt = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, decay=0.01)
+	model.compile(loss='binary_crossentropy', optimizer=opt, metrics=["accuracy"])
+	model.fit(X, Y, batch_size = 5, epochs=1) 
+	
+	def detect_triggerword(filename):
+		"""
+		Used to graph when a trigger word is heard.
+		"""
+		plt.subplot(2, 1, 1)
+		
+		x = graph_spectrogram(filename)
+		# the spectrogram outputs (freqs, Tx) and we want (Tx, freqs)
+		x  = x.swapaxes(0,1)
+		x = np.expand_dims(x, axis=0)
+		predictions = model.predict(x)
+		
+		plt.subplot(2, 1, 2)
+		plt.plot(predictions[0,:,0])
+		plt.ylabel('probability')
+		plt.show()
+		return predictions \end{lstlisting} 
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
 	
 	
 	
