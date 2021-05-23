@@ -69,7 +69,19 @@
 %%%% PAGE 1 %%%%
 	
 	\section{Fundamentals}
-	
+	\begin{itemize}
+		\item \textbf{tf.constant()} is not mutable, but \textbf{tf.Variable()} is by using the \textit{.assign()} method on the var object.
+		\item You must set both the global \textbf{tf.random.set\_seed()} and function \textbf{seed=} parameter to get reproducible results for shuffle function.
+		\item We can \textit{add dimensions} to a tensor whilst keeping the same information (\textit{newaxis} and \textit{expand\_dims} have same output).
+	\begin{lstlisting}
+	rank_3_tensor = rank_2_tensor[..., tf.newaxis] # "..." means "all dims prior to"
+	rank_2_tensor, rank_3_tensor # shape (2, 2), shape (2, 2, 1) 
+	tf.expand_dims(rank_2_tensor, axis=-1) # "-1" means last axis (2, 2, 1)  \end{lstlisting}
+		\item \textbf{tf.reshape()} will change the shape in the order they appear (top left to bottom right) and \textbf{tf.transpose()} simply flips the matrix.
+		\item We can reduce tensor sizes in memory by changing the datatype (i.e. float32 cast to float16). 
+		\item We can perform aggregation on tensors by using \textbf{reduce()\_[action]} and using min, max, mean, sum, etc. We can also find positional arguments using \textbf{tf.argmin()} or \textbf{tf.argmax()}.
+		\item 
+	\end{itemize}
 	
 	
 	
