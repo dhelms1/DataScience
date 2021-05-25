@@ -68,7 +68,7 @@
 	
 %%%% PAGE 1 %%%%
 	
-	\section{Fundamentals}
+	\noindent \Large \textbf{Introduction}: \normalsize
 	\begin{itemize}
 		\item \textbf{tf.constant()} is not mutable, but \textbf{tf.Variable()} is by using the \textit{.assign()} method on the var object.
 		\item You must set both the global \textbf{tf.random.set\_seed()} and function \textbf{seed=} parameter to get reproducible results for shuffle function.
@@ -80,8 +80,28 @@
 		\item \textbf{tf.reshape()} will change the shape in the order they appear (top left to bottom right) and \textbf{tf.transpose()} simply flips the matrix.
 		\item We can reduce tensor sizes in memory by changing the datatype (i.e. float32 cast to float16). 
 		\item We can perform aggregation on tensors by using \textbf{reduce()\_[action]} and using min, max, mean, sum, etc. We can also find positional arguments using \textbf{tf.argmin()} or \textbf{tf.argmax()}.
+	\end{itemize} \vspace*{6mm}
+	\noindent \Large \textbf{Neural Network Classification}: \normalsize
+	\begin{itemize}
+		\item We can create a \textbf{learning rate callback} to update our learning rate during training.
+	\begin{lstlisting}
+	# Create a learning rate scheduler callback
+	lr_scheduler = tf.keras.callbacks.LearningRateScheduler(lambda epoch: 
+	               1e-4 * 10**(epoch/20)) \end{lstlisting}
+		\item Traverse a set of learning rate values starting from 1e-4, increasing by 10**(epoch/20) every epoch.
+		\item Note that learning rate exponentially increases as epochs increases.
+		\item We can use a plot to determine the \textbf{ideal learning rate}, which we want to take the value where loss is still decreasing but not quite flattened out. It is the value around 10x smaller than the lowest point (refer to notebook for graph and point selection).
+	\begin{lstlisting}
+	lrs = 1e-4 * (10 ** (np.arange(100)/20))
+	plt.figure(figsize=(10, 7))
+	plt.semilogx(lrs, history.history["loss"]) # x-axis (lr) to be log scale \end{lstlisting}
+	\end{itemize}\vspace*{6mm}
+	\noindent \Large \textbf{Computer Vision \& CNNs}: \normalsize
+	\begin{itemize}
 		\item 
 	\end{itemize}
+	
+	
 	
 	
 	

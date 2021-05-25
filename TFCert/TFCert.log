@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.3) (preloaded format=pdflatex 2021.5.5)  23 MAY 2021 08:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.3) (preloaded format=pdflatex 2021.5.5)  25 MAY 2021 06:57
 entering extended mode
 **./TFCert.tex
 (TFCert.tex
@@ -796,29 +796,30 @@ ng (ext4): destination with the same identifier (name{page.1}) has been already
  used, duplicate ignored
 <to be read again> 
                    \relax 
-l.88 \end{document}
-                    [1] (TFCert.aux)
+l.108 \end{document}
+                     [1] (TFCert.aux)
 Package rerunfilecheck Info: File `TFCert.out' has not changed.
-(rerunfilecheck)             Checksum: 7152472417C4CDA59A3FE6F4CBB3C08F;103.
+(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 21902 strings out of 479252
- 380066 string characters out of 2863601
- 895767 words of memory out of 3000000
- 39082 multiletter control sequences out of 15000+600000
- 406872 words of font info for 39 fonts, out of 8000000 for 9000
+ 21919 strings out of 479252
+ 380301 string characters out of 2863601
+ 959766 words of memory out of 3000000
+ 39091 multiletter control sequences out of 15000+600000
+ 407477 words of font info for 41 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 112i,5n,116p,443b,1381s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 112i,5n,116p,443b,1373s stack positions out of 5000i,500n,10000p,200000b,80000s
  <C:\Users\derek\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\
 tcrm1095.pk><D:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.
 pfb><D:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><D:/
 Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><D:/Program F
-iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><D:/Program Files/MiKTe
-X 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb><D:/Program Files/MiKTeX 2.9/fo
-nts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on TFCert.pdf (2 pages, 82693 bytes).
+iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><D:/Program Files/MiKT
+eX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><D:/Program Files/MiKTeX 2.9/fon
+ts/type1/public/amsfonts/cm/cmti10.pfb><D:/Program Files/MiKTeX 2.9/fonts/type1
+/public/amsfonts/cm/cmtt9.pfb>
+Output written on TFCert.pdf (2 pages, 96661 bytes).
 PDF statistics:
- 58 PDF objects out of 1000 (max. 8388607)
- 7 named destinations out of 1000 (max. 500000)
- 21 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 65 PDF objects out of 1000 (max. 8388607)
+ 14 named destinations out of 1000 (max. 500000)
+ 13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
