@@ -110,15 +110,78 @@
 		tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
 		print(f"Saving TensorBoard log files to: {log_dir}")
 		return tensorboard_callback	\end{lstlisting}
-		\item We can also save a model as it trains so you can stop training if needed and come back to continue off where you left using \textbf{Model Checkpointing}.
+		\item We can also save a model as it trains so you can stop training if needed and come back to continue off where you left using \textbf{Model Checkpointing}. By default, metric monitored is \textit{validation loss}.
+	\begin{lstlisting}
+	cp_path = "model_checkpoint_name_here/checkpoint.ckpt"
+	
+	# Create a ModelCheckpoint callback that saves the model's weights only
+	checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=cp_path,
+		save_weights_only=True, # False to save the entire model
+		save_best_only=False, # True to save only best model instead of every epoch 
+		save_freq="epoch", # save every epoch
+		verbose=1)	\end{lstlisting}
 		\item \textbf{Feature Extraction} is when you take the weights a pretrained model has learned and adjust its outputs to be more suited to your problem (keep layers frozen except new output layers).
 	\end{itemize} \vspace*{2mm}
 
 	\subsection{Fine Tuning}
 	\begin{itemize}
-		\item 
-	\end{itemize}
+		\item The \textbf{GlobalAveragePooling2D} layer take the average of the outputs of the model (across the inner axis) and reduces it into a \textbf{feature vector} that is then passed to our final \textbf{Dense} layer, which then gives us our final output. For example, a tensor of shape (2, 4, 5, 3) will be reduced into shape (2, 3).
+		\item Images are best preprocessed on the GPU where as text and structured data are more suited to be preprocessed on the CPU. Image data augmentation only happens during training so we can still export our whole model and use it elsewhere. And if someone else wanted to train the same model as us, including the same kind of data augmentation, they could.
+		\item We can create a \textbf{Data Augmentation} layer for our model using the Sequential API and the \textit{ tf.keras.layers.experimental.preprocessing} layers. Note that this layer is turned off for predicting.
+	\begin{lstlisting}
+	data_augmentation = keras.Sequential([
+		preprocessing.RandomFlip("horizontal"),
+		preprocessing.RandomRotation(0.2),
+		... # zoom, width, rotation, normalize, etc.
+	], name = "data_augmentation")
 	
+	input_shape = (224, 224, 3)
+	base_model = tf.keras.applications.EfficientNetB0(include_top=False)
+	base_model.trainable = False # freeze model layers
+	
+	inputs = layers.Input(shape=input_shape, name="input_layer")
+	x = data_augmentation(inputs)
+	x = base_model(x, training=False)
+	x = layers.GlobalAveragePooling2D(name="global_average_pooling_layer")(x)
+	outputs = layers.Dense(10, activation="softmax", name="output_layer")(x)
+	model = keras.Model(inputs, outputs)	\end{lstlisting}
+	\end{itemize} \newpage
+
+%%%% PAGE 3 %%%%
+
+	\begin{itemize}
+		\item In \textbf{Fine Tuning} we will unfreeze deeper layers in the model in order to learn more problem specific features for our dataset. Generally, the amount we unfreeze is determined by how much data we have. 
+		\item \href{https://github.com/mrdbourke/tensorflow-deep-learning/blob/main/05_transfer_learning_in_tensorflow_part_2_fine_tuning.ipynb}{Click here} for how to resume training after unfreezing layers and plotting the history.
+	\end{itemize} \vspace*{2mm}
+	
+	\subsection{Scaling Up}
+	\begin{itemize}
+		\item We can used \href{https://www.tensorflow.org/guide/mixed_precision}{\textbf{Mixed Precision}} in order to improve our models performance on GPU by using a mix of float32 and float16 data types to use less memory where possible and in turn run faster (using less memory per tensor means more tensors can be computed on simultaneously). Note that this doesn't work for all hardware (must have score of 7.0+, see \textit{supported hardware} in above link).
+	\begin{lstlisting}
+	from tensorflow.keras import mixed_precision
+	
+	# set global policy to mixed precision
+	mixed_precision.set_global_policy(policy="mixed_float16") \end{lstlisting}
+		\item Note that in the final output layer, it is required to specify the \textit{dtype=tf.float32} and use the \textbf{Activation} layer instead of Dense when using mixed precision.
+	\begin{lstlisting}
+	base_model = tf.keras.applications.EfficientNetB0(include_top=False)
+	base_model.trainable = False # freeze base model layers
+
+	inputs = layers.Input(shape=input_shape, name="input_layer")
+	x = base_model(inputs, training=False) # set base_model to inference mode only
+	x = layers.GlobalAveragePooling2D(name="pooling_layer")(x)
+	x = layers.Dense(len(class_names))(x) # want one output neuron per class 
+	# Separate activation of output layer so we can output float32 activations
+	outputs = layers.Activation("softmax", dtype=tf.float32, name="sm_float32")(x) 
+	model = tf.keras.Model(inputs, outputs)	
+
+	for layer in model.layers:
+		print(layer.dtype_policy) # Check the dtype policy of layers\end{lstlisting}
+	\end{itemize} \newpage
+
+%%%% PAGE 4 %%%%
+
+	\section{Natural Language Processing}
 	
 	
 	
