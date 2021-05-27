@@ -95,11 +95,31 @@
 	lrs = 1e-4 * (10 ** (np.arange(100)/20))
 	plt.figure(figsize=(10, 7))
 	plt.semilogx(lrs, history.history["loss"]) # x-axis (lr) to be log scale \end{lstlisting}
-	\end{itemize}\vspace*{6mm}
-	\noindent \Large \textbf{Computer Vision \& CNNs}: \normalsize
+	\end{itemize} \newpage
+
+%%%% PAGE 2 %%%%
+	
+	\section{Transfer Learning}
+	\subsection{Feature Extraction}
+	\begin{itemize}
+		\item We can log the performance of multiple models, then view and compare these models in a visual way on a \textbf{TensorBoard}. It saves a model's training performance to a specified \textit{log\_dir}.
+	\begin{lstlisting}
+	def create_tensorboard_callback(dir_name, experiment_name):
+		log_dir = dir_name + "/" + experiment_name + "/" +
+		          datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+		tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
+		print(f"Saving TensorBoard log files to: {log_dir}")
+		return tensorboard_callback	\end{lstlisting}
+		\item We can also save a model as it trains so you can stop training if needed and come back to continue off where you left using \textbf{Model Checkpointing}.
+		\item \textbf{Feature Extraction} is when you take the weights a pretrained model has learned and adjust its outputs to be more suited to your problem (keep layers frozen except new output layers).
+	\end{itemize} \vspace*{2mm}
+
+	\subsection{Fine Tuning}
 	\begin{itemize}
 		\item 
 	\end{itemize}
+	
+	
 	
 	
 	

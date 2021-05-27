@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.3) (preloaded format=pdflatex 2021.5.5)  25 MAY 2021 06:57
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.3) (preloaded format=pdflatex 2021.5.5)  26 MAY 2021 07:13
 entering extended mode
 **./TFCert.tex
 (TFCert.tex
@@ -785,7 +785,17 @@ LaTeX Info: Redefining \nameref on input line 62.
 \@outlinefile=\write7
 \openout7 = `TFCert.out'.
 
- (TFCert.toc)
+ (TFCert.toc
+LaTeX Font Info:    Trying to load font information for U+msa on input line 2.
+
+(D:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 2.
+
+(D:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+))
 \tf@toc=\write8
 \openout8 = `TFCert.toc'.
 
@@ -796,17 +806,17 @@ ng (ext4): destination with the same identifier (name{page.1}) has been already
  used, duplicate ignored
 <to be read again> 
                    \relax 
-l.108 \end{document}
-                     [1] (TFCert.aux)
+l.98 	\end{itemize} \newpage
+                             [1] [2] (TFCert.aux)
 Package rerunfilecheck Info: File `TFCert.out' has not changed.
-(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
+(rerunfilecheck)             Checksum: 9D74AA11AF39A0018A47637603BC032E;396.
  ) 
 Here is how much of TeX's memory you used:
- 21919 strings out of 479252
- 380301 string characters out of 2863601
- 959766 words of memory out of 3000000
- 39091 multiletter control sequences out of 15000+600000
- 407477 words of font info for 41 fonts, out of 8000000 for 9000
+ 22009 strings out of 479252
+ 381530 string characters out of 2863601
+ 958766 words of memory out of 3000000
+ 39145 multiletter control sequences out of 15000+600000
+ 413986 words of font info for 65 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  112i,5n,116p,443b,1373s stack positions out of 5000i,500n,10000p,200000b,80000s
  <C:\Users\derek\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\
@@ -817,9 +827,9 @@ iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><D:/Program Files/MiKT
 eX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><D:/Program Files/MiKTeX 2.9/fon
 ts/type1/public/amsfonts/cm/cmti10.pfb><D:/Program Files/MiKTeX 2.9/fonts/type1
 /public/amsfonts/cm/cmtt9.pfb>
-Output written on TFCert.pdf (2 pages, 96661 bytes).
+Output written on TFCert.pdf (3 pages, 107737 bytes).
 PDF statistics:
- 65 PDF objects out of 1000 (max. 8388607)
- 14 named destinations out of 1000 (max. 500000)
- 13 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 94 PDF objects out of 1000 (max. 8388607)
+ 25 named destinations out of 1000 (max. 500000)
+ 37 words of extra memory for PDF output out of 10000 (max. 10000000)
 
