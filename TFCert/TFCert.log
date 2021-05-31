@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.3) (preloaded format=pdflatex 2021.5.5)  30 MAY 2021 08:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.3) (preloaded format=pdflatex 2021.5.5)  31 MAY 2021 10:57
 entering extended mode
 **./TFCert.tex
 (TFCert.tex
@@ -807,15 +807,15 @@ ng (ext4): destination with the same identifier (name{page.1}) has been already
 <to be read again> 
                    \relax 
 l.98 	\end{itemize} \newpage
-                             [1] [2] [3] [4] [5] [6] (TFCert.aux)
+                             [1] [2] [3] [4] [5] [6] [7] (TFCert.aux)
 Package rerunfilecheck Info: File `TFCert.out' has not changed.
-(rerunfilecheck)             Checksum: F4FC8CA4D9B097DAC2A02613D7F7858C;2112.
+(rerunfilecheck)             Checksum: 973BBFE0E68B3BA962DFE8F727273CBF;3099.
  ) 
 Here is how much of TeX's memory you used:
- 22233 strings out of 479252
- 384880 string characters out of 2863601
- 1086767 words of memory out of 3000000
- 39248 multiletter control sequences out of 15000+600000
+ 22269 strings out of 479252
+ 385435 string characters out of 2863601
+ 1124767 words of memory out of 3000000
+ 39259 multiletter control sequences out of 15000+600000
  414591 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  112i,5n,116p,504b,1373s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -827,9 +827,9 @@ iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><D:/Program Files/MiKT
 eX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><D:/Program Files/MiKTeX 2.9/fon
 ts/type1/public/amsfonts/cm/cmti10.pfb><D:/Program Files/MiKTeX 2.9/fonts/type1
 /public/amsfonts/cm/cmtt9.pfb>
-Output written on TFCert.pdf (7 pages, 163856 bytes).
+Output written on TFCert.pdf (8 pages, 175488 bytes).
 PDF statistics:
- 298 PDF objects out of 1000 (max. 8388607)
- 146 named destinations out of 1000 (max. 500000)
- 117 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 346 PDF objects out of 1000 (max. 8388607)
+ 171 named destinations out of 1000 (max. 500000)
+ 149 words of extra memory for PDF output out of 10000 (max. 10000000)
 

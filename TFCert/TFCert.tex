@@ -256,12 +256,7 @@
 		("clf", MultinomialNB()) # model the text
 	])
 	
-	model_0.fit(train_sentences, train_labels)
-	
-	# {'accuracy': 79.26509186351706,
-	#  'f1': 0.7862189758049549,
-	#  'precision': 0.8111390004213173,
-	#  'recall': 0.7926509186351706} \end{lstlisting}
+	model_0.fit(train_sentences, train_labels) \end{lstlisting}
 
 	\subsubsection{Model 1: Simple Dense Model}
 	We will create a single layer dense model. It'll take our text and labels as input, tokenize the text, create an embedding, find the average of the embedding (using Global Average Pooling) and then pass the average through a fully connected layer with one output unit and a sigmoid activation function.
@@ -271,29 +266,89 @@
 	x = embedding(x) # create an embedding of the numerized numbers
 	x = layers.GlobalAveragePooling1D()(x) # lower the dimensionality of the embedding
 	outputs = layers.Dense(1, activation="sigmoid")(x) #binary classification
-	model_1 = tf.keras.Model(inputs, outputs, name="model_1_dense")
-	
-	model_1.compile(loss="binary_crossentropy",
-		optimizer=tf.keras.optimizers.Adam(),
-		metrics=["accuracy"])
-	
-	# {'accuracy': 78.60892388451444,
-	#  'f1': 0.7827032509906072,
-	#  'precision': 0.7920916944370863,
-	#  'recall': 0.7860892388451444} \end{lstlisting}
+	model_1 = tf.keras.Model(inputs, outputs, name="model_1_dense") \end{lstlisting}
 
-	\subsubsection{Visualize Learned Embeddings}
+	\subsubsection{Extra: Visualize Learned Embeddings}
 	\begin{itemize}
 		\item Now that we have trained an embedding layer, we can save the weights and visualize them using the \href{https://projector.tensorflow.org/}{Embedding Projector Tool}. To see how to save weights and metadata (needed for projector tool) to .tsv files, see the \href{https://www.tensorflow.org/text/guide/word\_embeddings#retrieve\_the\_trained\_word\_embeddings\_and\_save\_them\_to\_disk}{TensorFlow Tutorial for Saving Word Embeddings}
 		\item With these embeddings, we can see if similar words are grouped together and how the model interprets these words (not how we interpret them).
+	\end{itemize} 
+
+	\subsubsection{Model 2: RNN with LSTM}
+	\begin{itemize}
+		\item A \textbf{RNN} allows the model to take information from the past to help with the future, meaning it can take into consideration the previous words to determine the meaning of the given word. There are many different types of RNNs:\\
+		- \textit{One to one}: one input, one output, such as image classification.\\
+		- \textit{One to many}: one input, many outputs, such as image captioning (image input, caption output).\\
+		- \textit{Many to one}: many inputs, one outputs, such as binary text classification.\\
+		- \textit{Many to many}: many inputs, many outputs, such as machine translation or speech to text.
+		\item An \textbf{LSTM} (Long Short Term Memory) is a variant of an RNN which allows for both feedforward and feedback, as well as processing entire sequences of data at once.
 	\end{itemize} \newpage
 
 %%%% PAGE 6 %%%%
 
-	\subsubsection{Model 2: RNN with LSTM}
+	\begin{lstlisting}
+	from tensorflow.keras import layers
+	
+	inputs = layers.Input(shape=(1,), dtype="string")
+	x = text_vectorizer(inputs)
+	x = embedding(x) # shape: (None, 15, 128)
+	x = layers.LSTM(64)(x) # return vector for whole sequence, shape: (None, 64)
+	# x = layers.Dense(64, activation="relu")(x) # optional on top of LSTM
+	outputs = layers.Dense(1, activation="sigmoid")(x)
+	model_2 = tf.keras.Model(inputs, outputs, name="model_2_LSTM") \end{lstlisting}
+	\begin{itemize}
+		\item NOTE: we can stack LSTM cells as long as \textit{return\_sequences=True} is set in layer parameters.
+		\item LSTM number of parameters: 4*(embedding\_size + LSTM\_units + 1) * LSTM\_units 
+	\end{itemize}
+
+	\subsubsection{Model 3: RNN with GRU}
+	\begin{itemize}
+		\item A \textbf{GRU} (Gated Recurrent Unit) aims to solve the vanishing gradient problem that often occurs in RNNs. The GRU will have less trainable parameters compared to the LSTM.
+		\item Again we can stack GRU cells as long as \textit{return\_sequences=True} is set in layer parameters.
+	\end{itemize}
+	\begin{lstlisting}
+	inputs = layers.Input(shape=(1,), dtype="string")
+	x = text_vectorizer(inputs)
+	x = embedding(x) 
+	x = layers.GRU(64)(x) # return vector for whole sequence
+	# x = layers.Dense(64, activation="relu")(x) # optional after GRU
+	outputs = layers.Dense(1, activation="sigmoid")(x)
+	model_3 = tf.keras.Model(inputs, outputs, name="model_3_GRU") \end{lstlisting} 
+
+	\subsubsection{Model 4: Bidirectional RNN Model}
+	\begin{itemize}
+		\item A \textbf{bidirectional} RNN will process the sequence from left to right and then again from right to left. This can improve performance but comes at the cost of longer training time and double the number of trainable model parameters.
+	\end{itemize}
+	\begin{lstlisting}
+	inputs = layers.Input(shape=(1,), dtype="string")
+	x = text_vectorizer(inputs)
+	x = embedding(x)
+	x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)
+	x = layers.Bidirectional(layers.GRU(64))(x)
+	outputs = layers.Dense(1, activation="sigmoid")(x)
+	model_4 = tf.keras.Model(inputs, outputs, name="model_4_Bidirectional") \end{lstlisting}
+
+	\subsubsection{Model 5: CNN for Text}
+	\begin{itemize}
+		\item Sequences come in the form of 1-dimensional data (string of text), so using a CNN will require 1D layers (temporal convolution) rather than 2D.
+		\item We can think of CNN \textit{filters} as ngram detectors, each filter specializing in a closely-related family of ngrams.\textit{ Max-pooling} over time extracts the relevant ngrams for making a decision.
+	\end{itemize}
+	\begin{lstlisting}
+	inputs = layers.Input(shape=(1,), dtype="string")
+	x = text_vectorizer(inputs)
+	x = embedding(x)
+	x = layers.Conv1D(filters=32, kernel_size=5, activation="relu")(x)
+	x = layers.GlobalMaxPool1D()(x)
+	outputs = layers.Dense(1, activation="sigmoid")(x)
+	model_5 = tf.keras.Model(inputs, outputs, name="model_5_Conv1D")\end{lstlisting} \newpage
+
+%%%% PAGE 7 %%%%
+
+	\subsubsection{Model 6: Transfer Learning (Pretrained Embeddings)}
 	\begin{itemize}
 		\item 
 	\end{itemize}
+	
 	
 	
 	
